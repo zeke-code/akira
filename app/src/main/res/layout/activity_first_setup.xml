@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/setup_enter_name"
+        android:textColorHint="@color/secondary_text"
         android:layout_margin="16dp"
         android:inputType="text" />
 
@@ -18,6 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/setup_enter_budget"
+        android:textColorHint="@color/secondary_text"
         android:layout_below="@id/userNameEditText"
         android:layout_margin="16dp"
         android:inputType="numberDecimal" />

@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- Background colors -->
+    <color name="background">#121212</color>
+    <color name="secondary_background">#1e1e1e</color>
+    <color name="tertiary_background">#333333</color>
+
+    <!-- Text colors -->
+    <color name="primary_text">#e0e0e0</color>
+    <color name="secondary_text">#b0b0b0</color>
+
+    <!-- UI and miscellaneous colors -->
+    <color name="accent_green">#00c853</color>
+    <color name="accent_red">#fe3737</color>
+    <color name="accent_blue">#1e88e5</color>
+    <color name="divider">#393939</color>
+    <color name="disabled_element">#1c1c1c</color>
 </resources>
