@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Akira - Financial Tracker</string>
+    <string name="home_welcome_text">Welcome, %1$s!</string>
+    <string name="home_budget_text">Your monthly budget is $%1$d</string>
+    <string name="setup_enter_name">Enter your name here…</string>
+    <string name="setup_enter_budget">Enter your monthly budget here…</string>
+    <string name="setup_save">I\'m ready to go!</string>
+</resources>
