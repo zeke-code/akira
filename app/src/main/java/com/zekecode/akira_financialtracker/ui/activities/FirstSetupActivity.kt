@@ -36,7 +36,6 @@ class FirstSetupActivity : AppCompatActivity() {
                     if (!isValidDecimal(monthlyBudgetStr)) {
                         Toast.makeText(this, "Please enter a number with at most 2 decimal numbers", Toast.LENGTH_SHORT).show()
                     } else {
-
                         switchViewWithAnimation(binding.userInputView, binding.readyView)
 
                         // Save data in sharedPreferences and proceed to the home activity after a short delay
