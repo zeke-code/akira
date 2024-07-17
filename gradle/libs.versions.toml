@@ -1,5 +1,5 @@
 [versions]
-agp = "8.4.2"
+agp = "8.5.1"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -13,11 +13,13 @@ constraintlayout = "2.1.4"
 moshi = "1.15.1"
 retrofitVersion = "2.11.0"
 roomRuntime = "2.6.1"
+transition = "1.5.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+androidx-transition = { module = "androidx.transition:transition", version.ref = "transition" }
 converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofitVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

@@ -5,31 +5,78 @@
     android:layout_height="match_parent"
     tools:context=".ui.activities.FirstSetupActivity">
 
-    <EditText
-        android:id="@+id/userNameEditText"
+    <!-- Welcome View -->
+    <LinearLayout
+        android:id="@+id/welcomeView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/setup_enter_name"
-        android:textColorHint="@color/secondary_text"
-        android:layout_margin="16dp"
-        android:inputType="text" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="16dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/setup_welcome"
+            android:textColor="@color/primary_text"
+            android:textSize="24sp"
+            android:gravity="center"/>
+    </LinearLayout>
 
-    <EditText
-        android:id="@+id/monthlyBudgetEditText"
+    <!-- User Input View -->
+    <LinearLayout
+        android:id="@+id/userInputView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/setup_enter_budget"
-        android:textColorHint="@color/secondary_text"
-        android:layout_below="@id/userNameEditText"
-        android:layout_margin="16dp"
-        android:inputType="numberDecimal" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:gravity="center"
+        android:visibility="gone">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/setup_input_request"
+            android:textColor="@color/primary_text"
+            android:textSize="20sp"
+            android:gravity="center" />
+        <EditText
+            android:id="@+id/userNameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/setup_enter_name"
+            android:textColorHint="@color/secondary_text"
+            android:layout_margin="16dp"
+            android:inputType="text"
+            android:maxLength="20"/>
+        <EditText
+            android:id="@+id/monthlyBudgetEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/setup_enter_budget"
+            android:textColorHint="@color/secondary_text"
+            android:layout_margin="16dp"
+            android:inputType="numberDecimal"/>
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/setup_save"
+            android:layout_marginTop="16dp" />
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/saveButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/setup_save"
-        android:layout_below="@id/monthlyBudgetEditText"
-        android:layout_marginTop="16dp"
-        android:layout_centerHorizontal="true"/>
+    <!-- Ready View -->
+    <LinearLayout
+        android:id="@+id/readyView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="16dp"
+        android:visibility="gone">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/setup_end"
+            android:textSize="24sp"
+            android:gravity="center"/>
+    </LinearLayout>
 </RelativeLayout>

@@ -13,13 +13,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         sharedPreferences = getSharedPreferences("AkiraPrefs", MODE_PRIVATE)
-        val isFirstLaunch = sharedPreferences.getBoolean("IsFirstLaunch", true)
+        val isSetupComplete = sharedPreferences.getBoolean("IsSetupComplete", false)
 
-        if (isFirstLaunch) {
-            with(sharedPreferences.edit()) {
-                putBoolean("IsFirstLaunch", false)
-                apply()
-            }
+        if (!isSetupComplete) {
             val intent = Intent(this, FirstSetupActivity::class.java)
             startActivity(intent)
             finish()
