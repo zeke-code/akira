@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("kotlin-parcelize")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -40,6 +42,7 @@ android {
     }
 }
 
+// All dependencies versions can be found in ../gradle/libs.versions.toml
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -47,6 +50,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.material)
 
     // Retrofit and Moshi dependencies
     implementation(libs.retrofit2.retrofit)
@@ -55,10 +59,13 @@ dependencies {
 
     // Room dependencies
     implementation(libs.androidx.room.runtime)
-    annotationProcessor(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    // KSP is a Kotlin based processor. We use it instead of KAPT which is now in maintenance mode
+    ksp(libs.androidx.room.compiler)
+    androidTestImplementation(libs.androidx.room.testing)
 
     // Coroutine dependencies
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
+    implementation(libs.jetbrains.kotlinx.coroutines.android)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
