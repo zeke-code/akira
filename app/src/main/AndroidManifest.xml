@@ -14,14 +14,15 @@
         android:theme="@style/Theme.AkiraFinancialTracker"
         tools:targetApi="31">
 
-        <activity android:name=".ui.activities.HomeActivity" />
-        <activity android:name=".ui.activities.FirstSetupActivity" />
-        <activity android:name=".ui.activities.MainActivity"
+        <activity android:name=".ui.activities.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.activities.HomeActivity" />
+        <activity android:name=".ui.activities.FirstSetupActivity" />
+        <activity android:name=".ui.activities.MainActivity" />
     </application>
 </manifest>

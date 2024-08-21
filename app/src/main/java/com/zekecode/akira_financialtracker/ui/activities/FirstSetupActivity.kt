@@ -38,7 +38,7 @@ class FirstSetupActivity : AppCompatActivity() {
                     } else {
                         switchViewWithAnimation(binding.userInputView, binding.readyView)
 
-                        // Save data in sharedPreferences and proceed to the home activity after a short delay
+                        // Save data in sharedPreferences and proceed to MainActivity after a short delay
                         binding.readyView.postDelayed({
                             with(sharedPreferences.edit()) {
                                 putString("Username", userName)
@@ -46,7 +46,7 @@ class FirstSetupActivity : AppCompatActivity() {
                                 putBoolean("IsSetupComplete", true)
                                 apply()
                             }
-                            val intent = Intent(this, HomeActivity::class.java)
+                            val intent = Intent(this, MainActivity::class.java)
                             startActivity(intent)
                             finish()
                         }, 4000)
