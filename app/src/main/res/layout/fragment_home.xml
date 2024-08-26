@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".ui.activities.HomeActivity">
+    tools:context=".ui.fragments.HomeFragment">
 
     <TextView
         android:id="@+id/welcomeTextView"

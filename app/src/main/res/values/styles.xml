@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Custom style for BottomNavigationView -->
+    <style name="CustomBottomNavigation" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="itemTextAppearanceActive">@style/BottomNavActiveTextStyle</item>
+        <item name="backgroundColor">@color/navbar_background</item>
+        <item name="backgroundTint">@color/navbar_background</item>
+        <item name="labelVisibilityMode">labeled</item>
+        <item name="itemTextAppearance">@style/BottomNavTextStyle</item>
+        <item name="menuGravity">center</item>
+    </style>
+
+    <!-- Style for active text in BottomNavigationView -->
+    <style name="BottomNavActiveTextStyle" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">#E0E0E0</item>
+    </style>
+
+    <!-- General text style for BottomNavigationView -->
+    <style name="BottomNavTextStyle" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">10sp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:paddingTop">0dp</item>
+    </style>
+
+</resources>

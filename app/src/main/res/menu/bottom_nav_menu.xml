@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/homeFragment"
+        android:icon="@drawable/ic_home"
+        android:title="@string/navbar_home"/>
+
+    <item
+        android:id="@+id/statsFragment"
+        android:icon="@drawable/ic_barchart"
+        android:title="@string/navbar_stats" />
+
+    <item
+        android:id="@+id/createFragment"
+        android:background="@drawable/ic_create_button"
+        android:icon="@drawable/ic_plus"
+        android:iconTint="@null"
+        app:actionViewClass="android.widget.ImageButton"
+        android:title=""
+        android:enabled="true" />
+
+    <item
+        android:id="@+id/stocksFragment"
+        android:icon="@drawable/ic_stocks"
+        android:title="@string/navbar_stocks" />
+
+    <item
+        android:id="@+id/settingsFragment"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/navigation_settings" />
+
+</menu>
