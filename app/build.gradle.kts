@@ -64,6 +64,9 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
 
+    // Charts library
+    implementation(libs.vico.views)
+
     // KSP is a Kotlin based processor. We use it instead of KAPT which is now in maintenance mode
     ksp(libs.androidx.room.compiler)
     androidTestImplementation(libs.androidx.room.testing)

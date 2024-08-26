@@ -1,4 +1,3 @@
-// GraphsFragment.kt
 package com.zekecode.akira_financialtracker.ui.fragments
 
 import android.os.Bundle

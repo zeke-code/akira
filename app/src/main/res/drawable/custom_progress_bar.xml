@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Outline layer -->
+    <item>
+        <shape>
+            <corners android:radius="12dp" />
+            <stroke
+                android:width="4dp"
+                android:color="@color/secondary_background" />
+        </shape>
+    </item>
+
+    <!-- Background layer: Green color for unfinished progress -->
+    <item android:id="@android:id/background">
+        <shape>
+            <corners android:radius="10dp" />
+            <solid android:color="@color/accent_green"/>
+        </shape>
+    </item>
+
+    <!-- Progress layer: Red color for completed progress -->
+    <item android:id="@android:id/progress">
+        <clip>
+            <shape>
+                <corners android:radius="10dp" />
+                <solid android:color="@color/accent_red"/>
+            </shape>
+        </clip>
+    </item>
+</layer-list>

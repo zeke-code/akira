@@ -12,9 +12,6 @@ class HomeViewModel(
     private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 
-    private val _userName = MutableLiveData<String>()
-    val userName: LiveData<String> get() = _userName
-
     private val _monthlyBudget = MutableLiveData<Float>()
     val monthlyBudget: LiveData<Float> get() = _monthlyBudget
 
@@ -23,7 +20,6 @@ class HomeViewModel(
     }
 
     private fun fetchUserData() {
-        _userName.value = sharedPreferences.getString("Username", "User")
         _monthlyBudget.value = sharedPreferences.getFloat("MonthlyBudget", 0F)
     }
 }

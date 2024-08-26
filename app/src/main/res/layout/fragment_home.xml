@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -6,26 +5,107 @@
     android:fitsSystemWindows="true"
     tools:context=".ui.fragments.HomeFragment">
 
-    <TextView
-        android:id="@+id/welcomeTextView"
-        android:layout_width="wrap_content"
+    <!-- Time Period Selection Tabs -->
+    <RadioGroup
+        android:id="@+id/timePeriodTabs"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/home_welcome_text"
-        android:textSize="@dimen/home_greeting_text"
-        android:textColor="@color/primary_text"
-        android:layout_marginTop="16dp"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="8dp">
 
+        <RadioButton
+            android:id="@+id/dayTab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/home_dayTab"
+            android:background="?attr/selectableItemBackground"
+            android:button="@null"
+            android:padding="10dp"
+            android:layout_marginEnd="32sp"
+            android:textColor="@color/primary_text"
+            android:textSize="16sp"/>
+
+        <RadioButton
+            android:id="@+id/weekTab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/home_weekTab"
+            android:background="?attr/selectableItemBackground"
+            android:button="@null"
+            android:padding="10dp"
+            android:layout_marginEnd="32sp"
+            android:textColor="@color/primary_text"
+            android:textSize="16sp"/>
+
+        <RadioButton
+            android:id="@+id/monthTab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/home_monthTab"
+            android:background="?attr/selectableItemBackground"
+            android:button="@null"
+            android:padding="10dp"
+            android:textColor="@color/primary_text"
+            android:textSize="16sp"/>
+    </RadioGroup>
+
+
+    <!-- Budget Information Text -->
     <TextView
         android:id="@+id/budgetTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/timePeriodTabs"
         android:text="@string/home_budget_text"
-        android:textSize="@dimen/home_budget_text"
+        android:textSize="18sp"
+        android:gravity="center"
         android:textColor="@color/secondary_text"
-        android:layout_below="@id/welcomeTextView"
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"/>
 
+    <!-- Budget Progress Bar -->
+    <ProgressBar
+        android:id="@+id/budgetProgressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_below="@id/budgetTextView"
+        android:progressDrawable="@drawable/custom_progress_bar"
+        android:progress="50"
+        android:indeterminate="false"
+        android:max="100"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
+
+    <!-- Used Budget Warning Text -->
+    <TextView
+        android:id="@+id/home_used_budget_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/budgetProgressBar"
+        android:layout_marginTop="@dimen/spacing_s"
+        android:textColor="@color/primary_text"
+        android:gravity="center"
+        android:text="You have used 50% of your budget" />
+
+    <!-- Divider -->
+    <View
+        android:id="@+id/home_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/home_used_budget_text"
+        android:layout_marginTop="@dimen/spacing_m"
+        android:background="@color/divider" />
+
+    <!-- Expense List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/homeExpenseRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@id/home_divider"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="@dimen/spacing_s"
+        android:layout_marginBottom="@dimen/spacing_s" />
 
 </RelativeLayout>

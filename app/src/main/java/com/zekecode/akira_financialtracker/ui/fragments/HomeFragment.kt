@@ -38,10 +38,6 @@ class HomeFragment : Fragment() {
 
         sharedPreferences = requireActivity().getSharedPreferences("AkiraPrefs", Context.MODE_PRIVATE)
 
-        viewModel.userName.observe(viewLifecycleOwner) { userName ->
-            binding.welcomeTextView.text = getString(R.string.home_welcome_text, userName)
-        }
-
         viewModel.monthlyBudget.observe(viewLifecycleOwner) { monthlyBudget ->
             binding.budgetTextView.text = getString(R.string.home_budget_text, monthlyBudget)
         }
