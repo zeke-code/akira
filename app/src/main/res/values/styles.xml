@@ -4,8 +4,8 @@
     <!-- Custom style for BottomNavigationView -->
     <style name="CustomBottomNavigation" parent="Widget.MaterialComponents.BottomNavigationView">
         <item name="itemTextAppearanceActive">@style/BottomNavActiveTextStyle</item>
-        <item name="backgroundColor">@color/navbar_background</item>
-        <item name="backgroundTint">@color/navbar_background</item>
+        <item name="backgroundColor">@color/secondary_background</item>
+        <item name="backgroundTint">@color/secondary_background</item>
         <item name="labelVisibilityMode">labeled</item>
         <item name="itemTextAppearance">@style/BottomNavTextStyle</item>
         <item name="menuGravity">center</item>

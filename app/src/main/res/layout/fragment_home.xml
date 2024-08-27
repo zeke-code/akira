@@ -61,7 +61,7 @@
         android:text="@string/home_budget_text"
         android:textSize="18sp"
         android:gravity="center"
-        android:textColor="@color/secondary_text"
+        android:textColor="@color/primary_text"
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"/>
 
@@ -71,6 +71,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:layout_marginStart="@dimen/spacing_l"
+        android:layout_marginEnd="@dimen/spacing_l"
         android:layout_below="@id/budgetTextView"
         android:progressDrawable="@drawable/custom_progress_bar"
         android:progress="50"
@@ -85,7 +87,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/budgetProgressBar"
         android:layout_marginTop="@dimen/spacing_s"
-        android:textColor="@color/primary_text"
+        android:textColor="@color/secondary_text"
         android:gravity="center"
         android:text="You have used 50% of your budget" />
 
@@ -96,6 +98,8 @@
         android:layout_height="1dp"
         android:layout_below="@id/home_used_budget_text"
         android:layout_marginTop="@dimen/spacing_m"
+        android:layout_marginStart="@dimen/spacing_m"
+        android:layout_marginEnd="@dimen/spacing_m"
         android:background="@color/divider" />
 
     <!-- Expense List -->

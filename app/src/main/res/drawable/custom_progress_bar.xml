@@ -1,18 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Outline layer -->
+    <!-- Outer Outline Layer -->
     <item>
+        <shape>
+            <corners android:radius="13dp" />
+            <stroke
+                android:width="3dp"
+                android:color="@color/secondary_background" />
+            <solid android:color="@android:color/transparent"/>
+        </shape>
+    </item>
+
+    <!-- Inner Outline Layer -->
+    <item android:top="1dp" android:bottom="1dp" android:left="1dp" android:right="1dp">
         <shape>
             <corners android:radius="12dp" />
             <stroke
-                android:width="4dp"
+                android:width="3dp"
                 android:color="@color/secondary_background" />
+            <solid android:color="@android:color/transparent"/>
         </shape>
     </item>
 
     <!-- Background layer: Green color for unfinished progress -->
-    <item android:id="@android:id/background">
+    <item android:id="@android:id/background" android:top="4dp" android:bottom="4dp" android:left="4dp" android:right="4dp">
         <shape>
             <corners android:radius="10dp" />
             <solid android:color="@color/accent_green"/>
@@ -20,7 +32,7 @@
     </item>
 
     <!-- Progress layer: Red color for completed progress -->
-    <item android:id="@android:id/progress">
+    <item android:id="@android:id/progress" android:top="4dp" android:bottom="4dp" android:left="4dp" android:right="4dp">
         <clip>
             <shape>
                 <corners android:radius="10dp" />
@@ -28,4 +40,5 @@
             </shape>
         </clip>
     </item>
+
 </layer-list>
