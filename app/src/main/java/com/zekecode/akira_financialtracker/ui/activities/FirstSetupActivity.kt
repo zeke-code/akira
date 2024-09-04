@@ -1,14 +1,22 @@
 package com.zekecode.akira_financialtracker.ui.activities
 
+import com.zekecode.akira_financialtracker.R
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.zekecode.akira_financialtracker.databinding.ActivityFirstSetupBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class FirstSetupActivity : AppCompatActivity() {
 
@@ -21,6 +29,12 @@ class FirstSetupActivity : AppCompatActivity() {
         binding = ActivityFirstSetupBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val currencySpinner: Spinner = binding.currencySpinner
+        val currencyOptions = resources.getStringArray(R.array.currency_options)
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, currencyOptions)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        currencySpinner.adapter = adapter
+
         sharedPreferences = getSharedPreferences("AkiraPrefs", MODE_PRIVATE)
 
         // Show welcome view and then switch to user input view
@@ -29,6 +43,7 @@ class FirstSetupActivity : AppCompatActivity() {
         binding.saveButton.setOnClickListener {
             val userName = binding.userNameEditText.text.toString().trim()
             val monthlyBudgetStr = binding.monthlyBudgetEditText.text.toString().trim()
+            val selectedCurrency = binding.currencySpinner.selectedItem.toString()
 
             if (userName.isNotEmpty() && monthlyBudgetStr.isNotEmpty()) {
                 try {
@@ -36,20 +51,25 @@ class FirstSetupActivity : AppCompatActivity() {
                     if (!isValidDecimal(monthlyBudgetStr)) {
                         Toast.makeText(this, "Please enter a number with at most 2 decimal numbers", Toast.LENGTH_SHORT).show()
                     } else {
-                        switchViewWithAnimation(binding.userInputView, binding.readyView)
-
                         // Save data in sharedPreferences and proceed to MainActivity after a short delay
-                        binding.readyView.postDelayed({
-                            with(sharedPreferences.edit()) {
-                                putString("Username", userName)
-                                putFloat("MonthlyBudget", monthlyBudget)
-                                putBoolean("IsSetupComplete", true)
-                                apply()
+                        CoroutineScope(Dispatchers.Main).launch{
+                            switchViewWithAnimation(binding.userInputView, binding.readyView)
+                            withContext(Dispatchers.IO) {
+                                sharedPreferences.edit().apply {
+                                    putString("Username", userName)
+                                    putFloat("MonthlyBudget", monthlyBudget)
+                                    putString("Currency", selectedCurrency)
+                                    putBoolean("IsSetupComplete", true)
+                                    apply()
+                                }
                             }
-                            val intent = Intent(this, MainActivity::class.java)
+
+                            delay(4000)
+
+                            val intent = Intent(this@FirstSetupActivity, MainActivity::class.java)
                             startActivity(intent)
                             finish()
-                        }, 4000)
+                        }
                     }
                 } catch (e: NumberFormatException) {
                     Toast.makeText(this, "Please enter a valid number for the budget", Toast.LENGTH_SHORT).show()

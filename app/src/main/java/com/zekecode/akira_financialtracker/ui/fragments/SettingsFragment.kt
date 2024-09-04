@@ -9,8 +9,10 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -57,8 +59,12 @@ class SettingsFragment : Fragment() {
             binding.tvBudget.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary_text))
         }
 
+        viewModel.selectedCurrency.observe(viewLifecycleOwner) { selectedCurrency ->
+            binding.tvCurrency.text = getString(R.string.settings_current_currency, selectedCurrency)
+        }
+
         // Observe system and app-level notification settings
-        viewModel.notificationsEnabled.observe(viewLifecycleOwner) { enabled ->
+        viewModel.notificationsEnabled.observe(viewLifecycleOwner) {
             checkSystemNotificationPermission()
         }
 
@@ -73,6 +79,10 @@ class SettingsFragment : Fragment() {
             showInputDialog("Change Monthly Budget", viewModel.budget.value.toString() ?: "0.0", { newBudget ->
                 viewModel.updateBudget(newBudget)
             }, isNumeric = true)
+        }
+
+        binding.rlCurrencySetting.setOnClickListener {
+            showCurrencySelectionDialog()
         }
 
         binding.rlNotificationsSetting.setOnClickListener {
@@ -178,6 +188,39 @@ class SettingsFragment : Fragment() {
             }
             .setNegativeButton("Cancel", null)
             .show()
+    }
+
+    private fun showCurrencySelectionDialog() {
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_spinner_input, null)
+        val spinnerCurrency = dialogView.findViewById<Spinner>(R.id.currencySpinner)
+        val btnSave = dialogView.findViewById<Button>(R.id.btnSave)
+        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
+
+        // Set up the Spinner
+        val currencyOptions = resources.getStringArray(R.array.currency_options)
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, currencyOptions)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerCurrency.adapter = adapter
+
+        // Create the dialog
+        val dialog = AlertDialog.Builder(requireContext(), R.style.CustomDialog)
+            .setView(dialogView)
+            .create()
+
+        // Handle Save button click
+        btnSave.setOnClickListener {
+            val selectedCurrency = spinnerCurrency.selectedItem.toString()
+            viewModel.updateCurrency(selectedCurrency) // Update ViewModel with the selected currency
+            dialog.dismiss()
+        }
+
+        // Handle Cancel button click
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        // Show the dialog
+        dialog.show()
     }
 
     override fun onDestroyView() {

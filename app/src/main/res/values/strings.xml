@@ -6,6 +6,14 @@
     <string name="setup_welcome">Hello, and welcome to Akira!\n \nI\'m going to ask you some questions first, before we move on!</string>
     <string name="setup_input_request">What\'s your name and monthly budget you want to set?</string>
     <string name="setup_end">We\'re ready to go!</string>
+    <string name="setup_select_currency">Select your currency</string>
+    <string-array name="currency_options">
+        <item>USD</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>JPY</item>
+        <item>CNY</item>
+    </string-array>
     <string name="home_welcome_text">Welcome, %1$s!</string>
     <string name="home_budget_text">Your monthly budget is %.2f $!</string>
     <string name="navbar_home">Home</string>
@@ -24,4 +32,6 @@
     <string name="dialog_cancel_button">Cancel</string>
     <string name="dialog_save_button">Save</string>
     <string name="dialog_edittext_hint">Enter a new value…</string>
+    <string name="settings_current_currency">Current currency: %s</string>
+    <string name="settings_currency_dialog_title">Select the desired currency</string>
 </resources>

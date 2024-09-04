@@ -25,6 +25,9 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     private val _notificationsEnabled = MutableLiveData<Boolean>()
     val notificationsEnabled: LiveData<Boolean> get() = _notificationsEnabled
 
+    private val _selectedCurrency = MutableLiveData<String>()
+    val selectedCurrency: LiveData<String> get() = _selectedCurrency
+
     init {
         loadSettings()
     }
@@ -35,6 +38,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             _username.postValue(sharedPreferences.getString("Username", "undefined"))
             _budget.postValue(sharedPreferences.getFloat("MonthlyBudget", 0.0f))
             _notificationsEnabled.postValue(sharedPreferences.getBoolean("notifications_enabled", false))
+            _selectedCurrency.postValue(sharedPreferences.getString("Currency", "USD"))
         }
     }
 
@@ -66,6 +70,13 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch(Dispatchers.IO) {
             sharedPreferences.edit().putBoolean("notifications_enabled", enabled).apply()
             _notificationsEnabled.postValue(enabled)
+        }
+    }
+
+    fun updateCurrency(newCurrency: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            sharedPreferences.edit().putString("Currency", newCurrency).apply()
+            _selectedCurrency.postValue(newCurrency)
         }
     }
 }

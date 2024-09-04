@@ -94,6 +94,40 @@
                 android:layout_height="1dp"
                 android:background="@color/divider" />
 
+            <!-- Currency setting -->
+
+            <RelativeLayout
+                android:id="@+id/rl_currency_setting"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_l"
+                android:padding="@dimen/spacing_s">
+
+                <ImageView
+                    android:id="@+id/iv_currency_exchange_icon"
+                    android:layout_width="@dimen/icon_s"
+                    android:layout_height="@dimen/icon_s"
+                    android:src="@drawable/ic_currency_exchange"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true" />
+
+                <TextView
+                    android:id="@+id/tv_currency"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/iv_currency_exchange_icon"
+                    android:layout_marginStart="@dimen/spacing_s"
+                    android:text="@string/settings_current_currency"
+                    android:textColor="@color/primary_text"
+                    android:textSize="16sp"
+                    android:layout_centerVertical="true" />
+            </RelativeLayout>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/divider" />
+
             <!-- Notifications Setting -->
             <RelativeLayout
                 android:id="@+id/rl_notifications_setting"
