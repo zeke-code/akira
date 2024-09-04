@@ -6,6 +6,7 @@
     <color name="tertiary_background">#333333</color>
 
     <!-- Text colors -->
+    <color name="white">#FFFFFF</color>
     <color name="primary_text">#e0e0e0</color>
     <color name="secondary_text">#b0b0b0</color>
 

@@ -7,6 +7,9 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -26,16 +29,21 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         loadSettings()
     }
 
+    // Load settings asynchronously using viewModelScope
     private fun loadSettings() {
-        _username.value = sharedPreferences.getString("Username", "undefined")
-        _budget.value = sharedPreferences.getFloat("MonthlyBudget", 0.0f)
-        _notificationsEnabled.value = sharedPreferences.getBoolean("notifications_enabled", false)
+        viewModelScope.launch(Dispatchers.IO) {
+            _username.postValue(sharedPreferences.getString("Username", "undefined"))
+            _budget.postValue(sharedPreferences.getFloat("MonthlyBudget", 0.0f))
+            _notificationsEnabled.postValue(sharedPreferences.getBoolean("notifications_enabled", false))
+        }
     }
 
     fun updateUsername(newUsername: String) {
         if (newUsername.isNotBlank()) {
-            sharedPreferences.edit().putString("Username", newUsername).apply()
-            _username.value = newUsername // Update the LiveData directly
+            viewModelScope.launch(Dispatchers.IO) {
+                sharedPreferences.edit().putString("Username", newUsername).apply()
+                _username.postValue(newUsername)
+            }
         } else {
             Log.w("SettingsViewModel", "Attempted to set an empty username.")
         }
@@ -44,15 +52,20 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     fun updateBudget(newBudget: String) {
         val budgetValue = newBudget.toFloatOrNull()
         if (budgetValue != null && budgetValue >= 0) {
-            sharedPreferences.edit().putFloat("MonthlyBudget", budgetValue).apply()
-            _budget.value = budgetValue
+            viewModelScope.launch(Dispatchers.IO) {
+                sharedPreferences.edit().putFloat("MonthlyBudget", budgetValue).apply()
+                _budget.postValue(budgetValue)
+            }
         } else {
             Log.w("SettingsViewModel", "Invalid budget value: $newBudget")
         }
     }
 
+    // Update notificationsEnabled asynchronously using viewModelScope
     fun updateNotificationsEnabled(enabled: Boolean) {
-        sharedPreferences.edit().putBoolean("notifications_enabled", enabled).apply()
-        _notificationsEnabled.value = enabled
+        viewModelScope.launch(Dispatchers.IO) {
+            sharedPreferences.edit().putBoolean("notifications_enabled", enabled).apply()
+            _notificationsEnabled.postValue(enabled)
+        }
     }
 }

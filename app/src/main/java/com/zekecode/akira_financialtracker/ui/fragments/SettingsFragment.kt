@@ -1,11 +1,19 @@
 package com.zekecode.akira_financialtracker.ui.fragments
 
-import android.content.SharedPreferences
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -21,13 +29,24 @@ class SettingsFragment : Fragment() {
 
     private val viewModel: SettingsViewModel by viewModels()
 
+    // Register permission launcher
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            viewModel.updateNotificationsEnabled(true)
+        } else {
+            viewModel.updateNotificationsEnabled(false)
+            showPermissionDeniedDialog()
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
 
-        // Observe LiveData from ViewModel
         viewModel.username.observe(viewLifecycleOwner) { username ->
             binding.tvName.text = getString(R.string.settings_username, username)
             binding.tvName.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary_text))
@@ -38,42 +57,127 @@ class SettingsFragment : Fragment() {
             binding.tvBudget.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary_text))
         }
 
+        // Observe system and app-level notification settings
         viewModel.notificationsEnabled.observe(viewLifecycleOwner) { enabled ->
-            binding.tvNotifications.text = getString(R.string.settings_notification_status, if (enabled) "yes" else "no")
-            binding.tvNotifications.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary_text))
+            checkSystemNotificationPermission()
         }
 
         // Set up click listeners to enable users to modify username, budget, and notifications permissions
         binding.rlNameSetting.setOnClickListener {
-            showInputDialog("Change Username", viewModel.username.value ?: "Username") { newUsername ->
+            showInputDialog("Change Username", viewModel.username.value ?: "Username", { newUsername ->
                 viewModel.updateUsername(newUsername)
-            }
+            }, isNumeric = false)
         }
 
         binding.rlBudgetSetting.setOnClickListener {
-            showInputDialog("Change Monthly Budget", viewModel.budget.value.toString() ?: "0.0") { newBudget ->
+            showInputDialog("Change Monthly Budget", viewModel.budget.value.toString() ?: "0.0", { newBudget ->
                 viewModel.updateBudget(newBudget)
-            }
+            }, isNumeric = true)
+        }
+
+        binding.rlNotificationsSetting.setOnClickListener {
+            handleNotificationToggle()
         }
 
         return binding.root
     }
 
-    private fun showInputDialog(title: String, currentValue: String, onSave: (String) -> Unit) {
-        val editText = EditText(requireContext())
+    private fun showInputDialog(title: String, currentValue: String, onSave: (String) -> Unit, isNumeric: Boolean = false) {
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_input, null)
+        val editText = dialogView.findViewById<EditText>(R.id.etInput)
+        val titleTextView = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
+        val btnSave = dialogView.findViewById<Button>(R.id.btnSave)
+        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
+
+        titleTextView.text = title
         editText.setText(currentValue)
 
-        val dialog = AlertDialog.Builder(requireContext())
-            .setTitle(title)
-            .setView(editText)
-            .setPositiveButton("Save") { _, _ ->
-                val newValue = editText.text.toString()
-                onSave(newValue)
-            }
-            .setNegativeButton("Cancel", null)
+        if (isNumeric) {
+            editText.inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+        }
+
+        val dialog = AlertDialog.Builder(requireContext(), R.style.CustomDialog)
+            .setView(dialogView)
             .create()
 
+        btnSave.setOnClickListener {
+            val newValue = editText.text.toString()
+            onSave(newValue)
+            dialog.dismiss()
+        }
+
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
         dialog.show()
+    }
+
+    private fun handleNotificationToggle() {
+        // Check if notifications are currently enabled in your app settings
+        val notificationsEnabled = viewModel.notificationsEnabled.value ?: false
+
+        if (notificationsEnabled) {
+            // If enabled, show dialog to guide the user to app settings to disable
+            showDisableNotificationsDialog()
+        } else {
+            // If not enabled, check if permission is needed
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (requireContext().checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    requestNotificationPermission()
+                } else {
+                    viewModel.updateNotificationsEnabled(true)
+                }
+            } else {
+                viewModel.updateNotificationsEnabled(true)
+            }
+        }
+    }
+
+    private fun checkSystemNotificationPermission() {
+        val notificationsEnabled = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireContext().checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
+
+        // Update SharedPreferences and ViewModel based on the system permission status
+        viewModel.updateNotificationsEnabled(notificationsEnabled)
+        // Update UI based on the current system permission status
+        binding.tvNotifications.text = getString(R.string.settings_notification_status, if (notificationsEnabled) "on" else "off")
+    }
+
+    private fun showDisableNotificationsDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Disable Notifications")
+            .setMessage("To disable notifications, please go to the app settings and turn them off.")
+            .setPositiveButton("Go to Settings") { _, _ ->
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", requireContext().packageName, null)
+                }
+                startActivity(intent)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun requestNotificationPermission() {
+        requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+    }
+
+    private fun showPermissionDeniedDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Notification Permission Denied")
+            .setMessage("To enable notifications, please allow the permission in the app settings.")
+            .setPositiveButton("Go to Settings") { _, _ ->
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", requireContext().packageName, null)
+                }
+                startActivity(intent)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     override fun onDestroyView() {

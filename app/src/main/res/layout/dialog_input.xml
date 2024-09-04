@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="350dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@drawable/rounded_dialog_background">
+
+    <TextView
+        android:id="@+id/tvDialogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAppearance="?attr/textAppearanceHeadline6"
+        android:textColor="@color/primary_text"
+        android:layout_marginBottom="16dp" />
+
+    <EditText
+        android:id="@+id/etInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:importantForAutofill="no"
+        android:hint="@string/dialog_edittext_hint"
+        android:textColorHint="@color/secondary_text"
+        android:inputType="text"
+        android:padding="@dimen/spacing_m"
+        android:background="@color/tertiary_background"
+        android:textColor="@color/primary_text"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        style="?android:attr/buttonBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="16dp">
+
+        <Button
+            android:id="@+id/btnCancel"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="100dp"
+            android:layout_height="48dp"
+            android:backgroundTint="@color/accent_red"
+            android:text="@string/dialog_cancel_button"
+            android:textColor="@color/primary_text" />
+
+        <Button
+            android:id="@+id/btnSave"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="100dp"
+            android:layout_height="48dp"
+            android:backgroundTint="@color/accent_blue"
+            android:text="@string/dialog_save_button"
+            android:textColor="@color/primary_text"
+            android:layout_marginStart="@dimen/spacing_l" />
+
+    </LinearLayout>
+</LinearLayout>

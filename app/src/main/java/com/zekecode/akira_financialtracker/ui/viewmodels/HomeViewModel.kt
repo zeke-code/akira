@@ -24,9 +24,15 @@ class HomeViewModel(
         _monthlyBudget.value = sharedPreferences.getFloat("MonthlyBudget", 0F)
     }
 
-    // Correct implementation of onSharedPreferenceChanged
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
-        _monthlyBudget.value = sharedPreferences.getFloat(key, 0F)
+        when (key) {
+            "MonthlyBudget" -> {
+                _monthlyBudget.value = sharedPreferences.getFloat(key, 0F)
+            }
+            "Username" -> {
+                val username = sharedPreferences.getString(key, "undefined")
+            }
+        }
     }
 
     override fun onCleared() {

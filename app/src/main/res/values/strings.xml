@@ -20,5 +20,8 @@
     <string name="settings_header_text">Settings</string>
     <string name="settings_username">Current name: %1$s</string>
     <string name="settings_budget">Current budget: %.2f $</string>
-    <string name="settings_notification_status">Enable notifications: %1$s</string>
+    <string name="settings_notification_status">Toggle notifications: %1$s</string>
+    <string name="dialog_cancel_button">Cancel</string>
+    <string name="dialog_save_button">Save</string>
+    <string name="dialog_edittext_hint">Enter a new value…</string>
 </resources>
