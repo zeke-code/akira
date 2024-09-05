@@ -12,8 +12,11 @@
 
     <!-- UI and miscellaneous colors -->
     <color name="accent_green">#00c853</color>
+    <color name="disabled_accent_green">#2D8050</color>
     <color name="accent_red">#fe3737</color>
+    <color name="disabled_accent_red">#C74A4A</color>
     <color name="accent_blue">#1e88e5</color>
+    <color name="disabled_accent_blue">#3677B1</color>
     <color name="divider">#393939</color>
     <color name="disabled_element">#1c1c1c</color>
 

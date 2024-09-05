@@ -6,6 +6,9 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +26,7 @@ import androidx.fragment.app.viewModels
 import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.databinding.FragmentSettingsBinding
 import com.zekecode.akira_financialtracker.ui.viewmodels.SettingsViewModel
+import java.util.Locale
 
 class SettingsFragment : Fragment() {
 
@@ -50,17 +54,20 @@ class SettingsFragment : Fragment() {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
 
         viewModel.username.observe(viewLifecycleOwner) { username ->
-            binding.tvName.text = getString(R.string.settings_username, username)
-            binding.tvName.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary_text))
+            val fullText = getString(R.string.settings_username, username)
+            binding.tvName.text = applyColorToDynamicContent(fullText, username, R.color.secondary_text)
         }
 
+
         viewModel.budget.observe(viewLifecycleOwner) { budget ->
-            binding.tvBudget.text = getString(R.string.settings_budget, budget)
-            binding.tvBudget.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary_text))
+            val fullText = getString(R.string.settings_budget, budget)
+            val budgetString = String.format(Locale.getDefault(), "%.2f", budget)
+            binding.tvBudget.text = applyColorToDynamicContent(fullText, budgetString, R.color.secondary_text)
         }
 
         viewModel.selectedCurrency.observe(viewLifecycleOwner) { selectedCurrency ->
-            binding.tvCurrency.text = getString(R.string.settings_current_currency, selectedCurrency)
+            val fullText = getString(R.string.settings_current_currency, selectedCurrency)
+            binding.tvCurrency.text = applyColorToDynamicContent(fullText, selectedCurrency, R.color.secondary_text)
         }
 
         // Observe system and app-level notification settings
@@ -76,7 +83,7 @@ class SettingsFragment : Fragment() {
         }
 
         binding.rlBudgetSetting.setOnClickListener {
-            showInputDialog("Change Monthly Budget", viewModel.budget.value.toString() ?: "0.0", { newBudget ->
+            showInputDialog("Change Monthly Budget", viewModel.budget.value.toString(), { newBudget ->
                 viewModel.updateBudget(newBudget)
             }, isNumeric = true)
         }
@@ -201,26 +208,40 @@ class SettingsFragment : Fragment() {
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, currencyOptions)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerCurrency.adapter = adapter
-
-        // Create the dialog
+        
         val dialog = AlertDialog.Builder(requireContext(), R.style.CustomDialog)
             .setView(dialogView)
             .create()
 
-        // Handle Save button click
         btnSave.setOnClickListener {
             val selectedCurrency = spinnerCurrency.selectedItem.toString()
-            viewModel.updateCurrency(selectedCurrency) // Update ViewModel with the selected currency
+            viewModel.updateCurrency(selectedCurrency)
             dialog.dismiss()
         }
 
-        // Handle Cancel button click
         btnCancel.setOnClickListener {
             dialog.dismiss()
         }
 
-        // Show the dialog
         dialog.show()
+    }
+
+    private fun applyColorToDynamicContent(fullText: String, dynamicContent: String, colorResId: Int): SpannableStringBuilder {
+        val spannable = SpannableStringBuilder(fullText)
+
+        val start = fullText.indexOf(dynamicContent)
+        val end = start + dynamicContent.length
+
+        if (start >= 0 && end <= fullText.length) {
+            spannable.setSpan(
+                ForegroundColorSpan(ContextCompat.getColor(requireContext(), colorResId)),
+                start,
+                end,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+
+        return spannable
     }
 
     override fun onDestroyView() {

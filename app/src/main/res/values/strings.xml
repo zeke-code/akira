@@ -34,4 +34,14 @@
     <string name="dialog_edittext_hint">Enter a new value…</string>
     <string name="settings_current_currency">Current currency: %s</string>
     <string name="settings_currency_dialog_title">Select the desired currency</string>
+    <!-- Create fragment -->
+    <string name="create_header">Add a transaction</string>
+    <string name="create_select_category_arrow">Select a category</string>
+    <string name="create_icon_selector_description">Select the icon for your category</string>
+    <string name="create_calendar_icon_description">Select a date for your expense</string>
+    <string name="create_note_icon_description">Write notes to describe your transaction</string>
+    <string name="create_expense_selector">Expense</string>
+    <string name="create_revenue_selector">Revenue</string>
+    <string name="create_cancel_button">Cancel your transaction</string>
+    <string name="create_confirm_button">Create your transaction</string>
 </resources>

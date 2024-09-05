@@ -1,14 +1,197 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragments.CreateFragment">
+    android:orientation="vertical"
+    android:background="@color/background">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <!-- Header -->
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:background="@color/secondary_background"
+        android:padding="@dimen/spacing_s">
 
-</FrameLayout>
+        <!-- Cancel Button (X) -->
+        <ImageView
+            android:id="@+id/iv_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_cancel"
+            android:contentDescription="@string/create_cancel_button"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/spacing_s"/>
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/create_header"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:textColor="@color/primary_text"
+            android:layout_gravity="center"
+            android:layout_centerVertical="true"
+            android:textStyle="bold" />
+
+        <!-- Confirm Button (Tick) -->
+        <ImageView
+            android:id="@+id/iv_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_confirm"
+            android:contentDescription="@string/create_confirm_button"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/spacing_s"/>
+
+    </RelativeLayout>
+
+
+
+    <!-- Amount Display -->
+    <TextView
+        android:id="@+id/tv_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="36 $"
+        android:textSize="32sp"
+        android:layout_marginTop="@dimen/spacing_xl"
+        android:textColor="@color/white"
+        android:layout_gravity="center"
+        android:paddingBottom="8dp"/>
+
+    <!-- Amount underline -->
+    <View
+        android:layout_width="150dp"
+        android:layout_height="1dp"
+        android:layout_gravity="center"
+        android:background="@color/divider"
+        android:layout_marginBottom="@dimen/spacing_xl"/>
+
+    <!-- Create/select category row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="@dimen/spacing_m"
+        android:padding="@dimen/spacing_s">
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/circle_background"
+            android:src="@drawable/ic_question_mark"
+            android:scaleType="center"
+            android:layout_marginEnd="@dimen/spacing_m"
+            android:contentDescription="@string/create_icon_selector_description"/>
+
+        <View
+            android:layout_width="@dimen/create_divider_width"
+            android:layout_height="1dp"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="@dimen/spacing_s"
+            android:background="@color/divider" />
+
+
+    </LinearLayout>
+
+    <!-- Edit date row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="@dimen/spacing_m"
+        android:padding="@dimen/spacing_s">
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/circle_background"
+            android:src="@drawable/ic_edit_calendar"
+            android:scaleType="center"
+            android:layout_marginEnd="@dimen/spacing_m"
+            android:contentDescription="@string/create_calendar_icon_description"/>
+
+        <View
+            android:layout_width="@dimen/create_divider_width"
+            android:layout_height="1dp"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="@dimen/spacing_s"
+            android:background="@color/divider" />
+
+    </LinearLayout>
+
+    <!-- Edit note row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="@dimen/spacing_m"
+        android:padding="@dimen/spacing_s">
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/circle_background"
+            android:src="@drawable/ic_edit_note"
+            android:scaleType="center"
+            android:layout_marginEnd="@dimen/spacing_m"
+            android:contentDescription="@string/create_note_icon_description"/>
+
+        <View
+            android:layout_width="@dimen/create_divider_width"
+            android:layout_height="1dp"
+            android:layout_marginBottom="@dimen/spacing_s"
+            android:layout_gravity="bottom"
+            android:background="@color/divider" />
+
+    </LinearLayout>
+
+    <!-- Select Expense or Revenue -->
+    <RadioGroup
+        android:id="@+id/radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/background_segmented_control"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp">
+
+        <RadioButton
+            android:id="@+id/rb_expense"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/create_expense_selector"
+            android:background="@drawable/selector_expense"
+            android:textColor="@color/primary_text"
+            android:padding="16dp"
+            android:button="@null"/>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/divider" />
+
+        <RadioButton
+            android:id="@+id/rb_revenue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/create_revenue_selector"
+            android:background="@drawable/selector_revenue"
+            android:textColor="@color/primary_text"
+            android:padding="16dp"
+            android:button="@null"/>
+
+    </RadioGroup>
+</LinearLayout>
