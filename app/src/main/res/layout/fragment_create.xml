@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -14,15 +15,15 @@
         android:padding="@dimen/spacing_s">
 
         <!-- Cancel Button (X) -->
-        <ImageView
+        <ImageButton
             android:id="@+id/iv_cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/image_button_s"
+            android:layout_height="@dimen/image_button_s"
             android:src="@drawable/ic_cancel"
             android:contentDescription="@string/create_cancel_button"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:padding="@dimen/spacing_s"/>
+            android:background="?attr/selectableItemBackgroundBorderless"/>
 
         <!-- Title -->
         <TextView
@@ -38,39 +39,43 @@
             android:textStyle="bold" />
 
         <!-- Confirm Button (Tick) -->
-        <ImageView
+        <ImageButton
             android:id="@+id/iv_confirm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/image_button_s"
+            android:layout_height="@dimen/image_button_s"
             android:src="@drawable/ic_confirm"
             android:contentDescription="@string/create_confirm_button"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:padding="@dimen/spacing_s"/>
+            android:background="?attr/selectableItemBackgroundBorderless"/>
 
     </RelativeLayout>
 
-
-
-    <!-- Amount Display -->
-    <TextView
-        android:id="@+id/tv_amount"
+    <!-- Amount Input Field -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="36 $"
-        android:textSize="32sp"
-        android:layout_marginTop="@dimen/spacing_xl"
-        android:textColor="@color/white"
         android:layout_gravity="center"
-        android:paddingBottom="8dp"/>
+        android:hint="@string/create_amount_hint"
+        android:textColorHint="@color/secondary_text"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_marginTop="@dimen/spacing_xs"
+        android:layout_marginBottom="@dimen/spacing_m">
 
-    <!-- Amount underline -->
-    <View
-        android:layout_width="150dp"
-        android:layout_height="1dp"
-        android:layout_gravity="center"
-        android:background="@color/divider"
-        android:layout_marginBottom="@dimen/spacing_xl"/>
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:hint=""
+            android:textColor="@color/white"
+            android:textSize="32sp"
+            android:gravity="center"
+            android:textColorHint="@color/secondary_text"
+            android:paddingBottom="8dp"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Create/select category row -->
     <LinearLayout
@@ -78,11 +83,13 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
+        android:background="?attr/selectableItemBackground"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="@dimen/spacing_m"
         android:padding="@dimen/spacing_s">
 
-        <ImageView
+        <ImageButton
+            android:id="@+id/ib_category_icon"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:background="@drawable/circle_background"
@@ -91,13 +98,31 @@
             android:layout_marginEnd="@dimen/spacing_m"
             android:contentDescription="@string/create_icon_selector_description"/>
 
-        <View
+        <LinearLayout
             android:layout_width="@dimen/create_divider_width"
-            android:layout_height="1dp"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="@dimen/spacing_s"
-            android:background="@color/divider" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/tv_create_category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:hint="@string/create_category_hint"
+                android:textColorHint="@color/secondary_text"
+                android:background="@android:color/transparent"
+                android:padding="@dimen/spacing_s"
+                android:textColor="@color/primary_text" />
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="@dimen/spacing_s"
+                android:background="@color/divider" />
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -107,25 +132,45 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
+        android:background="?attr/selectableItemBackground"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="@dimen/spacing_m"
         android:padding="@dimen/spacing_s">
 
-        <ImageView
+        <ImageButton
+            android:id="@+id/ib_date_icon"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:background="@drawable/circle_background"
             android:src="@drawable/ic_edit_calendar"
+            android:clickable="true"
             android:scaleType="center"
             android:layout_marginEnd="@dimen/spacing_m"
             android:contentDescription="@string/create_calendar_icon_description"/>
 
-        <View
+        <LinearLayout
             android:layout_width="@dimen/create_divider_width"
-            android:layout_height="1dp"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="@dimen/spacing_s"
-            android:background="@color/divider" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_create_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:hint="@string/create_date"
+                android:textColorHint="@color/secondary_text"
+                android:padding="@dimen/spacing_s" />
+
+            <View
+                android:layout_width="@dimen/create_divider_width"
+                android:layout_height="1dp"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="@dimen/spacing_s"
+                android:background="@color/divider" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -135,6 +180,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
+        android:background="?attr/selectableItemBackground"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="@dimen/spacing_m"
         android:padding="@dimen/spacing_s">
@@ -148,50 +194,78 @@
             android:layout_marginEnd="@dimen/spacing_m"
             android:contentDescription="@string/create_note_icon_description"/>
 
-        <View
+        <LinearLayout
             android:layout_width="@dimen/create_divider_width"
-            android:layout_height="1dp"
-            android:layout_marginBottom="@dimen/spacing_s"
-            android:layout_gravity="bottom"
-            android:background="@color/divider" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/et_create_notes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="notes"
+                android:background="@android:color/transparent"
+                android:hint="@string/create_notes"
+                android:inputType="text"
+                android:maxLines="1"
+                android:minHeight="48dp"
+                android:padding="@dimen/spacing_s"
+                android:textColorHint="@color/secondary_text" />
+
+            <View
+                android:layout_width="@dimen/create_divider_width"
+                android:layout_height="1dp"
+                android:layout_marginBottom="@dimen/spacing_s"
+                android:layout_gravity="bottom"
+                android:background="@color/divider" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
-    <!-- Select Expense or Revenue -->
-    <RadioGroup
-        android:id="@+id/radio_group"
+    <!-- Select Expense or Revenue using MaterialButtonToggleGroup -->
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/toggle_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@drawable/background_segmented_control"
-        android:gravity="center"
         android:layout_gravity="center"
-        android:layout_marginTop="16dp">
+        android:layout_marginTop="16dp"
+        app:singleSelection="true"
+        app:selectionRequired="true"
+        app:checkedButton="@id/btn_expense">
 
-        <RadioButton
-            android:id="@+id/rb_expense"
+        <!-- Expense Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_expense"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/create_expense_selector"
-            android:background="@drawable/selector_expense"
-            android:textColor="@color/primary_text"
-            android:padding="16dp"
-            android:button="@null"/>
+            app:cornerRadius="16dp"
+            app:iconPadding="0dp"
+            android:backgroundTint="@color/accent_red"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            app:strokeColor="@color/divider"
+            app:strokeWidth="2dp"
+            android:textColor="@color/primary_text" />
 
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="@color/divider" />
-
-        <RadioButton
-            android:id="@+id/rb_revenue"
+        <!-- Revenue Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_revenue"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/create_revenue_selector"
-            android:background="@drawable/selector_revenue"
+            app:cornerRadius="16dp"
+            app:iconPadding="0dp"
+            android:backgroundTint="@color/accent_green"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
             android:textColor="@color/primary_text"
-            android:padding="16dp"
-            android:button="@null"/>
+            app:strokeColor="@color/divider"
+            app:strokeWidth="2dp"/>
 
-    </RadioGroup>
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
 </LinearLayout>

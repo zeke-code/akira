@@ -44,4 +44,8 @@
     <string name="create_revenue_selector">Revenue</string>
     <string name="create_cancel_button">Cancel your transaction</string>
     <string name="create_confirm_button">Create your transaction</string>
+    <string name="create_category_hint">Create a new category or choose a new one...</string>
+    <string name="create_date">Select a date for the transaction here...</string>
+    <string name="create_notes">Describe your transaction here...</string>
+    <string name="create_amount_hint">00.00</string>
 </resources>
