@@ -6,20 +6,21 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.databinding.FragmentCreateBinding
-import com.zekecode.akira_financialtracker.ui.viewmodels.CreateFragmentViewModel
+import com.zekecode.akira_financialtracker.ui.viewmodels.CreateViewModel
 
 class CreateFragment : Fragment() {
 
     private var _binding: FragmentCreateBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: CreateFragmentViewModel by viewModels()
+    private val viewModel: CreateViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,6 +54,19 @@ class CreateFragment : Fragment() {
                 viewModel.doneNavigating() // Reset the navigation state
             }
         })
+
+        // Handle the Confirm button click to save data
+        binding.ivConfirm.setOnClickListener {
+            val name = "Sample Earning" // Replace with actual input
+            val category = "Salary" // Replace with actual input
+            val date = System.currentTimeMillis()
+
+            if (!viewModel.amount.value.isNullOrEmpty()) {
+                viewModel.insertEarning(name, category, date)
+            } else {
+                Toast.makeText(requireContext(), "Please enter an amount", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         return binding.root
     }

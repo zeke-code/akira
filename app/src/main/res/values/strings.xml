@@ -48,4 +48,7 @@
     <string name="create_date">Select a date for the transaction here...</string>
     <string name="create_notes">Describe your transaction here...</string>
     <string name="create_amount_hint">00.00</string>
+    <string name="dialog_select_category_title">Select a category for your transaction</string>
+    <string name="dialog_select_category_new_hint">Or create a new one by writing its name here...</string>
+    <string name="category_name_placeholder">Select or create a category</string>
 </resources>

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.zekecode.akira_financialtracker.data.local.dao.CategoryDao
 import com.zekecode.akira_financialtracker.data.local.dao.EarningDao
 import com.zekecode.akira_financialtracker.data.local.dao.ExpenseDao
 import com.zekecode.akira_financialtracker.data.local.entities.EarningModel
@@ -14,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 abstract class AkiraDatabase : RoomDatabase() {
     abstract fun expenseDao(): ExpenseDao
     abstract fun earningDao(): EarningDao
+    abstract fun categoryDao(): CategoryDao
 
     companion object {
         @Volatile
