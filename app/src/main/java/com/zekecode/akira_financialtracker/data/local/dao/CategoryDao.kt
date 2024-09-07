@@ -11,7 +11,7 @@ import com.zekecode.akira_financialtracker.data.local.entities.CategoryModel
 @Dao
 interface CategoryDao {
     @Query("SELECT * FROM categories")
-    fun getAllCategories(): List<CategoryModel>
+    fun getAllCategories(): LiveData<List<CategoryModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCategory(category: CategoryModel)

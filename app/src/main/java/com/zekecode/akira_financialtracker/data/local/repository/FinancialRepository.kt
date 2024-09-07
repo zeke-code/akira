@@ -16,7 +16,7 @@ class FinancialRepository(
 ) {
     val allExpenses: LiveData<List<ExpenseModel>> = expenseDao.getAllExpenses()
     val allEarnings: LiveData<List<EarningModel>> = earningDao.getAllEarnings()
-    val allCategories: List<CategoryModel> = categoryDao.getAllCategories()
+    val allCategories: LiveData<List<CategoryModel>> = categoryDao.getAllCategories()
 
     suspend fun insertExpense(expense: ExpenseModel) {
         expenseDao.insertExpense(expense)
@@ -42,7 +42,7 @@ class FinancialRepository(
         categoryDao.deleteCategory(category)
     }
 
-    suspend fun getAllCategories(): List<CategoryModel> {
+    suspend fun getAllCategories(): LiveData<List<CategoryModel>> {
         return categoryDao.getAllCategories()
     }
 }

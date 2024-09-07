@@ -9,7 +9,7 @@ import kotlinx.coroutines.SupervisorJob
 class Application : Application() {
     private val applicationScope = CoroutineScope(SupervisorJob())
 
-    val database by lazy {
+    private val database by lazy {
         AkiraDatabase.getDatabase(
             context = this,
             scope = applicationScope
@@ -17,7 +17,10 @@ class Application : Application() {
     }
 
     val repository by lazy {
-        FinancialRepository(database.expenseDao(), database.earningDao())
+        FinancialRepository(
+            database.expenseDao(),
+            database.earningDao(),
+            database.categoryDao())
     }
 
 }

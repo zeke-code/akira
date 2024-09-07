@@ -9,9 +9,10 @@ import com.zekecode.akira_financialtracker.data.local.dao.EarningDao
 import com.zekecode.akira_financialtracker.data.local.dao.ExpenseDao
 import com.zekecode.akira_financialtracker.data.local.entities.EarningModel
 import com.zekecode.akira_financialtracker.data.local.entities.ExpenseModel
+import com.zekecode.akira_financialtracker.data.local.entities.CategoryModel
 import kotlinx.coroutines.CoroutineScope
 
-@Database(entities = [EarningModel::class, ExpenseModel::class], version = 1)
+@Database(entities = [EarningModel::class, ExpenseModel::class, CategoryModel::class], version = 1, exportSchema = false)
 abstract class AkiraDatabase : RoomDatabase() {
     abstract fun expenseDao(): ExpenseDao
     abstract fun earningDao(): EarningDao

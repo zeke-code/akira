@@ -10,17 +10,29 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.zekecode.akira_financialtracker.R
+import com.zekecode.akira_financialtracker.data.local.database.AkiraDatabase
 import com.zekecode.akira_financialtracker.databinding.FragmentCreateBinding
 import com.zekecode.akira_financialtracker.ui.viewmodels.CreateViewModel
+import com.zekecode.akira_financialtracker.ui.viewmodels.CreateViewModelFactory
+import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
 
 class CreateFragment : Fragment() {
 
     private var _binding: FragmentCreateBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: CreateViewModel by viewModels()
+    // Initialize repository and ViewModel factory correctly
+    private val repository by lazy {
+        val database = AkiraDatabase.getDatabase(requireContext(), lifecycleScope)
+        FinancialRepository(database.expenseDao(), database.earningDao(), database.categoryDao())
+    }
+
+    private val viewModel: CreateViewModel by viewModels {
+        CreateViewModelFactory(repository)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
