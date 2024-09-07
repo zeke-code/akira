@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zekecode.akira_financialtracker.data.local.entities.CategoryModel
 import com.zekecode.akira_financialtracker.data.local.entities.EarningModel
+import com.zekecode.akira_financialtracker.data.local.entities.ExpenseModel
 import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
 import kotlinx.coroutines.launch
 
@@ -17,12 +18,49 @@ class CreateViewModel(private val repository: FinancialRepository) : ViewModel()
         get() = _navigateToHome
 
     // LiveData to handle user input
-    private val _amount = MutableLiveData<String>()
-    val amount: LiveData<String>
+    private val _amount = MutableLiveData<Double>()
+    val amount: LiveData<Double>
         get() = _amount
 
-    init {
+    // LiveData for all categories
+    val allCategories: LiveData<List<CategoryModel>> = repository.allCategories
 
+    // LiveData for the selected category
+    private val _selectedCategory = MutableLiveData<CategoryModel>()
+    val selectedCategory: LiveData<CategoryModel>
+        get() = _selectedCategory
+
+    private val _selectedDate = MutableLiveData<Long>()
+    val selectedDate: LiveData<Long> get() = _selectedDate
+
+    private val _name = MutableLiveData<String>()
+    val name: LiveData<String> get() = _name
+
+    private val _isExpense = MutableLiveData<Boolean>()
+    val isExpense: LiveData<Boolean> get() = _isExpense
+
+    init {
+        _isExpense.value = true // Set transaction default as expense
+    }
+
+    fun setAmount(value: Double) {
+        _amount.value = value
+    }
+
+    fun setSelectedCategory(category: CategoryModel) {
+        _selectedCategory.value = category
+    }
+
+    fun setSelectedDate(date: Long) {
+        _selectedDate.value = date
+    }
+
+    fun setTransactionName(value: String) {
+        _name.value = value
+    }
+
+    fun setIsExpense(isExpense: Boolean) {
+        _isExpense.value = isExpense
     }
 
     // Function to trigger navigation to HomeFragment
@@ -35,18 +73,47 @@ class CreateViewModel(private val repository: FinancialRepository) : ViewModel()
         _navigateToHome.value = false
     }
 
-    fun setAmount(value: String) {
-        _amount.value = value
-    }
-
     // Function to insert a new earning
-    fun insertEarning(name: String, category: String, date: Long) {
-        val amountValue = _amount.value?.toDoubleOrNull() ?: 0.0 // Convert amount to Double
-        val earning = EarningModel(name = name, amount = amountValue, category = category, date = date)
-        viewModelScope.launch {
-            repository.insertEarning(earning)
-            _navigateToHome.value = true
+    fun insertEarning() {
+        val amountValue = _amount.value ?: 0.0
+        val nameValue = _name.value ?: ""
+        val categoryValue = _selectedCategory.value
+        val dateValue = _selectedDate.value ?: System.currentTimeMillis()
+
+        if (categoryValue != null) {
+            val earning = EarningModel(
+                name = nameValue,
+                amount = amountValue,
+                category = categoryValue.name,
+                date = dateValue
+            )
+            viewModelScope.launch {
+                repository.insertEarning(earning)
+                _navigateToHome.value = true
+            }
+        } else {
+            // Handle the case when the category is not selected
+            _navigateToHome.value = false
         }
     }
 
+    fun insertExpense() {
+        val amountValue = _amount.value ?: 0.0
+        val nameValue = _name.value ?: ""
+        val categoryValue = _selectedCategory.value
+        val dateValue = _selectedDate.value ?: System.currentTimeMillis()
+
+        if (categoryValue != null) {
+            val expense = ExpenseModel(
+                name = nameValue,
+                amount = amountValue,
+                category = categoryValue.name,
+                date = dateValue
+            )
+            viewModelScope.launch {
+                repository.insertExpense(expense)
+                _navigateToHome.value = true
+            }
+        }
+    }
 }

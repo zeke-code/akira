@@ -128,6 +128,7 @@
 
     <!-- Edit date row -->
     <LinearLayout
+        android:id="@+id/ll_set_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -200,7 +201,7 @@
             android:orientation="vertical">
 
             <EditText
-                android:id="@+id/et_create_notes"
+                android:id="@+id/et_create_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autofillHints="notes"

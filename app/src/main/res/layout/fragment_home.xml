@@ -89,7 +89,7 @@
         android:layout_marginTop="@dimen/spacing_s"
         android:textColor="@color/secondary_text"
         android:gravity="center"
-        android:text="You have used 50% of your budget" />
+        android:text="@string/home_used_budget_text" />
 
     <!-- Divider -->
     <View

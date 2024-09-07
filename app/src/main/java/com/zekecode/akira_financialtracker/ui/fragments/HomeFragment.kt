@@ -8,9 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.zekecode.akira_financialtracker.Application
 import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.databinding.FragmentHomeBinding
+import com.zekecode.akira_financialtracker.ui.adapters.TransactionsAdapter
 import com.zekecode.akira_financialtracker.ui.viewmodels.HomeViewModel
 import com.zekecode.akira_financialtracker.ui.viewmodels.HomeViewModelFactory
 
@@ -25,6 +27,8 @@ class HomeFragment : Fragment() {
         HomeViewModelFactory((requireActivity().application as Application).repository, sharedPreferences)
     }
 
+    private lateinit var transactionsAdapter: TransactionsAdapter
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -38,8 +42,29 @@ class HomeFragment : Fragment() {
 
         sharedPreferences = requireActivity().getSharedPreferences("AkiraPrefs", Context.MODE_PRIVATE)
 
-        viewModel.monthlyBudget.observe(viewLifecycleOwner) { monthlyBudget ->
-            binding.budgetTextView.text = getString(R.string.home_budget_text, monthlyBudget)
+        transactionsAdapter = TransactionsAdapter(emptyList())  // Initialize with an empty list
+        binding.homeExpenseRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.homeExpenseRecyclerView.adapter = transactionsAdapter
+
+        viewModel.allTransactions.observe(viewLifecycleOwner) { transactions ->
+            transactionsAdapter.updateTransactions(transactions)
+        }
+
+        // Observe the real monthly budget
+        viewModel.realMonthlyBudget.observe(viewLifecycleOwner) { realBudget ->
+
+            binding.budgetTextView.text = getString(R.string.home_budget_text, realBudget)
+
+            // Calculate the percentage of the budget used and update the progress bar
+            val totalBudget = sharedPreferences.getFloat("MonthlyBudget", 0F)
+            if (totalBudget > 0) {
+                val progress = ((totalBudget - realBudget) / totalBudget * 100)
+                binding.budgetProgressBar.progress = progress.toInt()
+                binding.homeUsedBudgetText.text = getString(R.string.home_used_budget_text, progress)
+            } else {
+                binding.homeUsedBudgetText.text = getString(R.string.home_no_budget_set_text)
+                binding.budgetProgressBar.progress = 0
+            }
         }
     }
 

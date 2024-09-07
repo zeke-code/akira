@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp"
+    android:background="@color/secondary_background">
+
+    <!-- Earning Icon -->
+    <ImageView
+        android:id="@+id/ivEarningIcon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/ic_question_mark" />
+
+    <!-- Earning Category Name -->
+    <TextView
+        android:id="@+id/tvEarningCategory"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Earning Category"
+        android:textSize="16sp"
+        android:textColor="@color/primary_text"
+        android:textStyle="bold" />
+
+    <!-- Earning Amount -->
+    <TextView
+        android:id="@+id/tvEarningAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="+ $200"
+        android:textSize="16sp"
+        android:textColor="@color/primary_text"
+        android:textStyle="bold" />
+
+</LinearLayout>

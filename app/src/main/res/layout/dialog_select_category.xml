@@ -18,31 +18,6 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="16dp" />
 
-    <!-- Selected Category Display -->
-    <LinearLayout
-        android:id="@+id/ll_selected_category"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:orientation="horizontal"
-        android:padding="8dp">
-
-        <ImageView
-            android:id="@+id/iv_selected_category_icon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="8dp" />
-
-        <TextView
-            android:id="@+id/tv_selected_category_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/category_name_placeholder"
-            android:textSize="@dimen/text_s"
-            android:textColor="@color/primary_text"
-            android:textStyle="bold" />
-    </LinearLayout>
-
     <!-- New Category Input -->
     <EditText
         android:id="@+id/et_new_category_name"
