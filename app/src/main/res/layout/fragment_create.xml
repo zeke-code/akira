@@ -68,8 +68,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:inputType="numberDecimal"
-            android:hint=""
-            android:textColor="@color/white"
+            android:hint="@string/create_amount_hint"
+            android:textColor="@color/secondary_text"
             android:textSize="32sp"
             android:gravity="center"
             android:textColorHint="@color/secondary_text"
@@ -207,7 +207,10 @@
                 android:autofillHints="notes"
                 android:background="@android:color/transparent"
                 android:hint="@string/create_notes"
+                android:textSize="15sp"
+                android:maxLength="25"
                 android:inputType="text"
+                android:gravity="center_vertical"
                 android:maxLines="1"
                 android:minHeight="48dp"
                 android:padding="@dimen/spacing_s"
@@ -240,33 +243,37 @@
             android:id="@+id/btn_expense"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:text="@string/create_expense_selector"
             app:cornerRadius="16dp"
             app:iconPadding="0dp"
-            android:backgroundTint="@color/accent_red"
             android:paddingHorizontal="16dp"
             android:paddingVertical="8dp"
             app:strokeColor="@color/divider"
             app:strokeWidth="2dp"
-            android:textColor="@color/primary_text" />
+            android:textColor="@color/text_color_selector"
+            android:backgroundTint="@color/button_expense_selector"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+            android:stateListAnimator="@null" />
 
         <!-- Revenue Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_revenue"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:text="@string/create_revenue_selector"
             app:cornerRadius="16dp"
             app:iconPadding="0dp"
-            android:backgroundTint="@color/accent_green"
             android:paddingHorizontal="16dp"
             android:paddingVertical="8dp"
-            android:textColor="@color/primary_text"
             app:strokeColor="@color/divider"
-            app:strokeWidth="2dp"/>
-
+            app:strokeWidth="2dp"
+            android:textColor="@color/text_color_selector"
+            android:backgroundTint="@color/button_revenue_selector"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+            android:stateListAnimator="@null" />
     </com.google.android.material.button.MaterialButtonToggleGroup>
+
 
 </LinearLayout>

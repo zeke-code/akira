@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true"
     tools:context=".ui.fragments.HomeFragment">
 
@@ -65,6 +66,13 @@
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"/>
 
+    <!-- Cartesian Chart -->
+    <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
+        android:id="@+id/home_chart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:chartZoomEnabled="true" />
+
     <!-- Budget Progress Bar -->
     <ProgressBar
         android:id="@+id/budgetProgressBar"
@@ -110,6 +118,6 @@
         android:layout_below="@id/home_divider"
         android:layout_alignParentBottom="true"
         android:layout_marginTop="@dimen/spacing_s"
-        android:layout_marginBottom="@dimen/spacing_s" />
+        android:layout_marginBottom="@dimen/spacing_xl" />
 
 </RelativeLayout>

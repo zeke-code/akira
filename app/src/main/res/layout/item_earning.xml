@@ -4,7 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
+    android:gravity="center_vertical"
     android:padding="16dp"
+    android:layout_marginStart="@dimen/spacing_m"
+    android:layout_marginEnd="@dimen/spacing_m"
+    android:layout_marginTop="@dimen/spacing_xs"
+    android:layout_marginBottom="@dimen/spacing_xs"
     android:background="@color/secondary_background">
 
     <!-- Earning Icon -->
@@ -21,7 +26,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Earning Category"
+        android:text=""
         android:textSize="16sp"
         android:textColor="@color/primary_text"
         android:textStyle="bold" />
@@ -31,9 +36,9 @@
         android:id="@+id/tvEarningAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="+ $200"
+        android:text=""
         android:textSize="16sp"
-        android:textColor="@color/primary_text"
+        android:textColor="@color/accent_green"
         android:textStyle="bold" />
 
 </LinearLayout>

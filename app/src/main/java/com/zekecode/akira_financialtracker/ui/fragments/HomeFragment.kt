@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.patrykandpatrick.vico.core.cartesian.CartesianChart
+import com.patrykandpatrick.vico.views.cartesian.CartesianChartView
 import com.zekecode.akira_financialtracker.Application
 import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.databinding.FragmentHomeBinding
@@ -22,6 +24,7 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var chartView: CartesianChartView
 
     private val viewModel: HomeViewModel by viewModels {
         HomeViewModelFactory((requireActivity().application as Application).repository, sharedPreferences)
@@ -51,7 +54,7 @@ class HomeFragment : Fragment() {
         }
 
         // Observe the real monthly budget
-        viewModel.realMonthlyBudget.observe(viewLifecycleOwner) { realBudget ->
+        viewModel.remainingMonthlyBudget.observe(viewLifecycleOwner) { realBudget ->
 
             binding.budgetTextView.text = getString(R.string.home_budget_text, realBudget)
 

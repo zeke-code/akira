@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.zekecode.akira_financialtracker.data.local.entities.TransactionModel
 import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
 import java.util.Calendar
@@ -44,10 +45,13 @@ class HomeViewModel(
     }
 
     // Calculate the real monthly budget based on filtered transactions using the extension function `map`
-    val realMonthlyBudget: LiveData<Float> = currentMonthTransactions.map { transactions ->
+    val remainingMonthlyBudget: LiveData<Float> = currentMonthTransactions.map { transactions ->
         val totalEarnings = transactions.filterIsInstance<TransactionModel.Earning>().sumOf { it.revenue.amount }
         val totalExpenses = transactions.filterIsInstance<TransactionModel.Expense>().sumOf { it.expense.amount }
-        (totalEarnings - totalExpenses).toFloat()
+
+        val userBudget = _monthlyBudget.value ?: 0F
+
+        (userBudget - totalExpenses + totalEarnings).toFloat()
     }
 
     init {

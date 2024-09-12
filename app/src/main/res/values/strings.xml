@@ -15,7 +15,7 @@
         <item>CNY</item>
     </string-array>
     <string name="home_welcome_text">Welcome, %1$s!</string>
-    <string name="home_budget_text">Your monthly budget is $%1$.2f</string>
+    <string name="home_budget_text">Your monthly budget is %1$.2f</string>
     <string name="home_used_budget_text">You have used %1$.0f%% of your budget</string>
     <string name="navbar_home">Home</string>
     <string name="navbar_stats">Stats</string>
@@ -28,7 +28,7 @@
     <string name="home_monthTab">Month</string>
     <string name="settings_header_text">Settings</string>
     <string name="settings_username">Current name: %1$s</string>
-    <string name="settings_budget">Current budget: %.2f $</string>
+    <string name="settings_budget">Current budget set: %.2f $</string>
     <string name="settings_notification_status">Toggle notifications: %1$s</string>
     <string name="dialog_cancel_button">Cancel</string>
     <string name="dialog_save_button">Save</string>
@@ -52,5 +52,5 @@
     <string name="dialog_select_category_title">Select a category for your transaction</string>
     <string name="dialog_select_category_new_hint">Or create a new one by writing its name here…</string>
     <string name="category_name_placeholder">Select or create a category</string>
-    <string name="home_no_budget_set_text">Your budget is 0</string>
+    <string name="home_no_budget_set_text">You don\'t have any money left.</string>
 </resources>
