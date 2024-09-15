@@ -71,7 +71,12 @@
         android:id="@+id/home_chart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:chartZoomEnabled="true" />
+        android:layout_margin="@dimen/spacing_m"
+        android:layout_below="@id/budgetTextView"
+        app:layers="column"
+        app:showBottomAxis="true"
+        app:showStartAxis="true"
+        app:chartZoomEnabled="false" />
 
     <!-- Budget Progress Bar -->
     <ProgressBar
@@ -81,7 +86,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginStart="@dimen/spacing_l"
         android:layout_marginEnd="@dimen/spacing_l"
-        android:layout_below="@id/budgetTextView"
+        android:layout_below="@id/home_chart"
         android:progressDrawable="@drawable/custom_progress_bar"
         android:progress="50"
         android:indeterminate="false"

@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.patrykandpatrick.vico.core.cartesian.CartesianChart
 import com.patrykandpatrick.vico.views.cartesian.CartesianChartView
 import com.zekecode.akira_financialtracker.Application
 import com.zekecode.akira_financialtracker.R
@@ -24,7 +23,7 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var chartView: CartesianChartView
+    private lateinit var cartesianChartView: CartesianChartView
 
     private val viewModel: HomeViewModel by viewModels {
         HomeViewModelFactory((requireActivity().application as Application).repository, sharedPreferences)
@@ -45,7 +44,7 @@ class HomeFragment : Fragment() {
 
         sharedPreferences = requireActivity().getSharedPreferences("AkiraPrefs", Context.MODE_PRIVATE)
 
-        transactionsAdapter = TransactionsAdapter(emptyList())  // Initialize with an empty list
+        transactionsAdapter = TransactionsAdapter(emptyList())
         binding.homeExpenseRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.homeExpenseRecyclerView.adapter = transactionsAdapter
 
@@ -69,6 +68,10 @@ class HomeFragment : Fragment() {
                 binding.budgetProgressBar.progress = 0
             }
         }
+
+        cartesianChartView = binding.homeChart
+        cartesianChartView.modelProducer = viewModel.chartModelProducer
+
     }
 
     override fun onDestroyView() {
