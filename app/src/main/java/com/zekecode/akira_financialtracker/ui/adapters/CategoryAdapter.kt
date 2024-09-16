@@ -26,7 +26,6 @@ class CategoryAdapter(private val onItemClicked: (CategoryModel) -> Unit) :
 
         fun bind(category: CategoryModel) {
             binding.tvSelectedCategory.text = category.name
-            // You can set additional category properties here
 
             binding.root.setOnClickListener {
                 onItemClicked(category)

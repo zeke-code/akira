@@ -28,6 +28,9 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     private val _selectedCurrency = MutableLiveData<String>()
     val selectedCurrency: LiveData<String> get() = _selectedCurrency
 
+    private val _apiKey = MutableLiveData<String>()
+    val apiKey: LiveData<String> get() = _apiKey
+
     init {
         loadSettings()
     }
@@ -39,6 +42,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             _budget.postValue(sharedPreferences.getFloat("MonthlyBudget", 0.0f))
             _notificationsEnabled.postValue(sharedPreferences.getBoolean("notifications_enabled", false))
             _selectedCurrency.postValue(sharedPreferences.getString("Currency", "USD"))
+            _apiKey.postValue(sharedPreferences.getString("ApiKey", "none"))
         }
     }
 
@@ -77,6 +81,13 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch(Dispatchers.IO) {
             sharedPreferences.edit().putString("Currency", newCurrency).apply()
             _selectedCurrency.postValue(newCurrency)
+        }
+    }
+
+    fun updateApiKey(newApiKey: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            sharedPreferences.edit().putString("ApiKey", newApiKey).apply()
+            _apiKey.postValue(newApiKey)
         }
     }
 }

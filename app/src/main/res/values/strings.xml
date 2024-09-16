@@ -26,15 +26,17 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="home_weekTab">Week</string>
     <string name="home_monthTab">Month</string>
+    <!-- Settings Fragment -->
     <string name="settings_header_text">Settings</string>
-    <string name="settings_username">Current name: %1$s</string>
+    <string name="settings_username">Current name: %s</string>
     <string name="settings_budget">Current budget set: %.2f $</string>
-    <string name="settings_notification_status">Toggle notifications: %1$s</string>
+    <string name="settings_notification_status">Toggle notifications: %s</string>
     <string name="dialog_cancel_button">Cancel</string>
     <string name="dialog_save_button">Save</string>
     <string name="dialog_edittext_hint">Enter a new value…</string>
     <string name="settings_current_currency">Current currency: %s</string>
     <string name="settings_currency_dialog_title">Select the desired currency</string>
+    <string name="settings_api_key_viewer">"Current API key for stocks: %s"</string>
     <!-- Create fragment -->
     <string name="create_header">Add a transaction</string>
     <string name="create_select_category_arrow">Select a category</string>

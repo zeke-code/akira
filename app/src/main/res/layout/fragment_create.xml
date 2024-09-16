@@ -54,25 +54,22 @@
     <!-- Amount Input Field -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_amount"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:hint="@string/create_amount_hint"
-        android:textColorHint="@color/secondary_text"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_marginTop="@dimen/spacing_xs"
+        android:layout_marginTop="@dimen/spacing_l"
         android:layout_marginBottom="@dimen/spacing_m">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_amount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:hint="@string/create_amount_hint"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:textColor="@color/secondary_text"
+            android:inputType="numberDecimal"
             android:textSize="32sp"
             android:gravity="center"
-            android:textColorHint="@color/secondary_text"
             android:paddingBottom="8dp"/>
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -86,6 +83,7 @@
         android:background="?attr/selectableItemBackground"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="@dimen/spacing_m"
+        android:layout_marginTop="@dimen/spacing_m"
         android:padding="@dimen/spacing_s">
 
         <ImageButton
@@ -208,7 +206,7 @@
                 android:background="@android:color/transparent"
                 android:hint="@string/create_notes"
                 android:textSize="15sp"
-                android:maxLength="25"
+                android:maxLength="40"
                 android:inputType="text"
                 android:gravity="center_vertical"
                 android:maxLines="1"

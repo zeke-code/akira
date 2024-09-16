@@ -42,7 +42,6 @@ class CreateFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout using View Binding
         _binding = FragmentCreateBinding.inflate(inflater, container, false)
 
         setupInputListeners()
@@ -53,6 +52,7 @@ class CreateFragment : Fragment() {
                 val amountText = s.toString()
                 val amountDouble = amountText.toDoubleOrNull() ?: 0.0
                 viewModel.setAmount(amountDouble)
+                binding.tilAmount.hint = amountText.ifEmpty { getString(R.string.create_amount_hint) }
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {

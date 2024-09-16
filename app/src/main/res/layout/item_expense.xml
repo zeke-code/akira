@@ -1,44 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="16dp"
-    android:gravity="center_vertical"
     android:layout_marginStart="@dimen/spacing_m"
     android:layout_marginEnd="@dimen/spacing_m"
     android:layout_marginTop="@dimen/spacing_xs"
     android:layout_marginBottom="@dimen/spacing_xs"
-    android:background="@color/secondary_background">
+    app:cardElevation="4dp"
+    app:cardCornerRadius="8dp"
+    app:cardBackgroundColor="@color/secondary_background"
+    app:strokeColor="@color/tertiary_background"
+    app:strokeWidth="1dp">
 
-    <!-- Expense Icon -->
-    <ImageView
-        android:id="@+id/ivExpenseIcon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="8dp"
-        android:src="@drawable/ic_question_mark" />
-
-    <!-- Expense Category Name -->
-    <TextView
-        android:id="@+id/tvExpenseCategory"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text=""
-        android:textSize="16sp"
-        android:textColor="@color/primary_text"
-        android:textStyle="bold" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp">
 
-    <!-- Expense Amount -->
-    <TextView
-        android:id="@+id/tvExpenseAmount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:textSize="16sp"
-        android:textColor="@color/accent_red"
-        android:textStyle="bold" />
+        <!-- Expense Icon -->
+        <ImageView
+            android:id="@+id/ivExpenseIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_question_mark" />
 
-</LinearLayout>
+        <!-- Expense Category Name -->
+        <TextView
+            android:id="@+id/tvExpenseCategory"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text=""
+            android:textSize="16sp"
+            android:textColor="@color/primary_text"
+            android:textStyle="bold" />
+
+        <!-- Expense Amount -->
+        <TextView
+            android:id="@+id/tvExpenseAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="16sp"
+            android:textColor="@color/accent_red"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

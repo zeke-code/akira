@@ -14,7 +14,6 @@
 
     <item
         android:id="@+id/createFragment"
-        android:background="@drawable/ic_create_button"
         android:icon="@drawable/ic_plus"
         android:iconTint="@null"
         app:actionViewClass="android.widget.ImageButton"

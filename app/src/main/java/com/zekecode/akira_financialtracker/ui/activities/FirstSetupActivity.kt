@@ -59,6 +59,7 @@ class FirstSetupActivity : AppCompatActivity() {
                                     putString("Username", userName)
                                     putFloat("MonthlyBudget", monthlyBudget)
                                     putString("Currency", selectedCurrency)
+                                    putString("ApiKey", "")
                                     putBoolean("IsSetupComplete", true)
                                     apply()
                                 }

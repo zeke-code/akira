@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="300dp"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="24dp"
     android:background="@drawable/rounded_dialog_background">
@@ -16,24 +17,14 @@
         android:textColor="@color/primary_text"
         android:textStyle="bold"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="16dp" />
-
-    <!-- New Category Input -->
-    <EditText
-        android:id="@+id/et_new_category_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/dialog_select_category_new_hint"
-        android:layout_marginBottom="16dp"
-        android:inputType="text"
-        android:visibility="gone" />
+        android:layout_marginBottom="@dimen/spacing_m" />
 
     <!-- Categories List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_category_list"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginBottom="16dp"
+        android:layout_height="280dp"
+        android:layout_marginBottom="@dimen/spacing_m"
         android:scrollbars="vertical" />
 
     <!-- Action Buttons -->
@@ -41,21 +32,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginTop="16dp">
+        android:gravity="center">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCancel"
-            style="?android:attr/buttonBarButtonStyle"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
+            app:cornerRadius="16dp"
             android:layout_width="100dp"
             android:layout_height="48dp"
             android:backgroundTint="@color/accent_red"
             android:text="@string/dialog_cancel_button"
             android:textColor="@color/primary_text" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSave"
-            style="?android:attr/buttonBarButtonStyle"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
+            app:cornerRadius="16dp"
             android:layout_width="100dp"
             android:layout_height="48dp"
             android:backgroundTint="@color/accent_blue"

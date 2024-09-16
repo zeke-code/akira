@@ -9,6 +9,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.databinding.DialogSelectCategoryBinding
 import com.zekecode.akira_financialtracker.data.local.database.AkiraDatabase
 import com.zekecode.akira_financialtracker.data.local.entities.CategoryModel
@@ -24,6 +25,11 @@ class SelectCategoryDialogFragment : DialogFragment() {
 
     private lateinit var viewModel: CreateViewModel
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NO_TITLE, R.style.CustomDialog)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,7 +42,7 @@ class SelectCategoryDialogFragment : DialogFragment() {
         val repository = FinancialRepository(database.expenseDao(), database.earningDao(), database.categoryDao())
         val factory = CreateViewModelFactory(repository)
 
-        viewModel = ViewModelProvider(requireActivity(), factory).get(CreateViewModel::class.java)
+        viewModel = ViewModelProvider(requireActivity(), factory)[CreateViewModel::class.java]
 
         // Setup RecyclerView for categories
         binding.rvCategoryList.layoutManager = LinearLayoutManager(context)

@@ -27,8 +27,7 @@ class CreateViewModel(private val repository: FinancialRepository) : ViewModel()
 
     // LiveData for the selected category
     private val _selectedCategory = MutableLiveData<CategoryModel>()
-    val selectedCategory: LiveData<CategoryModel>
-        get() = _selectedCategory
+    val selectedCategory: LiveData<CategoryModel> get() = _selectedCategory
 
     private val _selectedDate = MutableLiveData<Long>()
     val selectedDate: LiveData<Long> get() = _selectedDate

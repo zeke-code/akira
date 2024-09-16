@@ -1,44 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:padding="16dp"
     android:layout_marginStart="@dimen/spacing_m"
     android:layout_marginEnd="@dimen/spacing_m"
     android:layout_marginTop="@dimen/spacing_xs"
     android:layout_marginBottom="@dimen/spacing_xs"
-    android:background="@color/secondary_background">
+    android:background="@color/secondary_background"
+    app:cardElevation="4dp"
+    app:cardCornerRadius="8dp"
+    app:cardBackgroundColor="@color/secondary_background"
+    app:strokeColor="@color/tertiary_background"
+    app:strokeWidth="1dp">
 
-    <!-- Earning Icon -->
-    <ImageView
-        android:id="@+id/ivEarningIcon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="8dp"
-        android:src="@drawable/ic_question_mark" />
-
-    <!-- Earning Category Name -->
-    <TextView
-        android:id="@+id/tvEarningCategory"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text=""
-        android:textSize="16sp"
-        android:textColor="@color/primary_text"
-        android:textStyle="bold" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp">
 
-    <!-- Earning Amount -->
-    <TextView
-        android:id="@+id/tvEarningAmount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:textSize="16sp"
-        android:textColor="@color/accent_green"
-        android:textStyle="bold" />
+        <!-- Earning Icon -->
+        <ImageView
+            android:id="@+id/ivEarningIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_question_mark" />
 
-</LinearLayout>
+        <!-- Earning Category Name -->
+        <TextView
+            android:id="@+id/tvEarningCategory"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text=""
+            android:textSize="16sp"
+            android:textColor="@color/primary_text"
+            android:textStyle="bold" />
+
+        <!-- Earning Amount -->
+        <TextView
+            android:id="@+id/tvEarningAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="16sp"
+            android:textColor="@color/accent_green"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

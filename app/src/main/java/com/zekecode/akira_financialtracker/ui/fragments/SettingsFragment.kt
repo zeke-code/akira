@@ -55,24 +55,32 @@ class SettingsFragment : Fragment() {
 
         viewModel.username.observe(viewLifecycleOwner) { username ->
             val fullText = getString(R.string.settings_username, username)
-            binding.tvName.text = applyColorToDynamicContent(fullText, username, R.color.secondary_text)
+            binding.tvName.text = fullText
         }
-
 
         viewModel.budget.observe(viewLifecycleOwner) { budget ->
             val fullText = getString(R.string.settings_budget, budget)
-            val budgetString = String.format(Locale.getDefault(), "%.2f", budget)
-            binding.tvBudget.text = applyColorToDynamicContent(fullText, budgetString, R.color.secondary_text)
+            binding.tvBudget.text = fullText
         }
 
         viewModel.selectedCurrency.observe(viewLifecycleOwner) { selectedCurrency ->
             val fullText = getString(R.string.settings_current_currency, selectedCurrency)
-            binding.tvCurrency.text = applyColorToDynamicContent(fullText, selectedCurrency, R.color.secondary_text)
+            binding.tvCurrency.text = fullText
         }
 
         // Observe system and app-level notification settings
         viewModel.notificationsEnabled.observe(viewLifecycleOwner) {
             checkSystemNotificationPermission()
+        }
+
+
+        viewModel.apiKey.observe(viewLifecycleOwner) { apiKey ->
+            val displayText = if (apiKey.isNullOrEmpty()) {
+                getString(R.string.settings_api_key_viewer, "none")
+            } else {
+                getString(R.string.settings_api_key_viewer, apiKey)
+            }
+            binding.tvApiKey.text = displayText
         }
 
         // Set up click listeners to enable users to modify username, budget, and notifications permissions
@@ -94,6 +102,13 @@ class SettingsFragment : Fragment() {
 
         binding.rlNotificationsSetting.setOnClickListener {
             handleNotificationToggle()
+        }
+
+        binding.rlApiKeySetter.setOnClickListener {
+            // TODO: Create API Key setter dialog
+            showInputDialog("Set your API key", viewModel.apiKey.value ?: "", { newApiKey ->
+                viewModel.updateApiKey(newApiKey)
+            })
         }
 
         return binding.root
@@ -224,24 +239,6 @@ class SettingsFragment : Fragment() {
         }
 
         dialog.show()
-    }
-
-    private fun applyColorToDynamicContent(fullText: String, dynamicContent: String, colorResId: Int): SpannableStringBuilder {
-        val spannable = SpannableStringBuilder(fullText)
-
-        val start = fullText.indexOf(dynamicContent)
-        val end = start + dynamicContent.length
-
-        if (start >= 0 && end <= fullText.length) {
-            spannable.setSpan(
-                ForegroundColorSpan(ContextCompat.getColor(requireContext(), colorResId)),
-                start,
-                end,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-        }
-
-        return spannable
     }
 
     override fun onDestroyView() {
