@@ -1,27 +1,23 @@
 package com.zekecode.akira_financialtracker.ui.activities
 
-import com.zekecode.akira_financialtracker.R
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.widget.ArrayAdapter
-import android.widget.Spinner
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.databinding.ActivityFirstSetupBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.zekecode.akira_financialtracker.ui.viewmodels.FirstSetupViewModel
 
 class FirstSetupActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityFirstSetupBinding
-    private lateinit var sharedPreferences: SharedPreferences
+    private val viewModel: FirstSetupViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,62 +25,52 @@ class FirstSetupActivity : AppCompatActivity() {
         binding = ActivityFirstSetupBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val currencySpinner: Spinner = binding.currencySpinner
-        val currencyOptions = resources.getStringArray(R.array.currency_options)
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, currencyOptions)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        currencySpinner.adapter = adapter
+        setupUI()
 
-        sharedPreferences = getSharedPreferences("AkiraPrefs", MODE_PRIVATE)
+        viewModel.showReadyView.observe(this, Observer { showReady ->
+            if (showReady) {
+                switchViewWithAnimation(binding.userInputView, binding.readyView)
+            } else {
+                Toast.makeText(
+                    this,
+                    "Please enter a valid number with at most 2 decimal digits",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
 
-        // Show welcome view and then switch to user input view
-        switchViewWithAnimation(binding.welcomeView, binding.userInputView, 5000)
+        viewModel.isSetupComplete.observe(this, Observer { isComplete ->
+            if (isComplete) {
+                val intent = Intent(this@FirstSetupActivity, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+        })
 
         binding.saveButton.setOnClickListener {
             val userName = binding.userNameEditText.text.toString().trim()
             val monthlyBudgetStr = binding.monthlyBudgetEditText.text.toString().trim()
-            val selectedCurrency = binding.currencySpinner.selectedItem.toString()
+            val selectedCurrency = binding.currencyAutoCompleteTextView.text.toString().trim()
 
-            if (userName.isNotEmpty() && monthlyBudgetStr.isNotEmpty()) {
-                try {
-                    val monthlyBudget = monthlyBudgetStr.toFloat()
-                    if (!isValidDecimal(monthlyBudgetStr)) {
-                        Toast.makeText(this, "Please enter a number with at most 2 decimal numbers", Toast.LENGTH_SHORT).show()
-                    } else {
-                        // Save data in sharedPreferences and proceed to MainActivity after a short delay
-                        CoroutineScope(Dispatchers.Main).launch{
-                            switchViewWithAnimation(binding.userInputView, binding.readyView)
-                            withContext(Dispatchers.IO) {
-                                sharedPreferences.edit().apply {
-                                    putString("Username", userName)
-                                    putFloat("MonthlyBudget", monthlyBudget)
-                                    putString("Currency", selectedCurrency)
-                                    putString("ApiKey", "")
-                                    putBoolean("IsSetupComplete", true)
-                                    apply()
-                                }
-                            }
-
-                            delay(4000)
-
-                            val intent = Intent(this@FirstSetupActivity, MainActivity::class.java)
-                            startActivity(intent)
-                            finish()
-                        }
-                    }
-                } catch (e: NumberFormatException) {
-                    Toast.makeText(this, "Please enter a valid number for the budget", Toast.LENGTH_SHORT).show()
-                }
+            if (userName.isNotEmpty() && monthlyBudgetStr.isNotEmpty() && selectedCurrency.isNotEmpty()) {
+                viewModel.saveUserData(userName, monthlyBudgetStr, selectedCurrency)
             } else {
                 Toast.makeText(this, "Please enter all details", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    // Checks if a number has equal or less than two decimal digits
-    private fun isValidDecimal(numberStr: String): Boolean {
-        val parts = numberStr.split(".")
-        return parts.size <= 1 || parts[1].length <= 2
+    private fun setupUI() {
+        val currencyAutoCompleteTextView = binding.currencyAutoCompleteTextView
+        val currencyOptions = resources.getStringArray(R.array.currency_options)
+        val adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_dropdown_item_1line,
+            currencyOptions
+        )
+        currencyAutoCompleteTextView.setAdapter(adapter)
+
+        switchViewWithAnimation(binding.welcomeView, binding.userInputView, 5000)
     }
 
     private fun switchViewWithAnimation(fromView: View, toView: View, delay: Long = 0) {
@@ -93,27 +79,58 @@ class FirstSetupActivity : AppCompatActivity() {
                 fadeOut(fromView) {
                     fromView.visibility = View.GONE
                     fadeIn(toView)
-                    toView.visibility = View.VISIBLE
                 }
             }, delay)
         } else {
             fadeOut(fromView) {
                 fromView.visibility = View.GONE
                 fadeIn(toView)
-                toView.visibility = View.VISIBLE
             }
         }
     }
 
-    private fun fadeIn(view: View, duration: Long = 500) {
+    private fun fadeIn(
+        view: View,
+        duration: Long = 500,
+        onAnimationEnd: (() -> Unit)? = null
+    ) {
+        view.visibility = View.VISIBLE
+
         val fadeIn = AlphaAnimation(0f, 1f).apply {
             this.duration = duration
             fillAfter = true
+            setAnimationListener(object : Animation.AnimationListener {
+                override fun onAnimationStart(animation: Animation?) {
+                    // Disable interaction during animation
+                    view.isEnabled = false
+                    view.isClickable = false
+                    view.isFocusable = false
+                }
+
+                override fun onAnimationEnd(animation: Animation?) {
+                    // Enable interaction after animation ends
+                    view.isEnabled = true
+                    view.isClickable = true
+                    view.isFocusable = true
+                    onAnimationEnd?.invoke()
+                }
+
+                override fun onAnimationRepeat(animation: Animation?) {}
+            })
         }
         view.startAnimation(fadeIn)
     }
 
-    private fun fadeOut(view: View, duration: Long = 500, onAnimationEnd: (() -> Unit)? = null) {
+    private fun fadeOut(
+        view: View,
+        duration: Long = 500,
+        onAnimationEnd: (() -> Unit)? = null
+    ) {
+        // Disable interaction before animation starts
+        view.isEnabled = false
+        view.isClickable = false
+        view.isFocusable = false
+
         val fadeOut = AlphaAnimation(1f, 0f).apply {
             this.duration = duration
             fillAfter = true

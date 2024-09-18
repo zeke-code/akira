@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.activities.FirstSetupActivity">
 
     <!-- Welcome View -->
@@ -14,13 +14,14 @@
         android:orientation="vertical"
         android:gravity="center"
         android:padding="16dp">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/setup_welcome"
             android:textColor="@color/primary_text"
             android:textSize="24sp"
-            android:gravity="center"/>
+            android:gravity="center" />
     </LinearLayout>
 
     <!-- User Input View -->
@@ -32,69 +33,91 @@
         android:padding="16dp"
         android:gravity="center"
         android:visibility="gone">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/setup_input_request"
             android:textColor="@color/primary_text"
             android:textSize="20sp"
+            android:layout_marginBottom="@dimen/spacing_l"
             android:gravity="center" />
-        <EditText
-            android:id="@+id/userNameEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:autofillHints="username"
-            android:hint="@string/setup_enter_name"
-            android:textColorHint="@color/secondary_text"
-            android:layout_margin="16dp"
-            android:inputType="text"
-            android:maxLength="20"/>
-        <EditText
-            android:id="@+id/monthlyBudgetEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:autofillHints="none"
-            android:hint="@string/setup_enter_budget"
-            android:textColorHint="@color/secondary_text"
-            android:layout_margin="16dp"
-            android:inputType="numberDecimal"/>
-        <!-- Currency Selection with ConstraintLayout -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp">
 
-            <TextView
-                android:id="@+id/currencySetupTextView"
-                android:layout_width="wrap_content"
+        <!-- Username Field -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/userNameInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:hint="@string/setup_enter_name"
+            app:hintAnimationEnabled="true"
+            android:background="@android:color/transparent"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/userNameEditText"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/setup_select_currency"
+                android:autofillHints="username"
+                android:textColor="@color/primary_text"
+                android:textColorHint="@color/secondary_text"
+                android:background="@android:color/transparent"
+                android:inputType="text"
+                android:maxLength="20" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Monthly Budget Field -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/monthlyBudgetInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:hint="@string/setup_enter_budget"
+            app:hintAnimationEnabled="true"
+            android:background="@android:color/transparent"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/monthlyBudgetEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="none"
+                android:background="@android:color/transparent"
+                android:textColor="@color/primary_text"
+                android:textColorHint="@color/secondary_text"
+                android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Currency Selection with TextInputLayout and AutoCompleteTextView -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/currencyDropdownLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:hint="@string/setup_select_currency"
+            app:hintAnimationEnabled="true"
+            android:background="@android:color/transparent"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu">
+
+            <AutoCompleteTextView
+                android:id="@+id/currencyAutoCompleteTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
                 android:textColor="@color/primary_text"
                 android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/currencySpinner" />
+                android:inputType="none"
+                tools:ignore="LabelFor" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-            <Spinner
-                android:id="@+id/currencySpinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:spinnerMode="dropdown"
-                android:layout_marginStart="@dimen/spacing_m"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/currencySetupTextView" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <Button
+        <!-- Save Button -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/saveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="@dimen/spacing_m"
             android:text="@string/setup_save"
-            android:textSize="16sp"
+            android:textSize="18sp"
             android:layout_marginTop="@dimen/spacing_l" />
     </LinearLayout>
 
@@ -107,11 +130,12 @@
         android:gravity="center"
         android:padding="16dp"
         android:visibility="gone">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/setup_end"
             android:textSize="24sp"
-            android:gravity="center"/>
+            android:gravity="center" />
     </LinearLayout>
 </RelativeLayout>
