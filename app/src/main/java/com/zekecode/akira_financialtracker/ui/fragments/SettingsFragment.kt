@@ -59,7 +59,7 @@ class SettingsFragment : Fragment() {
         }
 
         viewModel.budget.observe(viewLifecycleOwner) { budget ->
-            val fullText = getString(R.string.settings_budget, budget)
+            val fullText = getString(R.string.settings_budget, budget) + viewModel.currencySymbol.value
             binding.tvBudget.text = fullText
         }
 
@@ -105,7 +105,6 @@ class SettingsFragment : Fragment() {
         }
 
         binding.rlApiKeySetter.setOnClickListener {
-            // TODO: Create API Key setter dialog
             showInputDialog("Set your API key", viewModel.apiKey.value ?: "", { newApiKey ->
                 viewModel.updateApiKey(newApiKey)
             })

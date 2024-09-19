@@ -23,7 +23,7 @@ class FirstSetupViewModel(application: Application) : AndroidViewModel(applicati
     fun saveUserData(userName: String, monthlyBudgetStr: String, selectedCurrency: String) {
         try {
             val monthlyBudget = monthlyBudgetStr.toFloat()
-            if (!isValidDecimal(monthlyBudgetStr)) {
+            if (!isValidDecimal(monthlyBudgetStr) && monthlyBudget < 20) {
                 _showReadyView.value = false
             } else {
                 _showReadyView.value = true

@@ -58,8 +58,7 @@ class TransactionsAdapter(private var transactions: List<TransactionModel>) :
 
         fun bind(expense: ExpenseModel) {
             categoryName.text = expense.category
-            // TODO: Do not concatenate strings
-            expenseAmount.text = "- ${expense.amount}" // Formatting the amount
+            expenseAmount.text = itemView.context.getString(R.string.expense_amount, expense.amount)
             // TODO: Set the appropriate icon based on the category or expense type
             // categoryIcon.setImageResource(...) // Set your icon here
         }
@@ -73,8 +72,7 @@ class TransactionsAdapter(private var transactions: List<TransactionModel>) :
 
         fun bind(earning: EarningModel) {
             categoryName.text = earning.category
-            // TODO: Do not concatenate strings
-            earningAmount.text = "+ ${earning.amount}" // Formatting the amount
+            earningAmount.text = itemView.context.getString(R.string.earning_amount, earning.amount)
             // TODO: Set the appropriate icon based on the category or earning type
             // categoryIcon.setImageResource(...) // Set your icon here
         }

@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.zekecode.akira_financialtracker.utils.CurrencyUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -18,6 +19,9 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
 
     private val _username = MutableLiveData<String>()
     val username: LiveData<String> get() = _username
+
+    private val _currencySymbol = MutableLiveData<String>()
+    val currencySymbol: LiveData<String> get() = _currencySymbol
 
     private val _budget = MutableLiveData<Float?>()
     val budget: LiveData<Float?> get() = _budget
@@ -39,6 +43,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     private fun loadSettings() {
         viewModelScope.launch(Dispatchers.IO) {
             _username.postValue(sharedPreferences.getString("Username", "undefined"))
+            _currencySymbol.postValue(CurrencyUtils.getCurrencySymbol(sharedPreferences))
             _budget.postValue(sharedPreferences.getFloat("MonthlyBudget", 0.0f))
             _notificationsEnabled.postValue(sharedPreferences.getBoolean("notifications_enabled", false))
             _selectedCurrency.postValue(sharedPreferences.getString("Currency", "USD"))

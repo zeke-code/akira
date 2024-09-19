@@ -2,8 +2,6 @@ package com.zekecode.akira_financialtracker.data.local.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.map
 import com.zekecode.akira_financialtracker.data.local.dao.CategoryDao
 import com.zekecode.akira_financialtracker.data.local.dao.ExpenseDao
 import com.zekecode.akira_financialtracker.data.local.dao.EarningDao
@@ -17,11 +15,11 @@ class FinancialRepository(
     private val earningDao: EarningDao,
     private val categoryDao: CategoryDao
 ) {
-    val allExpenses: LiveData<List<ExpenseModel>> = expenseDao.getAllExpenses()
-    val allEarnings: LiveData<List<EarningModel>> = earningDao.getAllEarnings()
+    private val allExpenses: LiveData<List<ExpenseModel>> = expenseDao.getAllExpenses()
+    private val allEarnings: LiveData<List<EarningModel>> = earningDao.getAllEarnings()
     val allCategories: LiveData<List<CategoryModel>> = categoryDao.getAllCategories()
 
-    val allTransactions: LiveData<List<TransactionModel>> = MediatorLiveData<List<TransactionModel>>().apply {
+    private val _allTransactions: MediatorLiveData<List<TransactionModel>> = MediatorLiveData<List<TransactionModel>>().apply {
         addSource(allExpenses) { expenses ->
             val earnings = allEarnings.value ?: emptyList()
             value = mergeTransactions(expenses, earnings)
@@ -31,6 +29,7 @@ class FinancialRepository(
             value = mergeTransactions(expenses, earnings)
         }
     }
+    val allTransactions: LiveData<List<TransactionModel>> get() = _allTransactions
 
     private fun mergeTransactions(
         expenses: List<ExpenseModel>,

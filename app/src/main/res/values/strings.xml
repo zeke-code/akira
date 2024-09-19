@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Akira</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
     <!-- First Setup Activity -->
     <string name="setup_enter_name">Enter your name here…</string>
     <string name="setup_enter_budget">Enter your monthly budget here…</string>
@@ -15,23 +17,21 @@
         <item>JPY</item>
         <item>CNY</item>
     </string-array>
-    <!-- Honme Fragment -->
+    <!-- Home Fragment -->
     <string name="home_welcome_text">Welcome, %1$s!</string>
-    <string name="home_budget_text">Your monthly budget is %1$.2f</string>
-    <string name="home_used_budget_text">You have used %1$.0f%% of your budget</string>
+    <string name="home_remaining_budget_frame_text">%1$.2f</string>
+    <string name="home_used_budget_text">You have used <b>%1$.0f%%</b> of your budget</string>
     <string name="navbar_home">Home</string>
     <string name="navbar_stats">Stats</string>
     <string name="navbar_stocks">Stocks</string>
     <string name="navigation_settings">Settings</string>
     <string name="home_dayTab">Day</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="home_weekTab">Week</string>
     <string name="home_monthTab">Month</string>
     <!-- Settings Fragment -->
     <string name="settings_header_text">Settings</string>
     <string name="settings_username">Current name: %s</string>
-    <string name="settings_budget">Current budget set: %.2f $</string>
+    <string name="settings_budget">Current budget set: %.2f</string>
     <string name="settings_notification_status">Toggle notifications: %s</string>
     <string name="dialog_cancel_button">Cancel</string>
     <string name="dialog_save_button">Save</string>
@@ -57,4 +57,7 @@
     <string name="dialog_select_category_new_hint">Or create a new one by writing its name here…</string>
     <string name="category_name_placeholder">Select or create a category</string>
     <string name="home_no_budget_set_text">You don\'t have any money left.</string>
+    <!-- TransactionAdapter text -->
+    <string name="expense_amount">- %1$.2f</string>
+    <string name="earning_amount">- %1$.2f</string>
 </resources>

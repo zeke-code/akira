@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.patrykandpatrick.vico.views.cartesian.CartesianChartView
 import com.zekecode.akira_financialtracker.Application
 import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.databinding.FragmentHomeBinding
@@ -23,7 +22,6 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var cartesianChartView: CartesianChartView
 
     private val viewModel: HomeViewModel by viewModels {
         HomeViewModelFactory((requireActivity().application as Application).repository, sharedPreferences)
@@ -52,25 +50,19 @@ class HomeFragment : Fragment() {
             transactionsAdapter.updateTransactions(transactions)
         }
 
-        // Observe the real monthly budget
-        viewModel.remainingMonthlyBudget.observe(viewLifecycleOwner) { realBudget ->
-
-            binding.budgetTextView.text = getString(R.string.home_budget_text, realBudget)
-
-            // Calculate the percentage of the budget used and update the progress bar
-            val totalBudget = sharedPreferences.getFloat("MonthlyBudget", 0F)
-            if (totalBudget > 0) {
-                val progress = ((totalBudget - realBudget) / totalBudget * 100)
-                binding.budgetProgressBar.progress = progress.toInt()
-                binding.homeUsedBudgetText.text = getString(R.string.home_used_budget_text, progress)
+        viewModel.usedBudgetPercentage.observe(viewLifecycleOwner) { usedBudget ->
+            if (usedBudget > 0) {
+                binding.homeUsedBudgetText.text = getString(R.string.home_used_budget_text, usedBudget)
             } else {
                 binding.homeUsedBudgetText.text = getString(R.string.home_no_budget_set_text)
-                binding.budgetProgressBar.progress = 0
             }
+            usedBudget?.toInt()?.let { binding.circularProgress.setProgress(it, true) }
         }
 
-        cartesianChartView = binding.homeChart
-        cartesianChartView.modelProducer = viewModel.chartModelProducer
+        viewModel.remainingMonthlyBudget.observe(viewLifecycleOwner) { remainingBudget ->
+            val formattedText = getString(R.string.home_remaining_budget_frame_text, remainingBudget) + "${viewModel.currencySymbol.value}"
+            binding.budgetText.text = formattedText
+        }
 
     }
 

@@ -33,7 +33,7 @@ class FirstSetupActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(
                     this,
-                    "Please enter a valid number with at most 2 decimal digits",
+                    "Please enter a number bigger than 20 with at most 2 decimal digits",
                     Toast.LENGTH_SHORT
                 ).show()
             }
