@@ -51,7 +51,7 @@ class HomeFragment : Fragment() {
         }
 
         viewModel.usedBudgetPercentage.observe(viewLifecycleOwner) { usedBudget ->
-            if (usedBudget > 0) {
+            if (usedBudget < 100) {
                 binding.homeUsedBudgetText.text = getString(R.string.home_used_budget_text, usedBudget)
             } else {
                 binding.homeUsedBudgetText.text = getString(R.string.home_no_budget_set_text)
