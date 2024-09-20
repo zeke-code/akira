@@ -10,13 +10,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.zekecode.akira_financialtracker.R
-import com.zekecode.akira_financialtracker.databinding.DialogSelectCategoryBinding
 import com.zekecode.akira_financialtracker.data.local.database.AkiraDatabase
 import com.zekecode.akira_financialtracker.data.local.entities.CategoryModel
+import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
+import com.zekecode.akira_financialtracker.databinding.DialogSelectCategoryBinding
 import com.zekecode.akira_financialtracker.ui.adapters.CategoryAdapter
 import com.zekecode.akira_financialtracker.ui.viewmodels.CreateViewModel
 import com.zekecode.akira_financialtracker.ui.viewmodels.CreateViewModelFactory
-import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
 
 class SelectCategoryDialogFragment : DialogFragment() {
 

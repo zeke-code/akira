@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.databinding.ItemCategoryBinding
 import com.zekecode.akira_financialtracker.data.local.entities.CategoryModel
 
@@ -25,6 +26,7 @@ class CategoryAdapter(private val onItemClicked: (CategoryModel) -> Unit) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(category: CategoryModel) {
+            binding.ivCategoryIcon.setImageResource(category.icon)
             binding.tvSelectedCategory.text = category.name
 
             binding.root.setOnClickListener {

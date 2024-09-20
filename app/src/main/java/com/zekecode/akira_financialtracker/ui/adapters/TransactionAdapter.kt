@@ -60,7 +60,6 @@ class TransactionsAdapter(private var transactions: List<TransactionModel>) :
             categoryName.text = expense.category
             expenseAmount.text = itemView.context.getString(R.string.expense_amount, expense.amount)
             // TODO: Set the appropriate icon based on the category or expense type
-            // categoryIcon.setImageResource(...) // Set your icon here
         }
     }
 

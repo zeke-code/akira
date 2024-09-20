@@ -91,8 +91,9 @@ class HomeViewModel(
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
-        if (key == "MonthlyBudget") {
-            _monthlyBudget.value = sharedPreferences.getFloat(key, 0F)
+        when (key) {
+            "MonthlyBudget" -> _monthlyBudget.value = sharedPreferences.getFloat(key, 0F)
+            "Currency" -> _currencySymbol.value = CurrencyUtils.getCurrencySymbol(sharedPreferences)
         }
     }
 

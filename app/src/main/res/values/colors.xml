@@ -15,6 +15,7 @@
     <color name="disabled_accent_green">#2D8050</color>
     <color name="accent_red">#fe3737</color>
     <color name="disabled_accent_red">#C74A4A</color>
+    <color name="accent_orange">#D94309</color>
     <color name="accent_blue">#1e88e5</color>
     <color name="disabled_accent_blue">#3677B1</color>
     <color name="divider">#393939</color>

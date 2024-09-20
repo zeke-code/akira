@@ -25,7 +25,6 @@ import java.util.Locale
 
 class CreateFragment : Fragment() {
 
-    // Use View Binding
     private var _binding: FragmentCreateBinding? = null
     private val binding get() = _binding!!
 
@@ -88,7 +87,11 @@ class CreateFragment : Fragment() {
         })
 
         viewModel.selectedCategory.observe(viewLifecycleOwner) { category ->
-            binding.tvCreateCategory.text = category.name
+            binding.tvCreateCategory.text = category?.name
+        }
+
+        viewModel.formattedSelectedDate.observe(viewLifecycleOwner) { formattedDate ->
+            binding.tvCreateDate.text = formattedDate
         }
 
         // Handle Cancel Button Click
@@ -148,8 +151,10 @@ class CreateFragment : Fragment() {
     }
 
     private fun showDatePickerDialog() {
-        // Get the current date
-        val calendar = Calendar.getInstance()
+        // Get the current date from ViewModel
+        val calendar = Calendar.getInstance().apply {
+            timeInMillis = viewModel.selectedDate.value ?: System.currentTimeMillis()
+        }
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH)
         val day = calendar.get(Calendar.DAY_OF_MONTH)
@@ -158,15 +163,11 @@ class CreateFragment : Fragment() {
         val datePickerDialog = DatePickerDialog(
             requireContext(),
             { _, selectedYear, selectedMonth, selectedDay ->
-                // Handle the date selected by the user
-                val selectedDate = Calendar.getInstance()
-                selectedDate.set(selectedYear, selectedMonth, selectedDay)
+                val selectedDate = Calendar.getInstance().apply {
+                    set(selectedYear, selectedMonth, selectedDay)
+                }
 
-                // Format the date and display it in the TextView
-                val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
-                binding.tvCreateDate.text = dateFormat.format(selectedDate.time)
-
-                // You can save or use the selected date in your ViewModel or logic
+                // Save the selected date in ViewModel
                 viewModel.setSelectedDate(selectedDate.timeInMillis)
             },
             year, month, day

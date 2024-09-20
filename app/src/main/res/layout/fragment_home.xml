@@ -106,7 +106,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/circular_progress_frame"
-        android:layout_marginTop="@dimen/spacing_s"
+        android:layout_marginTop="@dimen/spacing_m"
         android:textColor="@color/primary_text"
         android:gravity="center"
         android:textSize="16sp"

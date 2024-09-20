@@ -3,12 +3,16 @@ package com.zekecode.akira_financialtracker.ui.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.zekecode.akira_financialtracker.data.local.entities.CategoryModel
 import com.zekecode.akira_financialtracker.data.local.entities.EarningModel
 import com.zekecode.akira_financialtracker.data.local.entities.ExpenseModel
 import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class CreateViewModel(private val repository: FinancialRepository) : ViewModel() {
 
@@ -26,11 +30,16 @@ class CreateViewModel(private val repository: FinancialRepository) : ViewModel()
     val allCategories: LiveData<List<CategoryModel>> = repository.allCategories
 
     // LiveData for the selected category
-    private val _selectedCategory = MutableLiveData<CategoryModel>()
-    val selectedCategory: LiveData<CategoryModel> get() = _selectedCategory
+    private val _selectedCategory = MutableLiveData<CategoryModel?>()
+    val selectedCategory: LiveData<CategoryModel?> get() = _selectedCategory
 
     private val _selectedDate = MutableLiveData<Long>()
     val selectedDate: LiveData<Long> get() = _selectedDate
+
+    val formattedSelectedDate: LiveData<String> = _selectedDate.map { dateInMillis ->
+        val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+        dateFormat.format(Date(dateInMillis))
+    }
 
     private val _name = MutableLiveData<String>()
     val name: LiveData<String> get() = _name
@@ -39,7 +48,8 @@ class CreateViewModel(private val repository: FinancialRepository) : ViewModel()
     val isExpense: LiveData<Boolean> get() = _isExpense
 
     init {
-        _isExpense.value = true // Set transaction default as expense
+        _isExpense.value = true
+        _selectedDate.value = System.currentTimeMillis()
     }
 
     fun setAmount(value: Double) {
@@ -111,8 +121,16 @@ class CreateViewModel(private val repository: FinancialRepository) : ViewModel()
             )
             viewModelScope.launch {
                 repository.insertExpense(expense)
+                resetData()
                 _navigateToHome.value = true
             }
         }
+    }
+
+    // Function to reset ViewModel's data to null.
+    private fun resetData() {
+        _name.value = ""
+        _selectedCategory.value = null
+        _selectedDate.value = System.currentTimeMillis() // Reset time to user's current day
     }
 }

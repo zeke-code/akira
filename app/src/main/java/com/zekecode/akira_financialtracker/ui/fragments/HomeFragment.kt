@@ -60,8 +60,12 @@ class HomeFragment : Fragment() {
         }
 
         viewModel.remainingMonthlyBudget.observe(viewLifecycleOwner) { remainingBudget ->
-            val formattedText = getString(R.string.home_remaining_budget_frame_text, remainingBudget) + "${viewModel.currencySymbol.value}"
-            binding.budgetText.text = formattedText
+            viewModel.currencySymbol.observe(viewLifecycleOwner) { symbol ->
+                symbol?.let {
+                    val formattedText = getString(R.string.home_remaining_budget_frame_text, remainingBudget ?: 0F, it)
+                    binding.budgetText.text = formattedText
+                }
+            }
         }
 
     }
