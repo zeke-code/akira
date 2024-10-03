@@ -21,6 +21,7 @@
     <string name="home_welcome_text">Welcome, %1$s!</string>
     <string name="home_remaining_budget_frame_text">%1$.2f%2$s</string>
     <string name="home_used_budget_text">You have used <b>%1$.0f%%</b> of your budget</string>
+    <string name="home_exceeded_budget_text">You haven\'t used your budget yet.</string>
     <string name="home_no_budget_set_text">You have used all your budget</string>
     <string name="navbar_home">Home</string>
     <string name="navbar_stats">Stats</string>

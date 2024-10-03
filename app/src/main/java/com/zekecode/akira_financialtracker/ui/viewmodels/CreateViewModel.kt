@@ -48,7 +48,7 @@ class CreateViewModel(private val repository: FinancialRepository) : ViewModel()
     val isExpense: LiveData<Boolean> get() = _isExpense
 
     init {
-        _isExpense.value = true
+        resetData()
         _selectedDate.value = System.currentTimeMillis()
     }
 
@@ -93,11 +93,12 @@ class CreateViewModel(private val repository: FinancialRepository) : ViewModel()
             val earning = EarningModel(
                 name = nameValue,
                 amount = amountValue,
-                category = categoryValue.name,
+                categoryId = categoryValue.id,
                 date = dateValue
             )
             viewModelScope.launch {
                 repository.insertEarning(earning)
+                resetData()
                 _navigateToHome.value = true
             }
         } else {
@@ -116,7 +117,7 @@ class CreateViewModel(private val repository: FinancialRepository) : ViewModel()
             val expense = ExpenseModel(
                 name = nameValue,
                 amount = amountValue,
-                category = categoryValue.name,
+                categoryId = categoryValue.id,
                 date = dateValue
             )
             viewModelScope.launch {
@@ -132,5 +133,6 @@ class CreateViewModel(private val repository: FinancialRepository) : ViewModel()
         _name.value = ""
         _selectedCategory.value = null
         _selectedDate.value = System.currentTimeMillis() // Reset time to user's current day
+        _isExpense.value = true
     }
 }

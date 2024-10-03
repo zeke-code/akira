@@ -5,43 +5,42 @@ import androidx.lifecycle.MediatorLiveData
 import com.zekecode.akira_financialtracker.data.local.dao.CategoryDao
 import com.zekecode.akira_financialtracker.data.local.dao.ExpenseDao
 import com.zekecode.akira_financialtracker.data.local.dao.EarningDao
-import com.zekecode.akira_financialtracker.data.local.entities.CategoryModel
-import com.zekecode.akira_financialtracker.data.local.entities.EarningModel
-import com.zekecode.akira_financialtracker.data.local.entities.ExpenseModel
-import com.zekecode.akira_financialtracker.data.local.entities.TransactionModel
+import com.zekecode.akira_financialtracker.data.local.entities.*
 
 class FinancialRepository(
     private val expenseDao: ExpenseDao,
     private val earningDao: EarningDao,
     private val categoryDao: CategoryDao
 ) {
-    private val allExpenses: LiveData<List<ExpenseModel>> = expenseDao.getAllExpenses()
+    private val allExpensesWithCategory: LiveData<List<ExpenseWithCategory>> = expenseDao.getExpensesWithCategories()
+    private val allEarningsWithCategory: LiveData<List<EarningWithCategory>> = earningDao.getEarningsWithCategories()
     private val allEarnings: LiveData<List<EarningModel>> = earningDao.getAllEarnings()
+    private val allExpenses: LiveData<List<ExpenseModel>> = expenseDao.getAllExpenses()
     val allCategories: LiveData<List<CategoryModel>> = categoryDao.getAllCategories()
 
     private val _allTransactions: MediatorLiveData<List<TransactionModel>> = MediatorLiveData<List<TransactionModel>>().apply {
-        addSource(allExpenses) { expenses ->
-            val earnings = allEarnings.value ?: emptyList()
+        addSource(allExpensesWithCategory) { expenses ->
+            val earnings = allEarningsWithCategory.value ?: emptyList()
             value = mergeTransactions(expenses, earnings)
         }
-        addSource(allEarnings) { earnings ->
-            val expenses = allExpenses.value ?: emptyList()
+        addSource(allEarningsWithCategory) { earnings ->
+            val expenses = allExpensesWithCategory.value ?: emptyList()
             value = mergeTransactions(expenses, earnings)
         }
     }
     val allTransactions: LiveData<List<TransactionModel>> get() = _allTransactions
 
     private fun mergeTransactions(
-        expenses: List<ExpenseModel>,
-        earnings: List<EarningModel>
+        expenses: List<ExpenseWithCategory>,
+        earnings: List<EarningWithCategory>
     ): List<TransactionModel> {
         val transactions = mutableListOf<TransactionModel>()
         transactions.addAll(expenses.map { TransactionModel.Expense(it) })
         transactions.addAll(earnings.map { TransactionModel.Earning(it) })
         return transactions.sortedByDescending {
             when (it) {
-                is TransactionModel.Expense -> it.expense.date
-                is TransactionModel.Earning -> it.revenue.date
+                is TransactionModel.Expense -> it.expenseWithCategory.expense.date
+                is TransactionModel.Earning -> it.earningWithCategory.earning.date
             }
         }
     }
@@ -69,5 +68,4 @@ class FinancialRepository(
     suspend fun deleteCategory(category: CategoryModel) {
         categoryDao.deleteCategory(category)
     }
-
 }

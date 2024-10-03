@@ -46,15 +46,25 @@ class HomeFragment : Fragment() {
         binding.homeExpenseRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.homeExpenseRecyclerView.adapter = transactionsAdapter
 
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading) {
+                binding.circularProgress.visibility = View.INVISIBLE
+                binding.homeUsedBudgetText.visibility = View.INVISIBLE
+            } else {
+                binding.circularProgress.visibility = View.VISIBLE
+                binding.homeUsedBudgetText.visibility = View.VISIBLE
+            }
+        }
+
         viewModel.allTransactions.observe(viewLifecycleOwner) { transactions ->
             transactionsAdapter.updateTransactions(transactions)
         }
 
         viewModel.usedBudgetPercentage.observe(viewLifecycleOwner) { usedBudget ->
-            if (usedBudget < 100) {
-                binding.homeUsedBudgetText.text = getString(R.string.home_used_budget_text, usedBudget)
-            } else {
-                binding.homeUsedBudgetText.text = getString(R.string.home_no_budget_set_text)
+            when {
+                usedBudget < 0 -> binding.homeUsedBudgetText.text = getString(R.string.home_exceeded_budget_text)
+                usedBudget < 100 -> binding.homeUsedBudgetText.text = getString(R.string.home_used_budget_text, usedBudget)
+                usedBudget > 100 -> binding.homeUsedBudgetText.text = getString(R.string.home_no_budget_set_text)
             }
             usedBudget?.toInt()?.let { binding.circularProgress.setProgress(it, true) }
         }

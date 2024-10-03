@@ -28,31 +28,38 @@ class HomeViewModel(
     private val _currencySymbol = MutableLiveData<String>()
     val currencySymbol: LiveData<String> get() = _currencySymbol
 
+    // Signal the UI when data is correctly loaded and ready to be observed
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
     // Filter transactions for the current month
     private val currentMonthTransactions: LiveData<List<TransactionModel>> = allTransactions.map { transactions ->
         transactions.filter { transaction ->
             when (transaction) {
-                is TransactionModel.Expense -> isInCurrentMonth(transaction.expense.date)
-                is TransactionModel.Earning -> isInCurrentMonth(transaction.revenue.date)
+                is TransactionModel.Expense -> isInCurrentMonth(transaction.expenseWithCategory.expense.date)
+                is TransactionModel.Earning -> isInCurrentMonth(transaction.earningWithCategory.earning.date)
             }
         }
     }
 
     val remainingMonthlyBudget: LiveData<Float> = currentMonthTransactions.map { transactions ->
-        val totalEarnings = transactions.filterIsInstance<TransactionModel.Earning>().sumOf { it.revenue.amount }
-        val totalExpenses = transactions.filterIsInstance<TransactionModel.Expense>().sumOf { it.expense.amount }
+        val totalEarnings = transactions.filterIsInstance<TransactionModel.Earning>().sumOf { it.earningWithCategory.earning.amount }
+        val totalExpenses = transactions.filterIsInstance<TransactionModel.Expense>().sumOf { it.expenseWithCategory.expense.amount }
         val userBudget = _monthlyBudget.value ?: 0F
 
         (userBudget - totalExpenses + totalEarnings).toFloat()
     }
 
      val usedBudgetPercentage: LiveData<Float> = remainingMonthlyBudget.map { remainingBudget ->
+         _isLoading.value = true
         val totalBudget = _monthlyBudget.value ?: 0F
-        if (totalBudget > 0F) {
+        val percentage = if (totalBudget > 0F) {
             ((totalBudget - remainingBudget) / totalBudget) * 100
         } else {
             0F
         }
+         _isLoading.value = false
+         percentage
     }
 
     // Extract expenses and revenues in one transformation

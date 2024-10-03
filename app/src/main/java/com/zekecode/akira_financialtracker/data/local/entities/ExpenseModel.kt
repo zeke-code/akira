@@ -8,6 +8,6 @@ data class ExpenseModel(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
     val amount: Double,
-    val category: String,
+    val categoryId: Int,
     val date: Long
 )
