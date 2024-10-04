@@ -94,11 +94,6 @@ class CreateFragment : Fragment() {
             binding.tvCreateDate.text = formattedDate
         }
 
-        // Handle Cancel Button Click
-        binding.ivCancel.setOnClickListener {
-            viewModel.onCancelClicked()
-        }
-
         // Handle the Confirm button click to save data
         binding.ivConfirm.setOnClickListener {
             val amount = viewModel.amount.value ?: 0.0
@@ -109,6 +104,7 @@ class CreateFragment : Fragment() {
 
             // Check if all required fields are filled
             if (amount > 0 && name.isNotEmpty() && category != null && date != null) {
+                binding.ivConfirm.isEnabled = false
                 if (isExpense) {
                     viewModel.insertExpense()
                 } else {

@@ -72,11 +72,6 @@ class CreateViewModel(private val repository: FinancialRepository) : ViewModel()
         _isExpense.value = isExpense
     }
 
-    // Function to trigger navigation to HomeFragment
-    fun onCancelClicked() {
-        _navigateToHome.value = true
-    }
-
     // Reset the navigation state
     fun doneNavigating() {
         _navigateToHome.value = false
@@ -99,11 +94,8 @@ class CreateViewModel(private val repository: FinancialRepository) : ViewModel()
             viewModelScope.launch {
                 repository.insertEarning(earning)
                 resetData()
-                _navigateToHome.value = true
+                _navigateToHome.postValue(true)
             }
-        } else {
-            // Handle the case when the category is not selected
-            _navigateToHome.value = false
         }
     }
 
@@ -123,7 +115,7 @@ class CreateViewModel(private val repository: FinancialRepository) : ViewModel()
             viewModelScope.launch {
                 repository.insertExpense(expense)
                 resetData()
-                _navigateToHome.value = true
+                _navigateToHome.postValue(true)
             }
         }
     }
