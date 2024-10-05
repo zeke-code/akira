@@ -29,4 +29,22 @@
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
+    <style name="ExpenseChartColumn1Style">
+        <item name="color">@color/accent_red</item>
+        <item name="thickness">16dp</item>
+    </style>
+
+    <style name="RevenueChartColumn1Style">
+        <item name="color">@color/accent_green</item>
+        <item name="thickness">16dp</item>
+    </style>
+
+    <style name="ExpenseChartColumnLayerStyle">
+        <item name="column1Style">@style/ExpenseChartColumn1Style</item>
+    </style>
+
+    <style name="RevenueChartColumnLayerStyle">
+        <item name="column1Style">@style/RevenueChartColumn1Style</item>
+    </style>
+
 </resources>

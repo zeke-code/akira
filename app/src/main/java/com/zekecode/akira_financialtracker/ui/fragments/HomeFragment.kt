@@ -64,7 +64,7 @@ class HomeFragment : Fragment() {
             when {
                 usedBudget < 0 -> binding.homeUsedBudgetText.text = getString(R.string.home_exceeded_budget_text)
                 usedBudget < 100 -> binding.homeUsedBudgetText.text = getString(R.string.home_used_budget_text, usedBudget)
-                usedBudget > 100 -> binding.homeUsedBudgetText.text = getString(R.string.home_no_budget_set_text)
+                usedBudget >= 100 -> binding.homeUsedBudgetText.text = getString(R.string.home_no_budget_set_text)
             }
             usedBudget?.toInt()?.let { binding.circularProgress.setProgress(it, true) }
         }

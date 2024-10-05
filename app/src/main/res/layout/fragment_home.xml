@@ -6,55 +6,9 @@
     android:fitsSystemWindows="true"
     tools:context=".ui.fragments.HomeFragment">
 
-    <!-- Time Period Selection Tabs -->
-    <RadioGroup
-        android:id="@+id/timePeriodTabs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginTop="8dp">
-
-        <RadioButton
-            android:id="@+id/dayTab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/home_dayTab"
-            android:background="?attr/selectableItemBackground"
-            android:button="@null"
-            android:padding="10dp"
-            android:layout_marginEnd="@dimen/spacing_s"
-            android:textColor="@color/primary_text"
-            android:textSize="16sp"/>
-
-        <RadioButton
-            android:id="@+id/weekTab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/home_weekTab"
-            android:background="?attr/selectableItemBackground"
-            android:button="@null"
-            android:padding="10dp"
-            android:layout_marginEnd="@dimen/spacing_s"
-            android:textColor="@color/primary_text"
-            android:textSize="16sp"/>
-
-        <RadioButton
-            android:id="@+id/monthTab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/home_monthTab"
-            android:background="?attr/selectableItemBackground"
-            android:button="@null"
-            android:padding="10dp"
-            android:textColor="@color/primary_text"
-            android:textSize="16sp"/>
-    </RadioGroup>
-
     <FrameLayout
         android:id="@+id/circular_progress_frame"
-        android:layout_below="@id/timePeriodTabs"
+        android:layout_marginTop="@dimen/spacing_m"
         android:layout_width="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_height="wrap_content"

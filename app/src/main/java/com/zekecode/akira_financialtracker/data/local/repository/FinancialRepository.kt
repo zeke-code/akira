@@ -12,23 +12,28 @@ class FinancialRepository(
     private val earningDao: EarningDao,
     private val categoryDao: CategoryDao
 ) {
-    private val allExpensesWithCategory: LiveData<List<ExpenseWithCategory>> = expenseDao.getExpensesWithCategories()
-    private val allEarningsWithCategory: LiveData<List<EarningWithCategory>> = earningDao.getEarningsWithCategories()
-    private val allEarnings: LiveData<List<EarningModel>> = earningDao.getAllEarnings()
-    private val allExpenses: LiveData<List<ExpenseModel>> = expenseDao.getAllExpenses()
-    val allCategories: LiveData<List<CategoryModel>> = categoryDao.getAllCategories()
+    private val _allExpensesWithCategory: LiveData<List<ExpenseWithCategory>> = expenseDao.getExpensesWithCategories()
+    private val _allEarningsWithCategory: LiveData<List<EarningWithCategory>> = earningDao.getEarningsWithCategories()
+    private val _allEarnings: LiveData<List<EarningModel>> = earningDao.getAllEarnings()
+    private val _allExpenses: LiveData<List<ExpenseModel>> = expenseDao.getAllExpenses()
+    private val _allCategories: LiveData<List<CategoryModel>> = categoryDao.getAllCategories()
 
     private val _allTransactions: MediatorLiveData<List<TransactionModel>> = MediatorLiveData<List<TransactionModel>>().apply {
-        addSource(allExpensesWithCategory) { expenses ->
-            val earnings = allEarningsWithCategory.value ?: emptyList()
+        addSource(_allExpensesWithCategory) { expenses ->
+            val earnings = _allEarningsWithCategory.value ?: emptyList()
             value = mergeTransactions(expenses, earnings)
         }
-        addSource(allEarningsWithCategory) { earnings ->
-            val expenses = allExpensesWithCategory.value ?: emptyList()
+        addSource(_allEarningsWithCategory) { earnings ->
+            val expenses = _allExpensesWithCategory.value ?: emptyList()
             value = mergeTransactions(expenses, earnings)
         }
     }
     val allTransactions: LiveData<List<TransactionModel>> get() = _allTransactions
+    val allCategories: LiveData<List<CategoryModel>> get() = _allCategories
+    val allEarnings: LiveData<List<EarningModel>> get() = _allEarnings
+    val allExpenses: LiveData<List<ExpenseModel>> get() = _allExpenses
+    val allExpensesWithCategory: LiveData<List<ExpenseWithCategory>> get() = _allExpensesWithCategory
+    val allEarningsWithCategory: LiveData<List<EarningWithCategory>> get() = _allEarningsWithCategory
 
     private fun mergeTransactions(
         expenses: List<ExpenseWithCategory>,

@@ -33,7 +33,7 @@
     <!-- Settings Fragment -->
     <string name="settings_header_text">Settings</string>
     <string name="settings_username">Current name: %s</string>
-    <string name="settings_budget">Current budget set: %.2f</string>
+    <string name="settings_budget">Current budget set: %.2f %2$s</string>
     <string name="settings_notification_status">Toggle notifications: %s</string>
     <string name="dialog_cancel_button">Cancel</string>
     <string name="dialog_save_button">Save</string>
@@ -61,4 +61,6 @@
     <!-- TransactionAdapter text -->
     <string name="expense_amount">-%1$.2f</string>
     <string name="earning_amount">+%1$.2f</string>
+    <string name="stats_monthly_expenses_header">Expenses this month</string>
+    <string name="stats_monthly_revenue_header">Revenues this month</string>
 </resources>

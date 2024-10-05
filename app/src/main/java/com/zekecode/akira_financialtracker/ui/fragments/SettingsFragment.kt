@@ -58,9 +58,9 @@ class SettingsFragment : Fragment() {
             binding.tvName.text = fullText
         }
 
-        viewModel.budget.observe(viewLifecycleOwner) { budget ->
-            val fullText = getString(R.string.settings_budget, budget) + viewModel.currencySymbol.value
+        viewModel.combinedBudgetText.observe(viewLifecycleOwner) { fullText ->
             binding.tvBudget.text = fullText
+            binding.tvBudget.invalidate()
         }
 
         viewModel.selectedCurrency.observe(viewLifecycleOwner) { selectedCurrency ->
