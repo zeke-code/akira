@@ -31,12 +31,16 @@
 
     <style name="ExpenseChartColumn1Style">
         <item name="color">@color/accent_red</item>
-        <item name="thickness">16dp</item>
+        <item name="thickness">8dp</item>
+    </style>
+
+    <style name="CustomAxis">
+        <item name="horizontalAxisLabelSpacing">2</item>
     </style>
 
     <style name="RevenueChartColumn1Style">
         <item name="color">@color/accent_green</item>
-        <item name="thickness">16dp</item>
+        <item name="thickness">8dp</item>
     </style>
 
     <style name="ExpenseChartColumnLayerStyle">

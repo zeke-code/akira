@@ -13,71 +13,52 @@
         android:orientation="vertical"
         android:padding="@dimen/spacing_m">
 
-        <!-- Expense Chart Container -->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@color/secondary_background"
-            android:layout_margin="@dimen/spacing_m"
-            android:padding="@dimen/spacing_m">
+            android:text="@string/stats_monthly_expenses_header"
+            android:textSize="20sp"
+            android:textColor="@color/primary_text"
+            android:textStyle="bold"
+            android:layout_marginBottom="@dimen/spacing_s"
+            android:layout_gravity="center_horizontal" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/stats_monthly_expenses_header"
-                android:textSize="20sp"
-                android:textColor="@color/primary_text"
-                android:textStyle="bold"
-                android:layout_marginBottom="@dimen/spacing_s"
-                android:layout_gravity="center_horizontal" />
-
-            <!-- Graph with transaction categories for expenses -->
-            <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
-                android:id="@+id/chart_view"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                app:scrollEnabled="true"
-                app:layers="column"
-                app:columnLayerStyle="@style/ExpenseChartColumnLayerStyle"
-                app:showStartAxis="true"
-                app:showBottomAxis="true"
-                android:padding="@dimen/spacing_m" />
-
-        </LinearLayout>
-
-        <!-- Revenue chart container -->
-        <LinearLayout
+        <!-- Expense Graph -->
+        <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
+            android:id="@+id/chart_view"
             android:layout_width="match_parent"
+            android:layout_height="300dp"
+            app:scrollEnabled="true"
+            app:layers="column"
+            app:columnLayerStyle="@style/ExpenseChartColumnLayerStyle"
+            app:showStartAxis="true"
+            app:showBottomAxis="true"
+            app:bottomAxisStyle="@style/CustomAxis"
+            android:padding="@dimen/spacing_m" />
+
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@color/secondary_background"
-            android:layout_margin="@dimen/spacing_m"
-            android:padding="@dimen/spacing_m">
+            android:text="@string/stats_monthly_revenue_header"
+            android:textSize="20sp"
+            android:textColor="@color/primary_text"
+            android:textStyle="bold"
+            android:layout_marginTop="@dimen/spacing_m"
+            android:layout_marginBottom="@dimen/spacing_s"
+            android:layout_gravity="center_horizontal" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/stats_monthly_revenue_header"
-                android:textSize="20sp"
-                android:textColor="@color/primary_text"
-                android:textStyle="bold"
-                android:layout_marginBottom="@dimen/spacing_s"
-                android:layout_gravity="center_horizontal" />
-
-            <!-- Graph with transaction categories for revenue -->
-            <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
-                android:id="@+id/revenue_chart_view"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                app:scrollEnabled="true"
-                app:layers="column"
-                app:columnLayerStyle="@style/RevenueChartColumnLayerStyle"
-                app:showStartAxis="true"
-                app:showBottomAxis="true"
-                android:padding="@dimen/spacing_m" />
-
-        </LinearLayout>
+        <!-- Revenue Graph -->
+        <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
+            android:id="@+id/revenue_chart_view"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            app:scrollEnabled="true"
+            app:layers="column"
+            app:columnLayerStyle="@style/RevenueChartColumnLayerStyle"
+            app:showStartAxis="true"
+            app:showBottomAxis="true"
+            android:layout_marginBottom="@dimen/spacing_m"
+            android:padding="@dimen/spacing_m" />
 
     </LinearLayout>
 </ScrollView>
