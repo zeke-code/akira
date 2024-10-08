@@ -39,7 +39,7 @@ class SelectCategoryDialogFragment : DialogFragment() {
         // Initialize repository and ViewModel factory correctly
         val applicationContext = requireActivity().applicationContext
         val database = AkiraDatabase.getDatabase(applicationContext, viewLifecycleOwner.lifecycleScope)
-        val repository = FinancialRepository(database.expenseDao(), database.earningDao(), database.categoryDao())
+        val repository = FinancialRepository(database.expenseDao(), database.earningDao(), database.categoryDao(), database.budgetDao())
         val factory = CreateViewModelFactory(repository)
 
         viewModel = ViewModelProvider(requireActivity(), factory)[CreateViewModel::class.java]

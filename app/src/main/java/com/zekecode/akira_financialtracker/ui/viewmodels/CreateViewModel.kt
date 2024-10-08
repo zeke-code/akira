@@ -26,10 +26,8 @@ class CreateViewModel(private val repository: FinancialRepository) : ViewModel()
     val amount: LiveData<Double>
         get() = _amount
 
-    // LiveData for all categories
-    val allCategories: LiveData<List<CategoryModel>> = repository.allCategories
+    val allCategories: LiveData<List<CategoryModel>> = repository.getAllCategories()
 
-    // LiveData for the selected category
     private val _selectedCategory = MutableLiveData<CategoryModel?>()
     val selectedCategory: LiveData<CategoryModel?> get() = _selectedCategory
 

@@ -20,7 +20,8 @@ class Application : Application() {
         FinancialRepository(
             database.expenseDao(),
             database.earningDao(),
-            database.categoryDao())
+            database.categoryDao(),
+            database.budgetDao())
     }
 
 }

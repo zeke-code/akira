@@ -27,7 +27,7 @@ class StatsFragment : Fragment() {
 
     private val repository by lazy {
         val database = AkiraDatabase.getDatabase(requireContext(), lifecycleScope)
-        FinancialRepository(database.expenseDao(), database.earningDao(), database.categoryDao())
+        FinancialRepository(database.expenseDao(), database.earningDao(), database.categoryDao(), database.budgetDao())
     }
 
     private val viewModel: StatsViewModel by viewModels{

@@ -22,7 +22,7 @@ class HomeViewModel(
     private val _monthlyBudget = MutableLiveData<Float>()
     val monthlyBudget: LiveData<Float> get() = _monthlyBudget
 
-    private val _allTransactions: LiveData<List<TransactionModel>> = repository.allTransactions
+    private val _allTransactions: LiveData<List<TransactionModel>> = repository.getAllTransactions()
     val allTransactions: LiveData<List<TransactionModel>> get() = _allTransactions
 
     private val _currencySymbol = MutableLiveData<String>()
@@ -62,13 +62,6 @@ class HomeViewModel(
          percentage
     }
 
-    // Extract expenses and revenues in one transformation
-    private val expensesAndRevenues: LiveData<Pair<List<TransactionModel.Expense>, List<TransactionModel.Earning>>> = allTransactions.map { transactions ->
-        val expenses = transactions.filterIsInstance<TransactionModel.Expense>()
-        val revenues = transactions.filterIsInstance<TransactionModel.Earning>()
-        expenses to revenues
-    }
-
     // Utility function to check if a transaction is in the current month
     private fun isInCurrentMonth(timestamp: Long): Boolean {
         val calendar = Calendar.getInstance()
@@ -98,9 +91,11 @@ class HomeViewModel(
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
-        when (key) {
-            "MonthlyBudget" -> _monthlyBudget.value = sharedPreferences.getFloat(key, 0F)
-            "Currency" -> _currencySymbol.value = CurrencyUtils.getCurrencySymbol(sharedPreferences)
+        viewModelScope.launch(Dispatchers.IO) {
+            when (key) {
+                "MonthlyBudget" -> _monthlyBudget.value = sharedPreferences.getFloat(key, 0F)
+                "Currency" -> _currencySymbol.value = CurrencyUtils.getCurrencySymbol(sharedPreferences)
+            }
         }
     }
 
@@ -109,4 +104,3 @@ class HomeViewModel(
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
     }
 }
-

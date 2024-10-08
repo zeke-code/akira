@@ -24,10 +24,10 @@ class StatsViewModel(
     private val repository: FinancialRepository
 ): ViewModel() {
 
-    private val _allExpenses: LiveData<List<ExpenseWithCategory>> = repository.allExpensesWithCategory
+    private val _allExpenses: LiveData<List<ExpenseWithCategory>> = repository.getAllExpensesWithCategory()
     val allExpenses: LiveData<List<ExpenseWithCategory>> get() = _allExpenses
 
-    private val _allEarnings: LiveData<List<EarningWithCategory>> = repository.allEarningsWithCategory
+    private val _allEarnings: LiveData<List<EarningWithCategory>> = repository.getAllEarningsWithCategory()
     val allEarnings: LiveData<List<EarningWithCategory>> get() = _allEarnings
 
     private val _expenseCategoryNames = MutableLiveData<List<String>>()
