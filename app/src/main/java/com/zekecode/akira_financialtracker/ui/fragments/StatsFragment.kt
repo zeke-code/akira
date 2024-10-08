@@ -7,32 +7,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianValueFormatter
-import com.zekecode.akira_financialtracker.data.local.database.AkiraDatabase
-import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
 import com.zekecode.akira_financialtracker.databinding.FragmentStatsBinding
 import com.zekecode.akira_financialtracker.ui.viewmodels.StatsViewModel
-import com.zekecode.akira_financialtracker.ui.viewmodels.StatsViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
-/**
- * This class needs refactoring, as its state right now is disgusting.
- * The vico library does not help at all with dependency injections.
- */
+@AndroidEntryPoint
 class StatsFragment : Fragment() {
 
     private var _binding: FragmentStatsBinding? = null
     private val binding get() = _binding!!
 
-    private val repository by lazy {
-        val database = AkiraDatabase.getDatabase(requireContext(), lifecycleScope)
-        FinancialRepository(database.expenseDao(), database.earningDao(), database.categoryDao(), database.budgetDao())
-    }
-
-    private val viewModel: StatsViewModel by viewModels{
-        StatsViewModelFactory(repository)
-    }
+    // Hilt-injected ViewModel
+    private val viewModel: StatsViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,7 +46,7 @@ class StatsFragment : Fragment() {
     }
 
     private fun setExpenseChartFormatter(categoryNames: List<String>) {
-        Log.d("StatsFragment", "Category names : $categoryNames")
+        Log.d("StatsFragment", "Expense category names: $categoryNames")
         val formatter = CartesianValueFormatter { _, x, _ ->
             categoryNames.getOrNull(x.toInt()) ?: x.toString()
         }
@@ -76,5 +64,4 @@ class StatsFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
 }

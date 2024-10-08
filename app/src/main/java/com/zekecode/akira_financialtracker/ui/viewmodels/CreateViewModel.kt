@@ -1,20 +1,20 @@
 package com.zekecode.akira_financialtracker.ui.viewmodels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.map
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.zekecode.akira_financialtracker.data.local.entities.CategoryModel
 import com.zekecode.akira_financialtracker.data.local.entities.EarningModel
 import com.zekecode.akira_financialtracker.data.local.entities.ExpenseModel
 import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
+import javax.inject.Inject
 
-class CreateViewModel(private val repository: FinancialRepository) : ViewModel() {
+@HiltViewModel
+class CreateViewModel @Inject constructor(
+    private val repository: FinancialRepository
+) : ViewModel() {
 
     // LiveData for navigation
     private val _navigateToHome = MutableLiveData<Boolean>()

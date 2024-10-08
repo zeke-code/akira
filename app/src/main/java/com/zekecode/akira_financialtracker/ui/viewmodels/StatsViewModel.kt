@@ -12,15 +12,18 @@ import com.patrykandpatrick.vico.core.common.data.ExtraStore
 import com.zekecode.akira_financialtracker.data.local.entities.EarningWithCategory
 import com.zekecode.akira_financialtracker.data.local.entities.ExpenseWithCategory
 import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * This class absolutely needs refactoring, as it is a mess.
  * At the moment, it works though.
  */
-class StatsViewModel(
+@HiltViewModel
+class StatsViewModel @Inject constructor(
     private val repository: FinancialRepository
 ): ViewModel() {
 

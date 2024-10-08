@@ -17,7 +17,7 @@ import com.zekecode.akira_financialtracker.data.local.entities.ExpenseModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@Database(entities = [CategoryModel::class, ExpenseModel::class, EarningModel::class, BudgetModel::class], version = 3)
+@Database(entities = [CategoryModel::class, ExpenseModel::class, EarningModel::class, BudgetModel::class], version = 3, exportSchema = false)
 abstract class AkiraDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
     abstract fun expenseDao(): ExpenseDao

@@ -6,24 +6,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.zekecode.akira_financialtracker.R
-import com.zekecode.akira_financialtracker.data.local.database.AkiraDatabase
 import com.zekecode.akira_financialtracker.data.local.entities.CategoryModel
-import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
 import com.zekecode.akira_financialtracker.databinding.DialogSelectCategoryBinding
 import com.zekecode.akira_financialtracker.ui.adapters.CategoryAdapter
 import com.zekecode.akira_financialtracker.ui.viewmodels.CreateViewModel
-import com.zekecode.akira_financialtracker.ui.viewmodels.CreateViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SelectCategoryDialogFragment : DialogFragment() {
 
     private var _binding: DialogSelectCategoryBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: CreateViewModel
+    // Use Hilt to inject the ViewModel
+    private val viewModel: CreateViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,14 +34,6 @@ class SelectCategoryDialogFragment : DialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = DialogSelectCategoryBinding.inflate(inflater, container, false)
-
-        // Initialize repository and ViewModel factory correctly
-        val applicationContext = requireActivity().applicationContext
-        val database = AkiraDatabase.getDatabase(applicationContext, viewLifecycleOwner.lifecycleScope)
-        val repository = FinancialRepository(database.expenseDao(), database.earningDao(), database.categoryDao(), database.budgetDao())
-        val factory = CreateViewModelFactory(repository)
-
-        viewModel = ViewModelProvider(requireActivity(), factory)[CreateViewModel::class.java]
 
         // Setup RecyclerView for categories
         binding.rvCategoryList.layoutManager = LinearLayoutManager(context)

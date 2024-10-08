@@ -1,6 +1,7 @@
 package com.zekecode.akira_financialtracker.ui.viewmodels
 
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,12 +10,14 @@ import androidx.lifecycle.viewModelScope
 import com.zekecode.akira_financialtracker.data.local.entities.TransactionModel
 import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
 import com.zekecode.akira_financialtracker.utils.CurrencyUtils
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.Calendar
-import java.util.Date
+import java.util.*
+import javax.inject.Inject
 
-class HomeViewModel(
+@HiltViewModel
+class HomeViewModel @Inject constructor(
     private val repository: FinancialRepository,
     private val sharedPreferences: SharedPreferences
 ) : ViewModel(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -28,7 +31,6 @@ class HomeViewModel(
     private val _currencySymbol = MutableLiveData<String>()
     val currencySymbol: LiveData<String> get() = _currencySymbol
 
-    // Signal the UI when data is correctly loaded and ready to be observed
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> get() = _isLoading
 
@@ -50,19 +52,18 @@ class HomeViewModel(
         (userBudget - totalExpenses + totalEarnings).toFloat()
     }
 
-     val usedBudgetPercentage: LiveData<Float> = remainingMonthlyBudget.map { remainingBudget ->
-         _isLoading.value = true
+    val usedBudgetPercentage: LiveData<Float> = remainingMonthlyBudget.map { remainingBudget ->
+        _isLoading.value = true
         val totalBudget = _monthlyBudget.value ?: 0F
         val percentage = if (totalBudget > 0F) {
             ((totalBudget - remainingBudget) / totalBudget) * 100
         } else {
             0F
         }
-         _isLoading.value = false
-         percentage
+        _isLoading.value = false
+        percentage
     }
 
-    // Utility function to check if a transaction is in the current month
     private fun isInCurrentMonth(timestamp: Long): Boolean {
         val calendar = Calendar.getInstance()
         val currentYear = calendar.get(Calendar.YEAR)
@@ -93,8 +94,8 @@ class HomeViewModel(
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
         viewModelScope.launch(Dispatchers.IO) {
             when (key) {
-                "MonthlyBudget" -> _monthlyBudget.value = sharedPreferences.getFloat(key, 0F)
-                "Currency" -> _currencySymbol.value = CurrencyUtils.getCurrencySymbol(sharedPreferences)
+                "MonthlyBudget" -> _monthlyBudget.postValue(sharedPreferences.getFloat(key, 0F))
+                "Currency" -> _currencySymbol.postValue(CurrencyUtils.getCurrencySymbol(sharedPreferences))
             }
         }
     }

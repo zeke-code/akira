@@ -17,25 +17,18 @@ import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.data.local.database.AkiraDatabase
 import com.zekecode.akira_financialtracker.databinding.FragmentCreateBinding
 import com.zekecode.akira_financialtracker.ui.viewmodels.CreateViewModel
-import com.zekecode.akira_financialtracker.ui.viewmodels.CreateViewModelFactory
 import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
+@AndroidEntryPoint
 class CreateFragment : Fragment() {
 
     private var _binding: FragmentCreateBinding? = null
     private val binding get() = _binding!!
-
-    private val repository by lazy {
-        val database = AkiraDatabase.getDatabase(requireContext(), lifecycleScope)
-        FinancialRepository(database.expenseDao(), database.earningDao(), database.categoryDao(), database.budgetDao())
-    }
-
-    private val viewModel: CreateViewModel by activityViewModels {
-        CreateViewModelFactory(repository)
-    }
+    private val viewModel: CreateViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

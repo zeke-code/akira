@@ -13,7 +13,9 @@ import androidx.lifecycle.Observer
 import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.databinding.ActivityFirstSetupBinding
 import com.zekecode.akira_financialtracker.ui.viewmodels.FirstSetupViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class FirstSetupActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityFirstSetupBinding

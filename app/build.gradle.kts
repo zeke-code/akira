@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("kotlin-parcelize")
     id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -55,6 +56,9 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.lifecycle.livedata.ktx.v261)
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.preference.ktx)
+    ksp(libs.hilt.android.compiler)
 
     // Retrofit and Moshi dependencies
     implementation(libs.retrofit2.retrofit)

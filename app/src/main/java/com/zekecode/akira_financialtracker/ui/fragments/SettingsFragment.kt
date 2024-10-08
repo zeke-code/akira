@@ -26,8 +26,10 @@ import androidx.fragment.app.viewModels
 import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.databinding.FragmentSettingsBinding
 import com.zekecode.akira_financialtracker.ui.viewmodels.SettingsViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 
+@AndroidEntryPoint
 class SettingsFragment : Fragment() {
 
     private var _binding: FragmentSettingsBinding? = null

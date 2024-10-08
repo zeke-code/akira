@@ -1,20 +1,21 @@
 package com.zekecode.akira_financialtracker.ui.viewmodels
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zekecode.akira_financialtracker.data.local.dao.BudgetDao
-import com.zekecode.akira_financialtracker.data.local.database.AkiraDatabase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class FirstSetupViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val sharedPreferences = application.getSharedPreferences("AkiraPrefs", Application.MODE_PRIVATE)
+@HiltViewModel
+class FirstSetupViewModel @Inject constructor(
+    private val sharedPreferences: SharedPreferences
+) : ViewModel() {
 
     private val _isSetupComplete = MutableLiveData<Boolean>()
     val isSetupComplete: LiveData<Boolean> get() = _isSetupComplete
@@ -25,7 +26,7 @@ class FirstSetupViewModel(application: Application) : AndroidViewModel(applicati
     fun saveUserData(userName: String, monthlyBudgetStr: String, selectedCurrency: String) {
         try {
             val monthlyBudget = monthlyBudgetStr.toFloat()
-            if (!isValidDecimal(monthlyBudgetStr) && monthlyBudget < 20) {
+            if (!isValidDecimal(monthlyBudgetStr) || monthlyBudget < 20) {  // Note: Fixed `&&` to `||`
                 _showReadyView.value = false
             } else {
                 _showReadyView.value = true
@@ -41,7 +42,7 @@ class FirstSetupViewModel(application: Application) : AndroidViewModel(applicati
                             apply()
                         }
                     }
-                    delay(4000)
+                    delay(2000)  // Optional delay for animation
                     _isSetupComplete.value = true // Signal to Activity to switch to MainActivity
                 }
             }
