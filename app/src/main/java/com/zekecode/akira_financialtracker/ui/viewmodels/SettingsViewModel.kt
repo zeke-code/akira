@@ -9,7 +9,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zekecode.akira_financialtracker.R
+import com.zekecode.akira_financialtracker.data.local.entities.BudgetModel
+import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
 import com.zekecode.akira_financialtracker.utils.CurrencyUtils
+import com.zekecode.akira_financialtracker.utils.DateUtils.getCurrentYearMonth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,6 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val sharedPreferences: SharedPreferences,
+    private val repository: FinancialRepository,
     private val application: Application
 ) : ViewModel() {
 
@@ -87,6 +91,10 @@ class SettingsViewModel @Inject constructor(
             viewModelScope.launch(Dispatchers.IO) {
                 sharedPreferences.edit().putFloat("MonthlyBudget", budgetValue).apply()
                 _budget.postValue(budgetValue)
+
+                val currentYearMonth = getCurrentYearMonth()
+                val newBudgetModel = BudgetModel(yearMonth = currentYearMonth, amount = budgetValue.toDouble())
+                repository.insertBudget(newBudgetModel) // On conflict, insertBudget replaces our budget.
             }
         } else {
             Log.w("SettingsViewModel", "Invalid budget value: $newBudget")

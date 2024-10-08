@@ -5,6 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zekecode.akira_financialtracker.data.local.entities.BudgetModel
+import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
+import com.zekecode.akira_financialtracker.utils.DateUtils.getCurrentYearMonth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -14,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FirstSetupViewModel @Inject constructor(
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
+    private val financialRepository: FinancialRepository
 ) : ViewModel() {
 
     private val _isSetupComplete = MutableLiveData<Boolean>()
@@ -26,7 +30,7 @@ class FirstSetupViewModel @Inject constructor(
     fun saveUserData(userName: String, monthlyBudgetStr: String, selectedCurrency: String) {
         try {
             val monthlyBudget = monthlyBudgetStr.toFloat()
-            if (!isValidDecimal(monthlyBudgetStr) || monthlyBudget < 20) {  // Note: Fixed `&&` to `||`
+            if (!isValidDecimal(monthlyBudgetStr) || monthlyBudget < 20) {
                 _showReadyView.value = false
             } else {
                 _showReadyView.value = true
@@ -41,6 +45,11 @@ class FirstSetupViewModel @Inject constructor(
                             putBoolean("IsSetupComplete", true)
                             apply()
                         }
+
+                        // Save initial budget in the Room database
+                        val currentYearMonth = getCurrentYearMonth()
+                        val initialBudget = BudgetModel(yearMonth = currentYearMonth, amount = monthlyBudget.toDouble())
+                        financialRepository.insertBudget(initialBudget)
                     }
                     delay(2000)  // Optional delay for animation
                     _isSetupComplete.value = true // Signal to Activity to switch to MainActivity

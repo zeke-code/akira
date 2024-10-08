@@ -24,4 +24,8 @@ interface EarningDao {
 
     @Delete
     suspend fun deleteEarning(earning: EarningModel)
+
+    @Transaction
+    @Query("SELECT * FROM earnings WHERE strftime('%Y-%m', date / 1000, 'unixepoch') = :yearMonth")
+    suspend fun getMonthlyEarningsWithCategories(yearMonth: String): List<EarningWithCategory>
 }

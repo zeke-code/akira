@@ -52,7 +52,7 @@ class HomeFragment : Fragment() {
             binding.homeUsedBudgetText.visibility = if (isLoading) View.INVISIBLE else View.VISIBLE
         }
 
-        viewModel.allTransactions.observe(viewLifecycleOwner) { transactions ->
+        viewModel.currentMonthTransactions.observe(viewLifecycleOwner) { transactions ->
             transactionsAdapter.updateTransactions(transactions)
         }
 

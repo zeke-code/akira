@@ -25,4 +25,8 @@ interface ExpenseDao {
 
     @Delete
     suspend fun deleteExpense(expense: ExpenseModel)
+
+    @Transaction
+    @Query("SELECT * FROM expenses WHERE strftime('%Y-%m', date / 1000, 'unixepoch') = :yearMonth")
+    suspend fun getMonthlyExpensesWithCategories(yearMonth: String): List<ExpenseWithCategory>
 }

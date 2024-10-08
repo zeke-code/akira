@@ -7,8 +7,11 @@ import com.zekecode.akira_financialtracker.data.local.dao.CategoryDao
 import com.zekecode.akira_financialtracker.data.local.dao.EarningDao
 import com.zekecode.akira_financialtracker.data.local.dao.ExpenseDao
 import com.zekecode.akira_financialtracker.data.local.entities.*
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class FinancialRepository(
+@Singleton
+class FinancialRepository @Inject constructor(
     private val expenseDao: ExpenseDao,
     private val earningDao: EarningDao,
     private val categoryDao: CategoryDao,
@@ -58,6 +61,14 @@ class FinancialRepository(
         earningDao.deleteEarning(earning)
     }
 
+    suspend fun getMonthlyExpenses(yearMonth: String): List<ExpenseWithCategory> {
+        return expenseDao.getMonthlyExpensesWithCategories(yearMonth)
+    }
+
+    suspend fun getMonthlyEarnings(yearMonth: String): List<EarningWithCategory> {
+        return earningDao.getMonthlyEarningsWithCategories(yearMonth)
+    }
+
     suspend fun insertCategory(category: CategoryModel) {
         categoryDao.insertCategory(category)
     }
@@ -71,12 +82,8 @@ class FinancialRepository(
         budgetDao.insertBudget(budget)
     }
 
-    suspend fun getBudgetForMonth(yearMonth: String): BudgetModel? {
-        return budgetDao.getBudgetForMonth(yearMonth)
-    }
-
-    suspend fun updateBudget(budget: BudgetModel) {
-        budgetDao.updateBudget(budget)
+    fun getMonthlyBudget(yearMonth: String): LiveData<Double?> {
+        return budgetDao.getMonthlyBudget(yearMonth)
     }
 
     // Private function to merge expenses and earnings
