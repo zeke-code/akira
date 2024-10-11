@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="350dp"
     android:layout_height="wrap_content"
@@ -16,18 +15,24 @@
         android:textColor="@color/primary_text"
         android:layout_marginBottom="16dp" />
 
-    <EditText
-        android:id="@+id/etInput"
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:importantForAutofill="no"
-        android:hint="@string/dialog_edittext_hint"
-        android:textColorHint="@color/secondary_text"
-        android:inputType="text"
-        android:padding="@dimen/spacing_m"
-        android:background="@color/tertiary_background"
-        android:textColor="@color/primary_text"
-        android:textSize="16sp" />
+        app:hintEnabled="true"
+        android:hint="@string/dialog_edittext_hint">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:importantForAutofill="no"
+            android:textColorHint="@color/secondary_text"
+            android:inputType="text"
+            android:padding="@dimen/spacing_m"
+            android:textColor="@color/primary_text"
+            android:textSize="16sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
         style="?android:attr/buttonBarStyle"

@@ -24,6 +24,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.zekecode.akira_financialtracker.R
+import com.zekecode.akira_financialtracker.databinding.DialogSpinnerInputBinding
 import com.zekecode.akira_financialtracker.databinding.FragmentSettingsBinding
 import com.zekecode.akira_financialtracker.ui.viewmodels.SettingsViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -214,28 +215,23 @@ class SettingsFragment : Fragment() {
     }
 
     private fun showCurrencySelectionDialog() {
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_spinner_input, null)
-        val spinnerCurrency = dialogView.findViewById<Spinner>(R.id.currencySpinner)
-        val btnSave = dialogView.findViewById<Button>(R.id.btnSave)
-        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
-
-        // Set up the Spinner
+        val binding = DialogSpinnerInputBinding.inflate(LayoutInflater.from(requireContext()))
         val currencyOptions = resources.getStringArray(R.array.currency_options)
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, currencyOptions)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerCurrency.adapter = adapter
+        binding.currencySpinner.adapter = adapter
         
         val dialog = AlertDialog.Builder(requireContext(), R.style.CustomDialog)
-            .setView(dialogView)
+            .setView(binding.root)
             .create()
 
-        btnSave.setOnClickListener {
-            val selectedCurrency = spinnerCurrency.selectedItem.toString()
+        binding.btnSave.setOnClickListener {
+            val selectedCurrency = binding.currencySpinner.selectedItem.toString()
             viewModel.updateCurrency(selectedCurrency)
             dialog.dismiss()
         }
 
-        btnCancel.setOnClickListener {
+        binding.btnCancel.setOnClickListener {
             dialog.dismiss()
         }
 
