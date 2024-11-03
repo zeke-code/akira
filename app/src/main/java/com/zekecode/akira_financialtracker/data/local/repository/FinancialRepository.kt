@@ -18,8 +18,8 @@ class FinancialRepository @Inject constructor(
     private val budgetDao: BudgetDao
 ) {
     // Private LiveData properties
-    private val _allExpensesWithCategory = expenseDao.getExpensesWithCategories()
-    private val _allEarningsWithCategory = earningDao.getEarningsWithCategories()
+    private val _allExpensesWithCategory = expenseDao.getAllExpensesWithCategories()
+    private val _allEarningsWithCategory = earningDao.getAllEarningsWithCategories()
 
     private val _allTransactions = MediatorLiveData<List<TransactionModel>>().apply {
         addSource(_allExpensesWithCategory) { expenses ->
@@ -61,11 +61,11 @@ class FinancialRepository @Inject constructor(
         earningDao.deleteEarning(earning)
     }
 
-    suspend fun getMonthlyExpenses(yearMonth: String): List<ExpenseWithCategory> {
+    fun getMonthlyExpenses(yearMonth: String): LiveData<List<ExpenseWithCategory>> {
         return expenseDao.getMonthlyExpensesWithCategories(yearMonth)
     }
 
-    suspend fun getMonthlyEarnings(yearMonth: String): List<EarningWithCategory> {
+    fun getMonthlyEarnings(yearMonth: String): LiveData<List<EarningWithCategory>> {
         return earningDao.getMonthlyEarningsWithCategories(yearMonth)
     }
 

@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.zekecode.akira_financialtracker.databinding.FragmentStocksBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class StocksFragment : Fragment() {
 
     private var _binding: FragmentStocksBinding? = null

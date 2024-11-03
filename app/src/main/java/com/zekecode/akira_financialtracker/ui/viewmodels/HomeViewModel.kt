@@ -2,11 +2,14 @@ package com.zekecode.akira_financialtracker.ui.viewmodels
 
 import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import com.zekecode.akira_financialtracker.data.local.entities.EarningWithCategory
+import com.zekecode.akira_financialtracker.data.local.entities.ExpenseWithCategory
 import com.zekecode.akira_financialtracker.data.local.entities.TransactionModel
 import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
 import com.zekecode.akira_financialtracker.utils.CurrencyUtils
@@ -30,9 +33,11 @@ class HomeViewModel @Inject constructor(
 
     val monthlyBudget: LiveData<Double?> = repository.getMonthlyBudget(getCurrentYearMonth())
 
-    private val _currentMonthTransactions = MutableLiveData<List<TransactionModel>>()
+    // Use MediatorLiveData to combine earnings and expenses
+    private val _currentMonthTransactions = MediatorLiveData<List<TransactionModel>>()
     val currentMonthTransactions: LiveData<List<TransactionModel>> get() = _currentMonthTransactions
 
+    // The remaining budget after expenses and earnings are applied
     val remainingMonthlyBudget: LiveData<Double> = monthlyBudget.switchMap { budget ->
         currentMonthTransactions.map { transactions ->
             val totalEarnings = transactions.filterIsInstance<TransactionModel.Earning>().sumOf { it.earningWithCategory.earning.amount }
@@ -41,6 +46,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    // Calculate the used budget percentage
     val usedBudgetPercentage: LiveData<Float> = remainingMonthlyBudget.map { remainingBudget ->
         val totalBudget = monthlyBudget.value ?: 0.0
         if (totalBudget > 0) {
@@ -52,28 +58,46 @@ class HomeViewModel @Inject constructor(
 
     init {
         fetchCurrencySymbol()
-        fetchCurrentMonthBudgetAndTransactions()
+        viewModelScope.launch {
+            setupTransactionMerging()
+        }
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+    }
+
+    private suspend fun setupTransactionMerging() {
+        val earningsLiveData = repository.getMonthlyEarnings(getCurrentYearMonth())
+        val expensesLiveData = repository.getMonthlyExpenses(getCurrentYearMonth())
+
+        _currentMonthTransactions.addSource(earningsLiveData) { earnings ->
+            val currentExpenses = expensesLiveData.value ?: emptyList()
+            _currentMonthTransactions.value = mergeTransactions(currentExpenses, earnings)
+        }
+
+        _currentMonthTransactions.addSource(expensesLiveData) { expenses ->
+            val currentEarnings = earningsLiveData.value ?: emptyList()
+            _currentMonthTransactions.value = mergeTransactions(expenses, currentEarnings)
+        }
+    }
+
+
+    private fun mergeTransactions(
+        expenses: List<ExpenseWithCategory>,
+        earnings: List<EarningWithCategory>
+    ): List<TransactionModel> {
+        val transactions = mutableListOf<TransactionModel>()
+        transactions.addAll(expenses.map { TransactionModel.Expense(it) })
+        transactions.addAll(earnings.map { TransactionModel.Earning(it) })
+        return transactions.sortedByDescending {
+            when (it) {
+                is TransactionModel.Expense -> it.expenseWithCategory.expense.date
+                is TransactionModel.Earning -> it.earningWithCategory.earning.date
+            }
+        }
     }
 
     private fun fetchCurrencySymbol() {
         viewModelScope.launch(Dispatchers.IO) {
             _currencySymbol.postValue(CurrencyUtils.getCurrencySymbol(sharedPreferences))
-        }
-    }
-
-    private fun fetchCurrentMonthBudgetAndTransactions() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _isLoading.postValue(true)
-            val currentYearMonth = getCurrentYearMonth()
-            val monthlyEarnings = repository.getMonthlyEarnings(currentYearMonth)
-            val monthlyExpenses = repository.getMonthlyExpenses(currentYearMonth)
-
-            val earningTransactions = monthlyEarnings.map { TransactionModel.Earning(it) }
-            val expenseTransactions = monthlyExpenses.map { TransactionModel.Expense(it) }
-
-            _currentMonthTransactions.postValue(earningTransactions + expenseTransactions)
-            _isLoading.postValue(false)
         }
     }
 

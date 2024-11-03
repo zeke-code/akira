@@ -57,8 +57,34 @@
             app:columnLayerStyle="@style/RevenueChartColumnLayerStyle"
             app:showStartAxis="true"
             app:showBottomAxis="true"
-            android:layout_marginBottom="@dimen/spacing_m"
+            android:layout_marginBottom="@dimen/spacing_xl"
             android:padding="@dimen/spacing_m" />
+
+        <!-- Expenses vs Revenues chart
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/stats_expenses_vs_revenue_header"
+            android:textSize="20sp"
+            android:textColor="@color/primary_text"
+            android:textStyle="bold"
+            android:layout_marginTop="@dimen/spacing_m"
+            android:layout_marginBottom="@dimen/spacing_s"
+            android:layout_gravity="center_horizontal" />
+
+        <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
+            android:id="@+id/revenue_vs_expenses_chart_view"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            app:scrollEnabled="false"
+            app:layers="line"
+            app:lineLayerStyle="@style/ExpenseVsChartLineLayerStyle"
+            app:showStartAxis="true"
+            app:showBottomAxis="true"
+            android:layout_marginBottom="@dimen/spacing_l"
+            android:padding="@dimen/spacing_m" />
+
+            -->
 
     </LinearLayout>
 </ScrollView>

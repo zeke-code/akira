@@ -18,7 +18,7 @@ interface ExpenseDao {
 
     @Transaction
     @Query("SELECT * FROM expenses")
-    fun getExpensesWithCategories(): LiveData<List<ExpenseWithCategory>>
+    fun getAllExpensesWithCategories(): LiveData<List<ExpenseWithCategory>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertExpense(expense: ExpenseModel)
@@ -28,5 +28,5 @@ interface ExpenseDao {
 
     @Transaction
     @Query("SELECT * FROM expenses WHERE strftime('%Y-%m', date / 1000, 'unixepoch') = :yearMonth")
-    suspend fun getMonthlyExpensesWithCategories(yearMonth: String): List<ExpenseWithCategory>
+    fun getMonthlyExpensesWithCategories(yearMonth: String): LiveData<List<ExpenseWithCategory>>
 }

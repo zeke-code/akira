@@ -50,5 +50,17 @@
     <style name="RevenueChartColumnLayerStyle">
         <item name="column1Style">@style/RevenueChartColumn1Style</item>
     </style>
+    
+    <style name="ExpenseVsChartLineLayerStyle">
+        <item name="line1Style">@style/ExpenseVsChartExpenseLineStyle</item>
+        <item name="line2Style">@style/ExpenseVsChartRevenueLineStyle</item>
+    </style>
+    
+    <style name="ExpenseVsChartExpenseLineStyle" parent="ExpenseVsChartLineLayerStyle">
+        <item name="color">@color/accent_red</item>
+    </style>
+    <style name="ExpenseVsChartRevenueLineStyle" parent="ExpenseVsChartLineLayerStyle">
+        <item name="color">@color/accent_green</item>
+    </style>
 
 </resources>

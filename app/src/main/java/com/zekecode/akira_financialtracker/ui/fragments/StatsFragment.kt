@@ -34,7 +34,7 @@ class StatsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.chartView.modelProducer = viewModel.expenseChartModelProducer
-        binding.revenueChartView.modelProducer = viewModel.revenueChartModelProducer
+        binding.revenueChartView.modelProducer = viewModel.earningChartModelProducer
 
         viewModel.expenseCategoryNames.observe(viewLifecycleOwner) { categoryNames ->
             setExpenseChartFormatter(categoryNames)

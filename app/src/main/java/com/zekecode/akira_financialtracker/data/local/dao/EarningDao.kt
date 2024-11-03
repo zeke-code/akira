@@ -17,7 +17,7 @@ interface EarningDao {
 
     @Transaction
     @Query("SELECT * FROM earnings")
-    fun getEarningsWithCategories(): LiveData<List<EarningWithCategory>>
+    fun getAllEarningsWithCategories(): LiveData<List<EarningWithCategory>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEarning(earning: EarningModel)
@@ -27,5 +27,5 @@ interface EarningDao {
 
     @Transaction
     @Query("SELECT * FROM earnings WHERE strftime('%Y-%m', date / 1000, 'unixepoch') = :yearMonth")
-    suspend fun getMonthlyEarningsWithCategories(yearMonth: String): List<EarningWithCategory>
+    fun getMonthlyEarningsWithCategories(yearMonth: String): LiveData<List<EarningWithCategory>>
 }

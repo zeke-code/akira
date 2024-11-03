@@ -63,4 +63,5 @@
     <string name="earning_amount">+%1$.2f</string>
     <string name="stats_monthly_expenses_header">Expenses this month</string>
     <string name="stats_monthly_revenue_header">Revenues this month</string>
+    <string name="stats_expenses_vs_revenue_header">Expenses vs Revenues this month</string>
 </resources>

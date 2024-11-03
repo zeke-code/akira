@@ -17,4 +17,3 @@ interface BudgetDao {
     @Query("SELECT amount FROM budgets WHERE yearMonth = :yearMonth LIMIT 1")
     fun getMonthlyBudget(yearMonth: String): LiveData<Double?>
 }
-
