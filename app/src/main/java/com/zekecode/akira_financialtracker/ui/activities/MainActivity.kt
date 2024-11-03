@@ -1,5 +1,7 @@
 package com.zekecode.akira_financialtracker.ui.activities
 
+import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
@@ -14,6 +16,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,5 +28,14 @@ class MainActivity : AppCompatActivity() {
 
         val bottomNavigationView: BottomNavigationView = binding.bottomNavigation
         NavigationUI.setupWithNavController(bottomNavigationView, navController)
+
+        sharedPreferences = getSharedPreferences("AkiraPrefs", MODE_PRIVATE)
+        val isSetupComplete = sharedPreferences.getBoolean("IsSetupComplete", false)
+
+        if (!isSetupComplete) {
+            startActivity(Intent(this, FirstSetupActivity::class.java))
+            finish()
+            return
+        }
     }
 }
