@@ -40,7 +40,6 @@ class CreateViewModel @Inject constructor(
     }
 
     private val _description = MutableLiveData<String>()
-    val description: LiveData<String> get() = _description
 
     private val _isExpense = MutableLiveData<Boolean>()
     val isExpense: LiveData<Boolean> get() = _isExpense

@@ -1,6 +1,5 @@
 package com.zekecode.akira_financialtracker.ui.viewmodels
 
-import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,7 +11,7 @@ import com.zekecode.akira_financialtracker.data.local.entities.EarningWithCatego
 import com.zekecode.akira_financialtracker.data.local.entities.ExpenseWithCategory
 import com.zekecode.akira_financialtracker.data.local.entities.TransactionModel
 import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
-import com.zekecode.akira_financialtracker.utils.CurrencyUtils
+import com.zekecode.akira_financialtracker.data.local.repository.SharedPreferencesRepository
 import com.zekecode.akira_financialtracker.utils.DateUtils.getCurrentYearMonth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,17 +20,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: FinancialRepository,
-    private val sharedPreferences: SharedPreferences
-) : ViewModel(), SharedPreferences.OnSharedPreferenceChangeListener {
+    private val financialRepository: FinancialRepository,
+    private val sharedPreferencesRepository: SharedPreferencesRepository
+) : ViewModel() {
 
-    private val _currencySymbol = MutableLiveData<String>()
-    val currencySymbol: LiveData<String> get() = _currencySymbol
+    val currencySymbol: LiveData<String> = sharedPreferencesRepository.currencySymbolLiveData
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> get() = _isLoading
 
-    private val monthlyBudget: LiveData<Double?> = repository.getMonthlyBudget(getCurrentYearMonth())
+    private val monthlyBudget: LiveData<Double?> = financialRepository.getMonthlyBudget(getCurrentYearMonth())
 
     // Use MediatorLiveData to combine earnings and expenses
     private val _currentMonthTransactions = MediatorLiveData<List<TransactionModel>>()
@@ -57,16 +55,14 @@ class HomeViewModel @Inject constructor(
     }
 
     init {
-        fetchCurrencySymbol()
         viewModelScope.launch {
             setupTransactionMerging()
         }
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
     private fun setupTransactionMerging() {
-        val earningsLiveData = repository.getMonthlyEarnings(getCurrentYearMonth())
-        val expensesLiveData = repository.getMonthlyExpenses(getCurrentYearMonth())
+        val earningsLiveData = financialRepository.getMonthlyEarnings(getCurrentYearMonth())
+        val expensesLiveData = financialRepository.getMonthlyExpenses(getCurrentYearMonth())
 
         _currentMonthTransactions.addSource(earningsLiveData) { earnings ->
             val currentExpenses = expensesLiveData.value ?: emptyList()
@@ -78,7 +74,6 @@ class HomeViewModel @Inject constructor(
             _currentMonthTransactions.value = mergeTransactions(expenses, currentEarnings)
         }
     }
-
 
     private fun mergeTransactions(
         expenses: List<ExpenseWithCategory>,
@@ -93,26 +88,5 @@ class HomeViewModel @Inject constructor(
                 is TransactionModel.Earning -> it.earningWithCategory.earning.date
             }
         }
-    }
-
-    private fun fetchCurrencySymbol() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _currencySymbol.postValue(CurrencyUtils.getCurrencySymbol(sharedPreferences))
-        }
-    }
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
-        viewModelScope.launch(Dispatchers.IO) {
-            when (key) {
-                "Currency" -> {
-                    _currencySymbol.postValue(CurrencyUtils.getCurrencySymbol(sharedPreferences))
-                }
-            }
-        }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
     }
 }

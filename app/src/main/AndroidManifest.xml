@@ -27,5 +27,9 @@
         </activity>
         <activity android:name=".ui.activities.FirstSetupActivity"
             android:exported="false"/>
+        <service
+            android:name="androidx.work.impl.background.systemjob.SystemJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="true"/>
     </application>
 </manifest>

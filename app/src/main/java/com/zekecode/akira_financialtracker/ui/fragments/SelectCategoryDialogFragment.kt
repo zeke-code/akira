@@ -21,7 +21,6 @@ class SelectCategoryDialogFragment : DialogFragment() {
     private var _binding: DialogSelectCategoryBinding? = null
     private val binding get() = _binding!!
 
-    // Use Hilt to inject the ViewModel
     private val viewModel: CreateViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {

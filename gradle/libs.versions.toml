@@ -24,7 +24,8 @@ navigationFragmentKtx = "2.8.3"
 navigationUiKtx = "2.8.3"
 vico = "2.0.0-beta.1"
 preferenceKtx = "1.2.1"
-workRuntimeKtx = "2.10.0"
+workRuntimeKtx = "2.8.0"
+hiltCommon = "1.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -58,6 +59,7 @@ androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navi
 androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
 vico-views = { group = "com.patrykandpatrick.vico", name = "views", version.ref = "vico" }
 androidx-preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preferenceKtx" }
+androidx-hilt-common = { group = "androidx.hilt", name = "hilt-common", version.ref = "hiltCommon" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

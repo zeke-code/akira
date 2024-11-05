@@ -43,7 +43,7 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideFinancialRepository(
-        database: AkiraDatabase
+        database: AkiraDatabase,
     ): FinancialRepository {
         return FinancialRepository(
             database.expenseDao(),

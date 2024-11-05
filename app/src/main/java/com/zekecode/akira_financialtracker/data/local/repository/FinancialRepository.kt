@@ -1,12 +1,22 @@
 package com.zekecode.akira_financialtracker.data.local.repository
 
+import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.work.WorkManager
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import com.zekecode.akira_financialtracker.data.workers.ReminderWorker
 import com.zekecode.akira_financialtracker.data.local.dao.BudgetDao
 import com.zekecode.akira_financialtracker.data.local.dao.CategoryDao
 import com.zekecode.akira_financialtracker.data.local.dao.EarningDao
 import com.zekecode.akira_financialtracker.data.local.dao.ExpenseDao
 import com.zekecode.akira_financialtracker.data.local.entities.*
+import com.zekecode.akira_financialtracker.utils.CurrencyUtils
+import com.zekecode.akira_financialtracker.utils.DateUtils.getCurrentYearMonth
+import java.util.Calendar
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,7 +25,7 @@ class FinancialRepository @Inject constructor(
     private val expenseDao: ExpenseDao,
     private val earningDao: EarningDao,
     private val categoryDao: CategoryDao,
-    private val budgetDao: BudgetDao
+    private val budgetDao: BudgetDao,
 ) {
     // Private LiveData properties
     private val _allExpensesWithCategory = expenseDao.getAllExpensesWithCategories()
@@ -32,7 +42,7 @@ class FinancialRepository @Inject constructor(
         }
     }
 
-    // Functions to expose data
+    // Methods to expose RoomDB data
     fun getAllTransactions(): LiveData<List<TransactionModel>> = _allTransactions
 
     fun getAllCategories(): LiveData<List<CategoryModel>> = categoryDao.getAllCategories()

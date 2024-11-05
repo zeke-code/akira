@@ -1,11 +1,28 @@
 package com.zekecode.akira_financialtracker
 
 import android.app.Application
-import com.zekecode.akira_financialtracker.data.local.database.AkiraDatabase
-import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import dagger.hilt.android.HiltAndroidApp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 
 @HiltAndroidApp
-class AkiraApplication : Application()
+class AkiraApplication : Application() {
+
+    override fun onCreate() {
+        super.onCreate()
+        createNotificationChannel()
+    }
+
+    private fun createNotificationChannel() {
+        val channel = NotificationChannel(
+            "daily_reminder_channel",
+            "Daily Reminder Notifications",
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = "Channel for daily reminder notifications"
+        }
+
+        val notificationManager = getSystemService(NotificationManager::class.java)
+        notificationManager?.createNotificationChannel(channel)
+    }
+}

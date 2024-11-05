@@ -1,18 +1,10 @@
 package com.zekecode.akira_financialtracker.ui.viewmodels
 
 import android.app.Application
-import android.content.SharedPreferences
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.zekecode.akira_financialtracker.R
-import com.zekecode.akira_financialtracker.data.local.entities.BudgetModel
-import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
-import com.zekecode.akira_financialtracker.utils.CurrencyUtils
-import com.zekecode.akira_financialtracker.utils.DateUtils.getCurrentYearMonth
+import com.zekecode.akira_financialtracker.data.local.repository.SharedPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,8 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val sharedPreferences: SharedPreferences,
-    private val repository: FinancialRepository,
+    private val sharedPreferencesRepository: SharedPreferencesRepository,
     private val application: Application
 ) : ViewModel() {
 
@@ -38,7 +29,6 @@ class SettingsViewModel @Inject constructor(
         addSource(budget) { value = combineBudgetAndSymbol() }
         addSource(_currencySymbol) { value = combineBudgetAndSymbol() }
     }
-
     val combinedBudgetText: LiveData<String> get() = _combinedBudgetText
 
     private val _notificationsEnabled = MutableLiveData<Boolean>()
@@ -54,30 +44,27 @@ class SettingsViewModel @Inject constructor(
         loadSettings()
     }
 
-    // Load settings asynchronously using viewModelScope
     private fun loadSettings() {
         viewModelScope.launch(Dispatchers.IO) {
-            _username.postValue(sharedPreferences.getString("Username", "undefined"))
-            _currencySymbol.postValue(CurrencyUtils.getCurrencySymbol(sharedPreferences))
-            _budget.postValue(sharedPreferences.getFloat("MonthlyBudget", 0.0f))
-            _notificationsEnabled.postValue(sharedPreferences.getBoolean("notifications_enabled", false))
-            _selectedCurrency.postValue(sharedPreferences.getString("Currency", "USD"))
-            _apiKey.postValue(sharedPreferences.getString("ApiKey", "none"))
+            _username.postValue(sharedPreferencesRepository.getUsername())
+            _currencySymbol.postValue(sharedPreferencesRepository.getCurrencySymbol())
+            _budget.postValue(sharedPreferencesRepository.getBudget())
+            _notificationsEnabled.postValue(sharedPreferencesRepository.isNotificationsEnabled())
+            _selectedCurrency.postValue(sharedPreferencesRepository.getSelectedCurrency())
+            _apiKey.postValue(sharedPreferencesRepository.getApiKey())
         }
     }
 
-    // Combines budget and symbol into a formatted string
     private fun combineBudgetAndSymbol(): String {
         val currentBudget = budget.value ?: 0F
         val currentSymbol = _currencySymbol.value ?: ""
         return application.getString(R.string.settings_budget, currentBudget, currentSymbol)
     }
 
-    // Update methods for various settings fields
     fun updateUsername(newUsername: String) {
         if (newUsername.isNotBlank()) {
             viewModelScope.launch(Dispatchers.IO) {
-                sharedPreferences.edit().putString("Username", newUsername).apply()
+                sharedPreferencesRepository.updateUsername(newUsername)
                 _username.postValue(newUsername)
             }
         } else {
@@ -89,12 +76,8 @@ class SettingsViewModel @Inject constructor(
         val budgetValue = newBudget.toFloatOrNull()
         if (budgetValue != null && budgetValue >= 0) {
             viewModelScope.launch(Dispatchers.IO) {
-                sharedPreferences.edit().putFloat("MonthlyBudget", budgetValue).apply()
+                sharedPreferencesRepository.updateBudget(budgetValue)
                 _budget.postValue(budgetValue)
-
-                val currentYearMonth = getCurrentYearMonth()
-                val newBudgetModel = BudgetModel(yearMonth = currentYearMonth, amount = budgetValue.toDouble())
-                repository.insertBudget(newBudgetModel) // On conflict, insertBudget replaces our budget.
             }
         } else {
             Log.w("SettingsViewModel", "Invalid budget value: $newBudget")
@@ -103,21 +86,21 @@ class SettingsViewModel @Inject constructor(
 
     fun updateNotificationsEnabled(enabled: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            sharedPreferences.edit().putBoolean("notifications_enabled", enabled).apply()
+            sharedPreferencesRepository.updateNotificationsEnabled(enabled)
             _notificationsEnabled.postValue(enabled)
         }
     }
 
     fun updateCurrency(newCurrency: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            sharedPreferences.edit().putString("Currency", newCurrency).apply()
+            sharedPreferencesRepository.updateSelectedCurrency(newCurrency)
             _selectedCurrency.postValue(newCurrency)
         }
     }
 
     fun updateApiKey(newApiKey: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            sharedPreferences.edit().putString("ApiKey", newApiKey).apply()
+            sharedPreferencesRepository.updateApiKey(newApiKey)
             _apiKey.postValue(newApiKey)
         }
     }

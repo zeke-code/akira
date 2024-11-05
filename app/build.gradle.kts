@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.preference.ktx)
+    implementation(libs.androidx.hilt.common)
     ksp(libs.hilt.android.compiler)
 
     // Retrofit and Moshi dependencies
