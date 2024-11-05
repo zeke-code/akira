@@ -31,7 +31,7 @@ class HomeViewModel @Inject constructor(
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> get() = _isLoading
 
-    val monthlyBudget: LiveData<Double?> = repository.getMonthlyBudget(getCurrentYearMonth())
+    private val monthlyBudget: LiveData<Double?> = repository.getMonthlyBudget(getCurrentYearMonth())
 
     // Use MediatorLiveData to combine earnings and expenses
     private val _currentMonthTransactions = MediatorLiveData<List<TransactionModel>>()
@@ -64,7 +64,7 @@ class HomeViewModel @Inject constructor(
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
-    private suspend fun setupTransactionMerging() {
+    private fun setupTransactionMerging() {
         val earningsLiveData = repository.getMonthlyEarnings(getCurrentYearMonth())
         val expensesLiveData = repository.getMonthlyExpenses(getCurrentYearMonth())
 

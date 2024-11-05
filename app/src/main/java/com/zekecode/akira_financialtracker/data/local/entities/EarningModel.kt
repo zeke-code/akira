@@ -6,8 +6,8 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "earnings")
 data class EarningModel(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val name: String,
     val amount: Double,
     val categoryId: Int,
-    val date: Long
+    val date: Long,
+    val description: String? = null,
 )

@@ -39,8 +39,8 @@ class CreateViewModel @Inject constructor(
         dateFormat.format(Date(dateInMillis))
     }
 
-    private val _name = MutableLiveData<String>()
-    val name: LiveData<String> get() = _name
+    private val _description = MutableLiveData<String>()
+    val description: LiveData<String> get() = _description
 
     private val _isExpense = MutableLiveData<Boolean>()
     val isExpense: LiveData<Boolean> get() = _isExpense
@@ -62,8 +62,8 @@ class CreateViewModel @Inject constructor(
         _selectedDate.value = date
     }
 
-    fun setTransactionName(value: String) {
-        _name.value = value
+    fun setTransactionDescription(value: String) {
+        _description.value = value
     }
 
     fun setIsExpense(isExpense: Boolean) {
@@ -75,52 +75,47 @@ class CreateViewModel @Inject constructor(
         _navigateToHome.value = false
     }
 
-    // Function to insert a new earning
-    fun insertEarning() {
+    // Function to insert a new record (earning or expense)
+    fun insertTransaction(isExpense: Boolean) {
         val amountValue = _amount.value ?: 0.0
-        val nameValue = _name.value ?: ""
+        val descriptionValue = _description.value
         val categoryValue = _selectedCategory.value
         val dateValue = _selectedDate.value ?: System.currentTimeMillis()
 
         if (categoryValue != null) {
-            val earning = EarningModel(
-                name = nameValue,
-                amount = amountValue,
-                categoryId = categoryValue.id,
-                date = dateValue
-            )
             viewModelScope.launch {
-                repository.insertEarning(earning)
+                if (isExpense) {
+                    val expense = ExpenseModel(
+                        amount = amountValue,
+                        categoryId = categoryValue.id,
+                        date = dateValue,
+                        description = descriptionValue
+                    )
+                    repository.insertExpense(expense)
+                } else {
+                    val earning = EarningModel(
+                        amount = amountValue,
+                        categoryId = categoryValue.id,
+                        date = dateValue,
+                        description = descriptionValue
+                    )
+                    repository.insertEarning(earning)
+                }
                 resetData()
                 _navigateToHome.postValue(true)
             }
         }
     }
 
-    fun insertExpense() {
+    // Function to validate data before creating a new transaction
+    fun canInsertTransaction(): Boolean {
         val amountValue = _amount.value ?: 0.0
-        val nameValue = _name.value ?: ""
-        val categoryValue = _selectedCategory.value
-        val dateValue = _selectedDate.value ?: System.currentTimeMillis()
-
-        if (categoryValue != null) {
-            val expense = ExpenseModel(
-                name = nameValue,
-                amount = amountValue,
-                categoryId = categoryValue.id,
-                date = dateValue
-            )
-            viewModelScope.launch {
-                repository.insertExpense(expense)
-                resetData()
-                _navigateToHome.postValue(true)
-            }
-        }
+        return amountValue > 0 && _selectedCategory.value != null && _selectedDate.value != null
     }
 
     // Function to reset ViewModel's data to null.
     private fun resetData() {
-        _name.value = ""
+        _description.value = ""
         _selectedCategory.value = null
         _selectedDate.value = System.currentTimeMillis() // Reset time to user's current day
         _isExpense.value = true

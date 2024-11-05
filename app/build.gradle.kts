@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.lifecycle.livedata.ktx.v261)
     implementation(libs.hilt.android)
+    implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.preference.ktx)
     ksp(libs.hilt.android.compiler)
 

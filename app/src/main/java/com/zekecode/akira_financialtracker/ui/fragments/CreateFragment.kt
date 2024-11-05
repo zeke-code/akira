@@ -59,7 +59,7 @@ class CreateFragment : Fragment() {
         // Set up TextWatcher for transaction name input
         binding.etCreateName.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                viewModel.setTransactionName(s.toString())
+                viewModel.setTransactionDescription(s.toString())
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -89,22 +89,11 @@ class CreateFragment : Fragment() {
 
         // Handle the Confirm button click to save data
         binding.ivConfirm.setOnClickListener {
-            val amount = viewModel.amount.value ?: 0.0
-            val name = viewModel.name.value ?: ""
-            val category = viewModel.selectedCategory.value
-            val date = viewModel.selectedDate.value
-            val isExpense = viewModel.isExpense.value ?: true
-
-            // Check if all required fields are filled
-            if (amount > 0 && name.isNotEmpty() && category != null && date != null) {
+            if (viewModel.canInsertTransaction()) {
                 binding.ivConfirm.isEnabled = false
-                if (isExpense) {
-                    viewModel.insertExpense()
-                } else {
-                    viewModel.insertEarning()
-                }
+                viewModel.insertTransaction(viewModel.isExpense.value ?: true)
             } else {
-                Toast.makeText(requireContext(), "Please enter all required fields", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Enter at least the amount, category, and date.", Toast.LENGTH_SHORT).show()
             }
         }
 
