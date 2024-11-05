@@ -48,8 +48,8 @@ object DatabaseModule {
         return FinancialRepository(
             database.expenseDao(),
             database.earningDao(),
-            database.categoryDao(),
-            database.budgetDao()
+            database.budgetDao(),
+            database.categoryDao()
         )
     }
 }

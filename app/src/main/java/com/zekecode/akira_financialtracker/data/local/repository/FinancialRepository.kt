@@ -1,22 +1,13 @@
 package com.zekecode.akira_financialtracker.data.local.repository
 
-import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.work.WorkManager
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import com.zekecode.akira_financialtracker.data.workers.ReminderWorker
 import com.zekecode.akira_financialtracker.data.local.dao.BudgetDao
 import com.zekecode.akira_financialtracker.data.local.dao.CategoryDao
 import com.zekecode.akira_financialtracker.data.local.dao.EarningDao
 import com.zekecode.akira_financialtracker.data.local.dao.ExpenseDao
 import com.zekecode.akira_financialtracker.data.local.entities.*
-import com.zekecode.akira_financialtracker.utils.CurrencyUtils
 import com.zekecode.akira_financialtracker.utils.DateUtils.getCurrentYearMonth
-import java.util.Calendar
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,8 +15,8 @@ import javax.inject.Singleton
 class FinancialRepository @Inject constructor(
     private val expenseDao: ExpenseDao,
     private val earningDao: EarningDao,
-    private val categoryDao: CategoryDao,
     private val budgetDao: BudgetDao,
+    private val categoryDao: CategoryDao,
 ) {
     // Private LiveData properties
     private val _allExpensesWithCategory = expenseDao.getAllExpensesWithCategories()
@@ -77,6 +68,23 @@ class FinancialRepository @Inject constructor(
 
     fun getMonthlyEarnings(yearMonth: String): LiveData<List<EarningWithCategory>> {
         return earningDao.getMonthlyEarningsWithCategories(yearMonth)
+    }
+
+    fun getCurrentMonthTransactions(): LiveData<List<TransactionModel>> {
+        val earningsLiveData = getMonthlyEarnings(getCurrentYearMonth())
+        val expensesLiveData = getMonthlyExpenses(getCurrentYearMonth())
+
+        val currentMonthTransactions = MediatorLiveData<List<TransactionModel>>()
+        currentMonthTransactions.addSource(earningsLiveData) { earnings ->
+            val currentExpenses = expensesLiveData.value ?: emptyList()
+            currentMonthTransactions.value = mergeTransactions(currentExpenses, earnings)
+        }
+
+        currentMonthTransactions.addSource(expensesLiveData) { expenses ->
+            val currentEarnings = earningsLiveData.value ?: emptyList()
+            currentMonthTransactions.value = mergeTransactions(expenses, currentEarnings)
+        }
+        return currentMonthTransactions
     }
 
     suspend fun insertCategory(category: CategoryModel) {

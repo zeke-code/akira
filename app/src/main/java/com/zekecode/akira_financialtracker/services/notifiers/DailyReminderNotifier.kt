@@ -1,4 +1,4 @@
-package com.zekecode.akira_financialtracker.notifiers
+package com.zekecode.akira_financialtracker.services.notifiers
 
 import android.content.Context
 import android.os.Build

@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zekecode.akira_financialtracker.data.local.entities.BudgetModel
 import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
-import com.zekecode.akira_financialtracker.data.local.repository.SharedPreferencesRepository
+import com.zekecode.akira_financialtracker.data.local.repository.UserRepository
 import com.zekecode.akira_financialtracker.utils.DateUtils.getCurrentYearMonth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FirstSetupViewModel @Inject constructor(
-    private val sharedPreferencesRepository: SharedPreferencesRepository,
+    private val userRepository: UserRepository,
     private val financialRepository: FinancialRepository
 ) : ViewModel() {
 
@@ -36,7 +36,8 @@ class FirstSetupViewModel @Inject constructor(
                 _showReadyView.value = true
                 viewModelScope.launch {
                     withContext(Dispatchers.IO) {
-                        sharedPreferencesRepository.saveUserData(userName, monthlyBudget, selectedCurrency)
+                        userRepository.saveUserData(userName, monthlyBudget, selectedCurrency)
+                        userRepository.setLastLaunchDateToNow()
                         val currentYearMonth = getCurrentYearMonth()
                         val initialBudget = BudgetModel(yearMonth = currentYearMonth, amount = monthlyBudget.toDouble())
                         financialRepository.insertBudget(initialBudget)

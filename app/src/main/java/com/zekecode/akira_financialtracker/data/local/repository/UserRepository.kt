@@ -4,15 +4,18 @@ import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.zekecode.akira_financialtracker.utils.CurrencyUtils
+import com.zekecode.akira_financialtracker.utils.DateUtils.getCurrentYearMonth
+import java.util.Calendar
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class SharedPreferencesRepository @Inject constructor(
+class UserRepository @Inject constructor(
     private val sharedPreferences: SharedPreferences
 ) {
 
     private val _currencySymbol = MutableLiveData<String>()
+    private val dateFormat = getCurrentYearMonth()
     val currencySymbolLiveData: LiveData<String> get() = _currencySymbol
 
     init {
@@ -70,5 +73,18 @@ class SharedPreferencesRepository @Inject constructor(
 
     fun updateApiKey(newApiKey: String) {
         sharedPreferences.edit().putString("ApiKey", newApiKey).apply()
+    }
+
+    fun getLastLaunchDate(): String? {
+        return sharedPreferences.getString("lastLaunchDate", null)
+    }
+
+    fun setLastLaunchDate(date: String) {
+        sharedPreferences.edit().putString("lastLaunchDate", date).apply()
+    }
+
+    fun setLastLaunchDateToNow() {
+        val currentDate = dateFormat.format(Calendar.getInstance().time)
+        setLastLaunchDate(currentDate)
     }
 }

@@ -1,10 +1,10 @@
-package com.zekecode.akira_financialtracker.data.workers
+package com.zekecode.akira_financialtracker.services.workers
 
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.zekecode.akira_financialtracker.notifiers.AppNotificationManager
+import com.zekecode.akira_financialtracker.services.managers.AppNotificationManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 

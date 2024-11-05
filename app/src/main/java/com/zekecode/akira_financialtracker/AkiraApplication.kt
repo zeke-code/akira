@@ -1,28 +1,22 @@
 package com.zekecode.akira_financialtracker
 
 import android.app.Application
-import android.app.NotificationChannel
-import android.app.NotificationManager
+import com.zekecode.akira_financialtracker.services.managers.AppNotificationManager
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
 @HiltAndroidApp
 class AkiraApplication : Application() {
 
+    @Inject
+    lateinit var appNotificationManager: AppNotificationManager
+
     override fun onCreate() {
         super.onCreate()
-        createNotificationChannel()
-    }
-
-    private fun createNotificationChannel() {
-        val channel = NotificationChannel(
-            "daily_reminder_channel",
-            "Daily Reminder Notifications",
-            NotificationManager.IMPORTANCE_DEFAULT
-        ).apply {
-            description = "Channel for daily reminder notifications"
-        }
-
-        val notificationManager = getSystemService(NotificationManager::class.java)
-        notificationManager?.createNotificationChannel(channel)
+        appNotificationManager.createNotificationChannel(
+            "reminder_channel",
+            "Reminder Notifications",
+            description = "Channel for reminder notifications"
+            )
     }
 }

@@ -11,20 +11,19 @@ import com.zekecode.akira_financialtracker.data.local.entities.EarningWithCatego
 import com.zekecode.akira_financialtracker.data.local.entities.ExpenseWithCategory
 import com.zekecode.akira_financialtracker.data.local.entities.TransactionModel
 import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
-import com.zekecode.akira_financialtracker.data.local.repository.SharedPreferencesRepository
+import com.zekecode.akira_financialtracker.data.local.repository.UserRepository
 import com.zekecode.akira_financialtracker.utils.DateUtils.getCurrentYearMonth
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val financialRepository: FinancialRepository,
-    private val sharedPreferencesRepository: SharedPreferencesRepository
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
-    val currencySymbol: LiveData<String> = sharedPreferencesRepository.currencySymbolLiveData
+    val currencySymbol: LiveData<String> = userRepository.currencySymbolLiveData
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> get() = _isLoading
@@ -32,7 +31,7 @@ class HomeViewModel @Inject constructor(
     private val monthlyBudget: LiveData<Double?> = financialRepository.getMonthlyBudget(getCurrentYearMonth())
 
     // Use MediatorLiveData to combine earnings and expenses
-    private val _currentMonthTransactions = MediatorLiveData<List<TransactionModel>>()
+    private val _currentMonthTransactions: LiveData<List<TransactionModel>> = financialRepository.getCurrentMonthTransactions()
     val currentMonthTransactions: LiveData<List<TransactionModel>> get() = _currentMonthTransactions
 
     // The remaining budget after expenses and earnings are applied
@@ -51,42 +50,6 @@ class HomeViewModel @Inject constructor(
             (((totalBudget - remainingBudget) / totalBudget) * 100).toFloat()
         } else {
             0f
-        }
-    }
-
-    init {
-        viewModelScope.launch {
-            setupTransactionMerging()
-        }
-    }
-
-    private fun setupTransactionMerging() {
-        val earningsLiveData = financialRepository.getMonthlyEarnings(getCurrentYearMonth())
-        val expensesLiveData = financialRepository.getMonthlyExpenses(getCurrentYearMonth())
-
-        _currentMonthTransactions.addSource(earningsLiveData) { earnings ->
-            val currentExpenses = expensesLiveData.value ?: emptyList()
-            _currentMonthTransactions.value = mergeTransactions(currentExpenses, earnings)
-        }
-
-        _currentMonthTransactions.addSource(expensesLiveData) { expenses ->
-            val currentEarnings = earningsLiveData.value ?: emptyList()
-            _currentMonthTransactions.value = mergeTransactions(expenses, currentEarnings)
-        }
-    }
-
-    private fun mergeTransactions(
-        expenses: List<ExpenseWithCategory>,
-        earnings: List<EarningWithCategory>
-    ): List<TransactionModel> {
-        val transactions = mutableListOf<TransactionModel>()
-        transactions.addAll(expenses.map { TransactionModel.Expense(it) })
-        transactions.addAll(earnings.map { TransactionModel.Earning(it) })
-        return transactions.sortedByDescending {
-            when (it) {
-                is TransactionModel.Expense -> it.expenseWithCategory.expense.date
-                is TransactionModel.Earning -> it.earningWithCategory.earning.date
-            }
         }
     }
 }

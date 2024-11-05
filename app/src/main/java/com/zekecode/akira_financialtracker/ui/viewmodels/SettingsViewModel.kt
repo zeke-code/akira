@@ -4,7 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
 import com.zekecode.akira_financialtracker.R
-import com.zekecode.akira_financialtracker.data.local.repository.SharedPreferencesRepository
+import com.zekecode.akira_financialtracker.data.local.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val sharedPreferencesRepository: SharedPreferencesRepository,
+    private val userRepository: UserRepository,
     private val application: Application
 ) : ViewModel() {
 
@@ -46,12 +46,12 @@ class SettingsViewModel @Inject constructor(
 
     private fun loadSettings() {
         viewModelScope.launch(Dispatchers.IO) {
-            _username.postValue(sharedPreferencesRepository.getUsername())
-            _currencySymbol.postValue(sharedPreferencesRepository.getCurrencySymbol())
-            _budget.postValue(sharedPreferencesRepository.getBudget())
-            _notificationsEnabled.postValue(sharedPreferencesRepository.isNotificationsEnabled())
-            _selectedCurrency.postValue(sharedPreferencesRepository.getSelectedCurrency())
-            _apiKey.postValue(sharedPreferencesRepository.getApiKey())
+            _username.postValue(userRepository.getUsername())
+            _currencySymbol.postValue(userRepository.getCurrencySymbol())
+            _budget.postValue(userRepository.getBudget())
+            _notificationsEnabled.postValue(userRepository.isNotificationsEnabled())
+            _selectedCurrency.postValue(userRepository.getSelectedCurrency())
+            _apiKey.postValue(userRepository.getApiKey())
         }
     }
 
@@ -64,7 +64,7 @@ class SettingsViewModel @Inject constructor(
     fun updateUsername(newUsername: String) {
         if (newUsername.isNotBlank()) {
             viewModelScope.launch(Dispatchers.IO) {
-                sharedPreferencesRepository.updateUsername(newUsername)
+                userRepository.updateUsername(newUsername)
                 _username.postValue(newUsername)
             }
         } else {
@@ -76,7 +76,7 @@ class SettingsViewModel @Inject constructor(
         val budgetValue = newBudget.toFloatOrNull()
         if (budgetValue != null && budgetValue >= 0) {
             viewModelScope.launch(Dispatchers.IO) {
-                sharedPreferencesRepository.updateBudget(budgetValue)
+                userRepository.updateBudget(budgetValue)
                 _budget.postValue(budgetValue)
             }
         } else {
@@ -86,21 +86,21 @@ class SettingsViewModel @Inject constructor(
 
     fun updateNotificationsEnabled(enabled: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            sharedPreferencesRepository.updateNotificationsEnabled(enabled)
+            userRepository.updateNotificationsEnabled(enabled)
             _notificationsEnabled.postValue(enabled)
         }
     }
 
     fun updateCurrency(newCurrency: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            sharedPreferencesRepository.updateSelectedCurrency(newCurrency)
+            userRepository.updateSelectedCurrency(newCurrency)
             _selectedCurrency.postValue(newCurrency)
         }
     }
 
     fun updateApiKey(newApiKey: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            sharedPreferencesRepository.updateApiKey(newApiKey)
+            userRepository.updateApiKey(newApiKey)
             _apiKey.postValue(newApiKey)
         }
     }
