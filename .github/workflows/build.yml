@@ -25,5 +25,8 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Set chmod to Gradlew
+        run: chmod +x ./gradlew
+
       - name: Build Akira Application
         run: ./gradlew build
