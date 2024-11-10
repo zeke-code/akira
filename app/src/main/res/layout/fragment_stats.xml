@@ -46,7 +46,7 @@
                 <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
                     android:id="@+id/chart_view"
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
+                    android:layout_height="wrap_content"
                     app:scrollEnabled="true"
                     app:layers="column"
                     app:columnLayerStyle="@style/ExpenseChartColumnLayerStyle"
@@ -80,7 +80,7 @@
                 <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
                     android:id="@+id/revenue_chart_view"
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
+                    android:layout_height="wrap_content"
                     app:scrollEnabled="true"
                     app:layers="column"
                     app:columnLayerStyle="@style/RevenueChartColumnLayerStyle"

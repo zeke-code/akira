@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">Akira</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <!-- First Setup Activity -->
     <string name="setup_enter_name">Enter your name here…</string>
     <string name="setup_enter_budget">Enter your monthly budget here…</string>
@@ -40,7 +38,7 @@
     <string name="dialog_edittext_hint">Enter a new value…</string>
     <string name="settings_current_currency">Current currency: %s</string>
     <string name="settings_currency_dialog_title">Select the desired currency</string>
-    <string name="settings_api_key_viewer">"Current API key for stocks: %s"</string>
+    <string name="settings_api_key_viewer">"Current Alpha Vantage API key: %s"</string>
     <!-- Create fragment -->
     <string name="create_header">Add a transaction</string>
     <string name="create_select_category_arrow">Select a category</string>
@@ -64,4 +62,6 @@
     <string name="stats_monthly_expenses_header">Expenses this month</string>
     <string name="stats_monthly_revenue_header">Revenues this month</string>
     <string name="stats_expenses_vs_revenue_header">Expenses vs Revenues this month</string>
+    <string name="stocks_header_text">Stocks</string>
+    <string name="search_hint">Search stock or currency here…</string>
 </resources>

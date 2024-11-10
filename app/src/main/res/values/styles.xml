@@ -47,6 +47,19 @@
         <item name="column1Style">@style/ExpenseChartColumn1Style</item>
     </style>
 
+    <style name="StocksChartLine1Style">
+        <item name="color">@color/accent_blue</item>
+    </style>
+
+    <style name="StocksChartLineStyle">
+        <item name="line1Style">@style/StocksChartLine1Style</item>
+    </style>
+
+    <style name="StocksChartBottomAxisStyle">
+        <item name="horizontalAxisItemPlacer">segmented</item>
+        <item name="showGuidelines">false</item>
+    </style>
+
     <style name="RevenueChartColumnLayerStyle">
         <item name="column1Style">@style/RevenueChartColumn1Style</item>
     </style>

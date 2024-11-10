@@ -1,14 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragments.StocksFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-</FrameLayout>
+        <!-- Header -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/stocks_header_text"
+            android:textColor="@color/primary_text"
+            android:textSize="@dimen/text_header"
+            android:textStyle="bold"
+            android:padding="@dimen/spacing_m"
+            android:background="@color/secondary_background"
+            android:gravity="center" />
+
+        <!-- Search Bar -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="@dimen/spacing_m"
+            android:layout_marginHorizontal="@dimen/spacing_m"
+            android:background="@color/secondary_background"
+            android:textColorHint="@color/secondary_text"
+            android:hint="@string/search_hint">
+
+            <AutoCompleteTextView
+                android:id="@+id/stock_search"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="text"
+                android:drawableStart="@drawable/ic_search"
+                android:drawableTint="@color/search_symbol"
+                android:drawablePadding="@dimen/spacing_m"
+                android:paddingStart="@dimen/spacing_m"
+                android:paddingEnd="@dimen/spacing_m"
+                android:hint="@string/search_hint"
+                android:completionThreshold="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Stock Information -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_m"
+            android:layout_marginTop="@dimen/spacing_m"
+            android:elevation="4dp">
+
+            <!-- Stock Name and Symbol -->
+            <TextView
+                android:id="@+id/stock_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Paolo"
+                android:textColor="@color/primary_text"
+                android:textSize="@dimen/text_m"
+                android:textStyle="bold"
+                android:layout_gravity="center_horizontal" />
+
+            <!-- Stock Price and Change -->
+            <TextView
+                android:id="@+id/stock_price_change"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="211,65 EUR | +2,45 (1.17%)"
+                android:textColor="@color/accent_green"
+                android:textSize="16sp"
+                android:layout_gravity="center_horizontal"
+                android:paddingTop="@dimen/spacing_s" />
+        </LinearLayout>
+
+        <!-- Stock Graph -->
+        <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
+            android:id="@+id/chart_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:scalableEndLayerPadding="16dp"
+            app:scalableStartLayerPadding="16dp"
+            app:layers="line"
+            app:lineLayerStyle="@style/StocksChartLineStyle"
+            app:showStartAxis="true"
+            app:showBottomAxis="true"
+            app:zoomEnabled="false"
+            android:padding="@dimen/spacing_m" />
+
+    </LinearLayout>
+
+</ScrollView>

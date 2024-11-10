@@ -14,6 +14,7 @@
     <dimen name="image_button_l">82dp</dimen>
     <dimen name="button_l">52dp</dimen>
     <dimen name="text_s">16sp</dimen>
+    <dimen name="text_header">18sp</dimen>
     <dimen name="text_m">24sp</dimen>
     <dimen name="text_l">32sp</dimen>
     <dimen name="create_divider_width">220dp</dimen>

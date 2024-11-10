@@ -21,8 +21,9 @@
             android:layout_height="wrap_content"
             android:text="@string/create_header"
             android:textAlignment="center"
-            android:textSize="20sp"
+            android:textSize="@dimen/text_header"
             android:textColor="@color/primary_text"
+            android:padding="@dimen/spacing_m"
             android:layout_gravity="center"
             android:layout_centerVertical="true"
             android:textStyle="bold" />
