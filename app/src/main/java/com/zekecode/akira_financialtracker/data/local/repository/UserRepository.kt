@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.zekecode.akira_financialtracker.utils.CurrencyUtils
 import com.zekecode.akira_financialtracker.utils.DateUtils.getCurrentYearMonth
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.util.Calendar
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -16,13 +18,18 @@ class UserRepository @Inject constructor(
 
     private val _currencySymbol = MutableLiveData<String>()
     private val dateFormat = getCurrentYearMonth()
+    private val _apiKeyFlow = MutableStateFlow(getApiKey())
+    val apiKeyFlow = _apiKeyFlow.asStateFlow()
     val currencySymbolLiveData: LiveData<String> get() = _currencySymbol
 
     init {
         loadCurrencySymbol()
+
+        // Register listener to detect changes in SharedPreferences
         sharedPreferences.registerOnSharedPreferenceChangeListener { _, key ->
-            if (key == "Currency") {
-                loadCurrencySymbol()
+            when (key) {
+                "Currency" -> loadCurrencySymbol()
+                "ApiKey" -> _apiKeyFlow.value = getApiKey()
             }
         }
     }

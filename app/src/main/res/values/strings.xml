@@ -64,4 +64,5 @@
     <string name="stats_expenses_vs_revenue_header">Expenses vs Revenues this month</string>
     <string name="stocks_header_text">Stocks</string>
     <string name="search_hint">Search stock or currency here…</string>
+    <string name="stocks_disabled_view_text">This view is disabled because you need to set a Venture API key. \n\nGo to settings and set a valid key.</string>
 </resources>
