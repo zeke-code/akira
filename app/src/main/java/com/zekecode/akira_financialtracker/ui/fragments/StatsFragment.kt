@@ -1,7 +1,6 @@
 package com.zekecode.akira_financialtracker.ui.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +18,6 @@ class StatsFragment : Fragment() {
     private var _binding: FragmentStatsBinding? = null
     private val binding get() = _binding!!
 
-    // Hilt-injected ViewModel
     private val viewModel: StatsViewModel by viewModels()
 
     override fun onCreateView(
@@ -33,8 +31,32 @@ class StatsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.chartView.modelProducer = viewModel.expenseChartModelProducer
-        binding.revenueChartView.modelProducer = viewModel.earningChartModelProducer
+        binding.expenseChartView.modelProducer = viewModel.expenseChartModelProducer
+        binding.earningChartView.modelProducer = viewModel.earningChartModelProducer
+
+        setupObservers()
+    }
+
+    private fun setupObservers() {
+        viewModel.isEarningDataEmpty.observe(viewLifecycleOwner) { isDataEmpty ->
+            if (isDataEmpty) {
+                binding.earningChartView.visibility = View.GONE
+                binding.noEarningsDataTextView.visibility = View.VISIBLE
+            } else {
+                binding.earningChartView.visibility = View.VISIBLE
+                binding.noEarningsDataTextView.visibility = View.GONE
+            }
+        }
+
+        viewModel.isExpenseDataEmpty.observe(viewLifecycleOwner) { isDataEmpty ->
+            if (isDataEmpty) {
+                binding.expenseChartView.visibility = View.GONE
+                binding.noExpensesDataTextView.visibility = View.VISIBLE
+            } else {
+                binding.expenseChartView.visibility = View.VISIBLE
+                binding.noExpensesDataTextView.visibility = View.GONE
+            }
+        }
 
         viewModel.expenseCategoryNames.observe(viewLifecycleOwner) { categoryNames ->
             setExpenseChartFormatter(categoryNames)
@@ -46,18 +68,17 @@ class StatsFragment : Fragment() {
     }
 
     private fun setExpenseChartFormatter(categoryNames: List<String>) {
-        Log.d("StatsFragment", "Expense category names: $categoryNames")
         val formatter = CartesianValueFormatter { _, x, _ ->
             categoryNames.getOrNull(x.toInt()) ?: x.toString()
         }
-        binding.chartView.chart?.bottomAxis = (binding.chartView.chart?.bottomAxis as HorizontalAxis).copy(valueFormatter = formatter)
+        binding.expenseChartView.chart?.bottomAxis = (binding.expenseChartView.chart?.bottomAxis as HorizontalAxis).copy(valueFormatter = formatter)
     }
 
     private fun setEarningsChartFormatter(categoryNames: List<String>) {
         val formatter = CartesianValueFormatter { _, x, _ ->
             categoryNames.getOrNull(x.toInt()) ?: x.toString()
         }
-        binding.revenueChartView.chart?.bottomAxis = (binding.revenueChartView.chart?.bottomAxis as HorizontalAxis).copy(valueFormatter = formatter)
+        binding.earningChartView.chart?.bottomAxis = (binding.earningChartView.chart?.bottomAxis as HorizontalAxis).copy(valueFormatter = formatter)
     }
 
     override fun onDestroyView() {

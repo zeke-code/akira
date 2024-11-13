@@ -25,10 +25,8 @@ class MainActivity : AppCompatActivity() {
 
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
-        // Check and update budget
         mainViewModel.checkAndUpdateBudget()
 
-        // Check if the initial setup is complete
         if (!mainViewModel.isSetupComplete()) {
             startActivity(Intent(this, FirstSetupActivity::class.java))
             finish()

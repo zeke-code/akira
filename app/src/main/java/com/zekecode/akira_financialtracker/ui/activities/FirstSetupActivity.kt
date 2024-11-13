@@ -28,38 +28,8 @@ class FirstSetupActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupUI()
-
-        viewModel.showReadyView.observe(this, Observer { showReady ->
-            if (showReady) {
-                switchViewWithAnimation(binding.userInputView, binding.readyView)
-            } else {
-                Toast.makeText(
-                    this,
-                    "Please enter a number bigger than 20 with at most 2 decimal digits",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        })
-
-        viewModel.isSetupComplete.observe(this, Observer { isComplete ->
-            if (isComplete) {
-                val intent = Intent(this@FirstSetupActivity, MainActivity::class.java)
-                startActivity(intent)
-                finish()
-            }
-        })
-
-        binding.saveButton.setOnClickListener {
-            val userName = binding.userNameEditText.text.toString().trim()
-            val monthlyBudgetStr = binding.monthlyBudgetEditText.text.toString().trim()
-            val selectedCurrency = binding.currencyAutoCompleteTextView.text.toString().trim()
-
-            if (userName.isNotEmpty() && monthlyBudgetStr.isNotEmpty() && selectedCurrency.isNotEmpty()) {
-                viewModel.saveUserData(userName, monthlyBudgetStr, selectedCurrency)
-            } else {
-                Toast.makeText(this, "Please enter all details", Toast.LENGTH_SHORT).show()
-            }
-        }
+        setupObservers()
+        setupListeners()
     }
 
     private fun setupUI() {
@@ -72,7 +42,44 @@ class FirstSetupActivity : AppCompatActivity() {
         )
         currencyAutoCompleteTextView.setAdapter(adapter)
 
+        // Initial animation to switch views
         switchViewWithAnimation(binding.welcomeView, binding.userInputView, 5000)
+    }
+
+    private fun setupObservers() {
+        viewModel.showReadyView.observe(this) { showReady ->
+            if (showReady) {
+                switchViewWithAnimation(binding.userInputView, binding.readyView)
+            } else {
+                Toast.makeText(
+                    this,
+                    "Please enter a number bigger than 0 with at most 2 decimal digits",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        viewModel.isSetupComplete.observe(this) { isComplete ->
+            if (isComplete) {
+                val intent = Intent(this@FirstSetupActivity, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+        }
+    }
+
+    private fun setupListeners() {
+        binding.saveButton.setOnClickListener {
+            val userName = binding.userNameEditText.text.toString().trim()
+            val monthlyBudgetStr = binding.monthlyBudgetEditText.text.toString().trim()
+            val selectedCurrency = binding.currencyAutoCompleteTextView.text.toString().trim()
+
+            if (userName.isNotEmpty() && monthlyBudgetStr.isNotEmpty() && selectedCurrency.isNotEmpty()) {
+                viewModel.saveUserData(userName, monthlyBudgetStr, selectedCurrency)
+            } else {
+                Toast.makeText(this, "Please enter all details", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun switchViewWithAnimation(fromView: View, toView: View, delay: Long = 0) {
@@ -103,14 +110,12 @@ class FirstSetupActivity : AppCompatActivity() {
             fillAfter = true
             setAnimationListener(object : Animation.AnimationListener {
                 override fun onAnimationStart(animation: Animation?) {
-                    // Disable interaction during animation
                     view.isEnabled = false
                     view.isClickable = false
                     view.isFocusable = false
                 }
 
                 override fun onAnimationEnd(animation: Animation?) {
-                    // Enable interaction after animation ends
                     view.isEnabled = true
                     view.isClickable = true
                     view.isFocusable = true
@@ -128,7 +133,6 @@ class FirstSetupActivity : AppCompatActivity() {
         duration: Long = 500,
         onAnimationEnd: (() -> Unit)? = null
     ) {
-        // Disable interaction before animation starts
         view.isEnabled = false
         view.isClickable = false
         view.isFocusable = false

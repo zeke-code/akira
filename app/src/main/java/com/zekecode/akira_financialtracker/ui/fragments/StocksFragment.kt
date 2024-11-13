@@ -34,28 +34,26 @@ class StocksFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        observeApiKey()
+        setupObservers()
         setupSuggestionsAdapter()
     }
 
-    private fun observeApiKey() {
+    private fun setupObservers() {
         viewModel.isApiKeyPresent.observe(viewLifecycleOwner) { isPresent ->
             if (isPresent) {
                 showView()
-                observeStockData()
+
+                // Observe stock data received from the API (name and price are combined to render them simultaneously)
+                lifecycleScope.launch {
+                    combine(viewModel.stockName, viewModel.stockPrice) { name, price ->
+                        name to price
+                    }.collect { (name, price) ->
+                        binding.stockHeader.text = name
+                        binding.stockPriceChange.text = price
+                    }
+                }
             } else {
                 hideView()
-            }
-        }
-    }
-
-    private fun observeStockData() {
-        lifecycleScope.launch {
-            combine(viewModel.stockName, viewModel.stockPrice) { name, price ->
-                name to price
-            }.collect { (name, price) ->
-                binding.stockHeader.text = name
-                binding.stockPriceChange.text = price
             }
         }
     }

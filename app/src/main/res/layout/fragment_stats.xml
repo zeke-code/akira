@@ -44,7 +44,7 @@
 
                 <!-- Expense Graph -->
                 <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
-                    android:id="@+id/chart_view"
+                    android:id="@+id/expense_chart_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:scrollEnabled="true"
@@ -54,6 +54,16 @@
                     app:showBottomAxis="true"
                     app:bottomAxisStyle="@style/CustomAxis"
                     android:padding="@dimen/spacing_m" />
+
+                <!-- Empty Expense Data Message -->
+                <TextView
+                    android:id="@+id/noExpensesDataTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/stats_no_data_message"                    android:visibility="gone"
+                    android:gravity="center"
+                    android:textSize="@dimen/text_s"
+                    android:textColor="@color/secondary_text" />
 
                 <!-- Divider -->
                 <View
@@ -78,7 +88,7 @@
 
                 <!-- Revenue Graph -->
                 <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
-                    android:id="@+id/revenue_chart_view"
+                    android:id="@+id/earning_chart_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:scrollEnabled="true"
@@ -87,6 +97,17 @@
                     app:showStartAxis="true"
                     app:showBottomAxis="true"
                     android:padding="@dimen/spacing_m" />
+
+                <!-- Empty Earnings Data Message -->
+                <TextView
+                    android:id="@+id/noEarningsDataTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/stats_no_data_message"
+                    android:visibility="gone"
+                    android:gravity="center"
+                    android:textSize="@dimen/text_s"
+                    android:textColor="@color/secondary_text" />
 
                 <!-- Expenses vs Revenue Graph
                 <com.patrykandpatrick.vico.views.cartesian.CartesianChartView

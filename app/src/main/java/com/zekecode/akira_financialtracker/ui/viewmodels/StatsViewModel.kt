@@ -45,6 +45,12 @@ class StatsViewModel @Inject constructor(
     private val _earningChartModelProducer = CartesianChartModelProducer()
     val earningChartModelProducer: CartesianChartModelProducer get() = _earningChartModelProducer
 
+    private val _isEarningDataEmpty = MutableLiveData<Boolean>()
+    val isEarningDataEmpty: LiveData<Boolean> get() = _isEarningDataEmpty
+
+    private val _isExpenseDataEmpty = MutableLiveData<Boolean>()
+    val isExpenseDataEmpty: LiveData<Boolean> get() = _isExpenseDataEmpty
+
     init {
         _expenseCategoryNames.addSource(monthlyExpenses) { expenses ->
             updateExpenseData(expenses)
@@ -66,6 +72,7 @@ class StatsViewModel @Inject constructor(
     private fun updateExpenseData(expenses: List<ExpenseWithCategory>) {
         if (expenses.isEmpty()) {
             Log.w("StatsViewModel", "No expenses available to update the data.")
+            _isExpenseDataEmpty.value = true
             return
         }
 
@@ -86,6 +93,7 @@ class StatsViewModel @Inject constructor(
     private fun updateEarningsData(earnings: List<EarningWithCategory>) {
         if (earnings.isEmpty()) {
             Log.w("StatsViewModel", "No earnings available to update the data.")
+            _isEarningDataEmpty.value = true
             return
         }
 

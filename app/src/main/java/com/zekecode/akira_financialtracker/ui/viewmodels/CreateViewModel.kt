@@ -16,12 +16,10 @@ class CreateViewModel @Inject constructor(
     private val repository: FinancialRepository
 ) : ViewModel() {
 
-    // LiveData for navigation
     private val _navigateToHome = MutableLiveData<Boolean>()
     val navigateToHome: LiveData<Boolean>
         get() = _navigateToHome
 
-    // LiveData to handle user input
     private val _amount = MutableLiveData<Double>()
     val amount: LiveData<Double>
         get() = _amount
@@ -74,7 +72,6 @@ class CreateViewModel @Inject constructor(
         _navigateToHome.value = false
     }
 
-    // Function to insert a new record (earning or expense)
     fun insertTransaction(isExpense: Boolean) {
         val amountValue = _amount.value ?: 0.0
         val descriptionValue = _description.value
@@ -112,11 +109,11 @@ class CreateViewModel @Inject constructor(
         return amountValue > 0 && _selectedCategory.value != null && _selectedDate.value != null
     }
 
-    // Function to reset ViewModel's data to null.
+    // Function needed to clear data if user changes view.
     private fun resetData() {
         _description.value = ""
         _selectedCategory.value = null
-        _selectedDate.value = System.currentTimeMillis() // Reset time to user's current day
+        _selectedDate.value = System.currentTimeMillis()
         _isExpense.value = true
     }
 }

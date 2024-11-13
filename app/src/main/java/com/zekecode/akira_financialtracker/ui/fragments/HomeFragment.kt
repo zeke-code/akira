@@ -47,11 +47,6 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.circularProgress.visibility = if (isLoading) View.INVISIBLE else View.VISIBLE
-            binding.homeUsedBudgetText.visibility = if (isLoading) View.INVISIBLE else View.VISIBLE
-        }
-
         viewModel.currentMonthTransactions.observe(viewLifecycleOwner) { transactions ->
             transactionsAdapter.updateTransactions(transactions)
         }

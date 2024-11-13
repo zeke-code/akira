@@ -34,34 +34,36 @@ class SelectCategoryDialogFragment : DialogFragment() {
     ): View {
         _binding = DialogSelectCategoryBinding.inflate(inflater, container, false)
 
-        // Setup RecyclerView for categories
-        binding.rvCategoryList.layoutManager = LinearLayoutManager(context)
-        val adapter = CategoryAdapter { category ->
-            viewModel.setSelectedCategory(category)
-            onCategorySelected(category)
-        }
-        binding.rvCategoryList.adapter = adapter
-
-        // Observe categories from ViewModel
-        viewModel.allCategories.observe(viewLifecycleOwner) { categories ->
-            adapter.submitList(categories)
-        }
-
-        // Set up buttons
-        binding.btnCancel.setOnClickListener {
-            dismiss()
-        }
-
-        binding.btnSave.setOnClickListener {
-            dismiss()
-        }
+        setupObservers()
+        setupListeners()
 
         return binding.root
     }
 
-    private fun onCategorySelected(category: CategoryModel) {
-        Toast.makeText(requireContext(), "Selected: ${category.name}", Toast.LENGTH_SHORT).show()
-        dismiss()
+    private fun setupObservers() {
+        // Observe categories from ViewModel
+        viewModel.allCategories.observe(viewLifecycleOwner) { categories ->
+            (binding.rvCategoryList.adapter as? CategoryAdapter)?.submitList(categories)
+        }
+    }
+
+    private fun setupListeners() {
+        // Set up RecyclerView and adapter for categories
+        binding.rvCategoryList.layoutManager = LinearLayoutManager(context)
+        val adapter = CategoryAdapter { category ->
+            viewModel.setSelectedCategory(category)
+        }
+        binding.rvCategoryList.adapter = adapter
+
+        // Cancel button listener
+        binding.btnCancel.setOnClickListener {
+            dismiss()
+        }
+
+        // Save button listener
+        binding.btnSave.setOnClickListener {
+            dismiss()
+        }
     }
 
     override fun onDestroyView() {

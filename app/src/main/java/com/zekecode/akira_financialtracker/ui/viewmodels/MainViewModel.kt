@@ -20,6 +20,11 @@ class MainViewModel @Inject constructor(
         return userRepository.isSetupComplete()
     }
 
+    /**
+     * Function to update budget if last time app was launched was the previous month.
+     * If user entered a new month, refresh his budget by adding an entry to the database
+     * with the new month.
+     */
     fun checkAndUpdateBudget() {
         val currentYearMonth = getCurrentYearMonth()
         if (userRepository.getLastLaunchDate() != currentYearMonth) {

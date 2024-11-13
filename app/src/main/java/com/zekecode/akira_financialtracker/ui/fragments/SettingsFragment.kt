@@ -17,6 +17,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
@@ -24,6 +25,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.zekecode.akira_financialtracker.R
+import com.zekecode.akira_financialtracker.databinding.DialogInputBinding
 import com.zekecode.akira_financialtracker.databinding.DialogSpinnerInputBinding
 import com.zekecode.akira_financialtracker.databinding.FragmentSettingsBinding
 import com.zekecode.akira_financialtracker.ui.viewmodels.SettingsViewModel
@@ -56,6 +58,13 @@ class SettingsFragment : Fragment() {
     ): View {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
 
+        setupObservers()
+        setupClickListeners()
+
+        return binding.root
+    }
+
+    private fun setupObservers() {
         viewModel.username.observe(viewLifecycleOwner) { username ->
             val fullText = getString(R.string.settings_username, username)
             binding.tvName.text = fullText
@@ -71,11 +80,9 @@ class SettingsFragment : Fragment() {
             binding.tvCurrency.text = fullText
         }
 
-        // Observe system and app-level notification settings
         viewModel.notificationsEnabled.observe(viewLifecycleOwner) {
             checkSystemNotificationPermission()
         }
-
 
         viewModel.apiKey.observe(viewLifecycleOwner) { apiKey ->
             val displayText = if (apiKey.isNullOrEmpty()) {
@@ -86,7 +93,14 @@ class SettingsFragment : Fragment() {
             binding.tvApiKey.text = displayText
         }
 
-        // Set up click listeners to enable users to modify username, budget, and notifications permissions
+        viewModel.invalidInputToastText.observe(viewLifecycleOwner) { message ->
+            message?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun setupClickListeners() {
         binding.rlNameSetting.setOnClickListener {
             showInputDialog("Change Username", viewModel.username.value ?: "Username", { newUsername ->
                 viewModel.updateUsername(newUsername)
@@ -112,50 +126,38 @@ class SettingsFragment : Fragment() {
                 viewModel.updateApiKey(newApiKey)
             })
         }
-
-        return binding.root
     }
 
     private fun showInputDialog(title: String, currentValue: String, onSave: (String) -> Unit, isNumeric: Boolean = false) {
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_input, null)
-        val editText = dialogView.findViewById<EditText>(R.id.etInput)
-        val titleTextView = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
-        val btnSave = dialogView.findViewById<Button>(R.id.btnSave)
-        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
+        val binding = DialogInputBinding.inflate(LayoutInflater.from(requireContext())).apply {
+            tvDialogTitle.text = title
+            etInput.setText(currentValue)
 
-        titleTextView.text = title
-        editText.setText(currentValue)
-
-        if (isNumeric) {
-            editText.inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+            if (isNumeric) {
+                etInput.inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+            }
         }
 
-        val dialog = AlertDialog.Builder(requireContext(), R.style.CustomDialog)
-            .setView(dialogView)
+        AlertDialog.Builder(requireContext(), R.style.CustomDialog)
+            .setView(binding.root)
             .create()
-
-        btnSave.setOnClickListener {
-            val newValue = editText.text.toString()
-            onSave(newValue)
-            dialog.dismiss()
-        }
-
-        btnCancel.setOnClickListener {
-            dialog.dismiss()
-        }
-
-        dialog.show()
+            .apply {
+                binding.btnSave.setOnClickListener {
+                    onSave(binding.etInput.text.toString())
+                    dismiss()
+                }
+                binding.btnCancel.setOnClickListener { dismiss() }
+            }
+            .show()
     }
 
+
     private fun handleNotificationToggle() {
-        // Check if notifications are currently enabled in your app settings
         val notificationsEnabled = viewModel.notificationsEnabled.value ?: false
 
         if (notificationsEnabled) {
-            // If enabled, show dialog to guide the user to app settings to disable
             showDisableNotificationsDialog()
         } else {
-            // If not enabled, check if permission is needed
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 if (requireContext().checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                     requestNotificationPermission()
@@ -175,9 +177,7 @@ class SettingsFragment : Fragment() {
             true
         }
 
-        // Update SharedPreferences and ViewModel based on the system permission status
         viewModel.updateNotificationsEnabled(notificationsEnabled)
-        // Update UI based on the current system permission status
         binding.tvNotifications.text = getString(R.string.settings_notification_status, if (notificationsEnabled) "on" else "off")
     }
 
@@ -220,7 +220,7 @@ class SettingsFragment : Fragment() {
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, currencyOptions)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.currencySpinner.adapter = adapter
-        
+
         val dialog = AlertDialog.Builder(requireContext(), R.style.CustomDialog)
             .setView(binding.root)
             .create()

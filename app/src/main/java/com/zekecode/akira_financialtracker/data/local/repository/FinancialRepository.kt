@@ -18,7 +18,6 @@ class FinancialRepository @Inject constructor(
     private val budgetDao: BudgetDao,
     private val categoryDao: CategoryDao,
 ) {
-    // Private LiveData properties
     private val _allExpensesWithCategory = expenseDao.getAllExpensesWithCategories()
     private val _allEarningsWithCategory = earningDao.getAllEarningsWithCategories()
 

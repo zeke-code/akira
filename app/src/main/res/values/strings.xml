@@ -56,13 +56,16 @@
     <string name="dialog_select_category_title">Select a category for your transaction</string>
     <string name="dialog_select_category_new_hint">Or create a new one by writing its name here…</string>
     <string name="category_name_placeholder">Select or create a category</string>
+    <!-- Stats Fragment -->
+    <string name="stats_no_data_message">You don\'t have enough data to display this chart. Log more transactions!</string>
+    <string name="stats_expenses_vs_revenue_header">Expenses vs Revenues this month</string>
+    <string name="stats_monthly_expenses_header">Expenses this month</string>
+    <string name="stats_monthly_revenue_header">Revenues this month</string>
+    <!-- Stocks Fragment -->
+    <string name="stocks_disabled_view_text">This view is disabled because you need to set a Venture API key. \n\nGo to settings and set a valid key.</string>
+    <string name="search_hint">Search stock or currency here…</string>
+    <string name="stocks_header_text">Stocks</string>
     <!-- TransactionAdapter text -->
     <string name="expense_amount">-%1$.2f</string>
     <string name="earning_amount">+%1$.2f</string>
-    <string name="stats_monthly_expenses_header">Expenses this month</string>
-    <string name="stats_monthly_revenue_header">Revenues this month</string>
-    <string name="stats_expenses_vs_revenue_header">Expenses vs Revenues this month</string>
-    <string name="stocks_header_text">Stocks</string>
-    <string name="search_hint">Search stock or currency here…</string>
-    <string name="stocks_disabled_view_text">This view is disabled because you need to set a Venture API key. \n\nGo to settings and set a valid key.</string>
 </resources>

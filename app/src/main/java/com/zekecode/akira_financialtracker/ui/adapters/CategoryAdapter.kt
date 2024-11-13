@@ -5,9 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.zekecode.akira_financialtracker.R
-import com.zekecode.akira_financialtracker.databinding.ItemCategoryBinding
 import com.zekecode.akira_financialtracker.data.local.entities.CategoryModel
+import com.zekecode.akira_financialtracker.databinding.ItemCategoryBinding
 
 class CategoryAdapter(private val onItemClicked: (CategoryModel) -> Unit) :
     ListAdapter<CategoryModel, CategoryAdapter.CategoryViewHolder>(DiffCallback) {

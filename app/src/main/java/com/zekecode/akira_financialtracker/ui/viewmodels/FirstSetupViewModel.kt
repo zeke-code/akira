@@ -30,7 +30,7 @@ class FirstSetupViewModel @Inject constructor(
     fun saveUserData(userName: String, monthlyBudgetStr: String, selectedCurrency: String) {
         try {
             val monthlyBudget = monthlyBudgetStr.toFloat()
-            if (!isValidDecimal(monthlyBudgetStr) || monthlyBudget < 20) {
+            if (!isValidDecimal(monthlyBudgetStr) || monthlyBudget <= 0) {
                 _showReadyView.value = false
             } else {
                 _showReadyView.value = true

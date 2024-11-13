@@ -1,7 +1,6 @@
 package com.zekecode.akira_financialtracker.ui.viewmodels
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.*
 import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.data.local.repository.UserRepository
@@ -20,7 +19,6 @@ class SettingsViewModel @Inject constructor(
     val username: LiveData<String> get() = _username
 
     private val _currencySymbol = MutableLiveData<String>()
-    val currencySymbol: LiveData<String> get() = _currencySymbol
 
     private val _budget = MutableLiveData<Float?>()
     val budget: LiveData<Float?> get() = _budget
@@ -39,6 +37,9 @@ class SettingsViewModel @Inject constructor(
 
     private val _apiKey = MutableLiveData<String>()
     val apiKey: LiveData<String> get() = _apiKey
+
+    private val _invalidInputToastText = MutableLiveData<String>()
+    val invalidInputToastText: LiveData<String> get() = _invalidInputToastText
 
     init {
         loadSettings()
@@ -68,19 +69,19 @@ class SettingsViewModel @Inject constructor(
                 _username.postValue(newUsername)
             }
         } else {
-            Log.w("SettingsViewModel", "Attempted to set an empty username.")
+            _invalidInputToastText.value = "Username cannot be empty."
         }
     }
 
     fun updateBudget(newBudget: String) {
         val budgetValue = newBudget.toFloatOrNull()
-        if (budgetValue != null && budgetValue >= 0) {
+        if (budgetValue != null && budgetValue > 0) {
             viewModelScope.launch(Dispatchers.IO) {
                 userRepository.updateBudget(budgetValue)
                 _budget.postValue(budgetValue)
             }
         } else {
-            Log.w("SettingsViewModel", "Invalid budget value: $newBudget")
+            _invalidInputToastText.value = "Budget cannot be nothing and must be bigger than 0."
         }
     }
 
