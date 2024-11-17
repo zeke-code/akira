@@ -6,13 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import com.zekecode.akira_financialtracker.databinding.FragmentStocksBinding
 import com.zekecode.akira_financialtracker.ui.adapters.SuggestionsAdapter
 import com.zekecode.akira_financialtracker.ui.viewmodels.StocksViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class StocksFragment : Fragment() {
@@ -42,16 +39,6 @@ class StocksFragment : Fragment() {
         viewModel.isApiKeyPresent.observe(viewLifecycleOwner) { isPresent ->
             if (isPresent) {
                 showView()
-
-                // Observe stock data received from the API (name and price are combined to render them simultaneously)
-                lifecycleScope.launch {
-                    combine(viewModel.stockName, viewModel.stockPrice) { name, price ->
-                        name to price
-                    }.collect { (name, price) ->
-                        binding.stockHeader.text = name
-                        binding.stockPriceChange.text = price
-                    }
-                }
             } else {
                 hideView()
             }

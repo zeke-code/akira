@@ -66,6 +66,7 @@ dependencies {
     implementation(libs.retrofit2.retrofit)
     implementation(libs.converter.moshi)
     implementation(libs.moshi)
+    ksp("com.squareup.moshi:moshi-kotlin-codegen:1.15.0")
 
     // Room dependencies
     implementation(libs.androidx.room.runtime)
