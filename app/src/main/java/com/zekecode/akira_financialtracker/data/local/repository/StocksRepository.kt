@@ -1,6 +1,8 @@
 package com.zekecode.akira_financialtracker.data.local.repository
 
+import android.util.Log
 import com.zekecode.akira_financialtracker.data.remote.api.AlphaVentureService
+import com.zekecode.akira_financialtracker.data.remote.models.StockQuoteModel
 import com.zekecode.akira_financialtracker.data.remote.models.TimeSeriesDailyModel
 import okio.IOException
 import retrofit2.HttpException
@@ -15,6 +17,19 @@ class StocksRepository @Inject constructor(
     suspend fun getDailyTimeSeries(symbol: String, apiKey: String): Result<TimeSeriesDailyModel> {
         return try {
             val response = alphaVentureService.getDailyTimeSeries(symbol = symbol, apiKey = apiKey)
+            Result.success(response)
+        } catch (e: HttpException) {
+            Result.failure(Exception("HTTP error: ${e.message}"))
+        } catch (e: IOException) {
+            Result.failure(Exception("Network error: ${e.message}"))
+        } catch (e: Exception) {
+            Result.failure(Exception("Unknown error: ${e.message}"))
+        }
+    }
+
+    suspend fun getStockQuote(symbol: String, apiKey: String): Result<StockQuoteModel> {
+        return try {
+            val response = alphaVentureService.getStockQuote(symbol = symbol, apiKey = apiKey)
             Result.success(response)
         } catch (e: HttpException) {
             Result.failure(Exception("HTTP error: ${e.message}"))

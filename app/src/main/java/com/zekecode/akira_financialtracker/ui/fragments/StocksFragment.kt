@@ -4,12 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.zekecode.akira_financialtracker.databinding.FragmentStocksBinding
 import com.zekecode.akira_financialtracker.ui.adapters.SuggestionsAdapter
 import com.zekecode.akira_financialtracker.ui.viewmodels.StocksViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
 class StocksFragment : Fragment() {
@@ -33,12 +41,19 @@ class StocksFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
         setupSuggestionsAdapter()
+        setupSearchListener()
     }
 
     private fun setupObservers() {
         viewModel.isApiKeyPresent.observe(viewLifecycleOwner) { isPresent ->
             if (isPresent) {
                 showView()
+                viewModel.stockName.observe(viewLifecycleOwner) { stockName ->
+                    binding.stockHeader.text = stockName
+                }
+                viewModel.stockPrice.observe(viewLifecycleOwner) { stockPrice ->
+                    binding.stockPrice.text = stockPrice
+                }
             } else {
                 hideView()
             }
@@ -46,9 +61,28 @@ class StocksFragment : Fragment() {
     }
 
     private fun setupSuggestionsAdapter() {
-        val suggestions = listOf("AAPL - Apple", "GOOGL - Alphabet", "TSLA - Tesla", "EUR - Euro", "USD - US Dollar")
+        val suggestions = listOf("AAPL", "GOOGL", "TSLA", "EUR", "USD")
         suggestionsAdapter = SuggestionsAdapter(requireContext(), suggestions)
         binding.stockSearch.setAdapter(suggestionsAdapter)
+    }
+
+    private fun setupSearchListener() {
+        val searchQueryFlow = callbackFlow<String> {
+            val textWatcher = binding.stockSearch.doAfterTextChanged { text ->
+                trySend(text.toString())
+            }
+            awaitClose { binding.stockSearch.removeTextChangedListener(textWatcher) }
+        }
+
+        searchQueryFlow
+            .debounce(2000)
+            .distinctUntilChanged()
+            .onEach { query ->
+                if (query.isNotEmpty()) {
+                    viewModel.fetchStockData(query)
+                }
+            }
+            .launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
     private fun showView() {

@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zekecode.akira_financialtracker.data.local.repository.StocksRepository
 import com.zekecode.akira_financialtracker.data.local.repository.UserRepository
+import com.zekecode.akira_financialtracker.data.remote.models.DailyData
 import com.zekecode.akira_financialtracker.data.remote.models.TimeSeriesDailyModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +24,15 @@ class StocksViewModel @Inject constructor(
     private val _stockData = MutableStateFlow<TimeSeriesDailyModel?>(null)
     val stockData: StateFlow<TimeSeriesDailyModel?> = _stockData
 
+    private val _chartData = MutableStateFlow<List<Pair<String, Double>>>(emptyList())
+    val chartData: StateFlow<List<Pair<String, Double>>> = _chartData
+
+    private val _stockName = MutableLiveData<String?>()
+    val stockName: LiveData<String?> get() = _stockName
+
+    private val _stockPrice = MutableLiveData<String?>()
+    val stockPrice: LiveData<String?> get() = _stockPrice
+
     private val _isApiKeyPresent = MutableLiveData<Boolean>()
     val isApiKeyPresent: LiveData<Boolean> get() = _isApiKeyPresent
 
@@ -31,7 +41,6 @@ class StocksViewModel @Inject constructor(
 
     init {
         setUpObservers()
-        if (_isApiKeyPresent.value != null) { fetchStockData("AAPL", userRepository.getApiKey()) }
     }
 
     private fun setUpObservers() {
@@ -42,17 +51,43 @@ class StocksViewModel @Inject constructor(
         }
     }
 
-    fun fetchStockData(symbol: String, apiKey: String) {
-        viewModelScope.launch {
-            val result = stocksRepository.getDailyTimeSeries(symbol, apiKey)
-            result.onSuccess { data ->
-                _stockData.value = data
-                Log.d("StocksViewModel", "Response data is: $data")
-            }.onFailure { error ->
-                _errorMessage.value = "Could not retrieve stock information... try again later."
-                Log.d("StocksViewModel", "Error, response data is: $error")
+    fun fetchStockData(symbol: String) {
+        val apiKey = userRepository.getApiKey()
+        if (isApiKeyValid(apiKey)) {
+            viewModelScope.launch {
+                val dailyTimeSeriesData = stocksRepository.getDailyTimeSeries(symbol, apiKey)
+                val globalQuoteData = stocksRepository.getStockQuote(symbol, apiKey)
+                dailyTimeSeriesData.onSuccess { data ->
+                    _stockData.value = data
+                    _stockName.value = data.metaData.symbol
+                    val chartData = extractChartData(data.timeSeries)
+                    _chartData.value = chartData
+                    Log.d("StocksViewModel", "Response data is: $data")
+                }.onFailure { error ->
+                    _errorMessage.value = "Could not retrieve stock information... try again later."
+                    Log.d("StocksViewModel", "$error")
+                }
+                globalQuoteData.onSuccess { data ->
+                    _stockPrice.value = data.globalQuote.price
+                    Log.d("StocksViewModel", "Response data is: $data")
+                }.onFailure { error ->
+                    _errorMessage.value = "Could not retrieve stock information... try again later."
+                    Log.d("StocksViewModel", "$error")
+                }
             }
         }
+    }
+
+    private fun extractChartData(timeSeries: Map<String, DailyData>): List<Pair<String, Double>> {
+        return timeSeries.entries
+            .mapNotNull { entry ->
+                val date = entry.key
+                val closePrice = entry.value.close.toDoubleOrNull()
+                if (closePrice != null) {
+                    date to closePrice
+                } else null
+            }
+            .sortedBy { it.first }
     }
 
     private fun isApiKeyValid(apiKey: String): Boolean {

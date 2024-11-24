@@ -67,7 +67,7 @@
                     android:id="@+id/stock_header"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Paolo"
+                    android:text=""
                     android:textColor="@color/primary_text"
                     android:textSize="@dimen/text_m"
                     android:textStyle="bold"
@@ -75,10 +75,10 @@
 
                 <!-- Stock Price and Change -->
                 <TextView
-                    android:id="@+id/stock_price_change"
+                    android:id="@+id/stock_price"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="211,65 EUR | +2,45 (1.17%)"
+                    android:text=""
                     android:textColor="@color/accent_green"
                     android:textSize="16sp"
                     android:layout_gravity="center_horizontal"
