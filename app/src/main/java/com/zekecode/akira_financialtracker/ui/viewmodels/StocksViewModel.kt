@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.zekecode.akira_financialtracker.data.local.repository.StocksRepository
 import com.zekecode.akira_financialtracker.data.local.repository.UserRepository
 import com.zekecode.akira_financialtracker.data.remote.models.DailyData
-import com.zekecode.akira_financialtracker.data.remote.models.TimeSeriesDailyModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,10 +19,6 @@ class StocksViewModel @Inject constructor(
     private val stocksRepository: StocksRepository,
     private val userRepository: UserRepository
 ) : ViewModel() {
-
-    private val _stockData = MutableStateFlow<TimeSeriesDailyModel?>(null)
-    val stockData: StateFlow<TimeSeriesDailyModel?> = _stockData
-
     private val _chartData = MutableStateFlow<List<Pair<String, Double>>>(emptyList())
     val chartData: StateFlow<List<Pair<String, Double>>> = _chartData
 
@@ -36,8 +31,8 @@ class StocksViewModel @Inject constructor(
     private val _isApiKeyPresent = MutableLiveData<Boolean>()
     val isApiKeyPresent: LiveData<Boolean> get() = _isApiKeyPresent
 
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    val errorMessage: StateFlow<String?> = _errorMessage
+    private val _errorMessage = MutableLiveData<String?>(null)
+    val errorMessage: LiveData<String?> = _errorMessage
 
     init {
         setUpObservers()
@@ -58,7 +53,6 @@ class StocksViewModel @Inject constructor(
                 val dailyTimeSeriesData = stocksRepository.getDailyTimeSeries(symbol, apiKey)
                 val globalQuoteData = stocksRepository.getStockQuote(symbol, apiKey)
                 dailyTimeSeriesData.onSuccess { data ->
-                    _stockData.value = data
                     _stockName.value = data.metaData.symbol
                     val chartData = extractChartData(data.timeSeries)
                     _chartData.value = chartData
@@ -71,7 +65,6 @@ class StocksViewModel @Inject constructor(
                     _stockPrice.value = data.globalQuote.price
                     Log.d("StocksViewModel", "Response data is: $data")
                 }.onFailure { error ->
-                    _errorMessage.value = "Could not retrieve stock information... try again later."
                     Log.d("StocksViewModel", "$error")
                 }
             }
@@ -93,5 +86,4 @@ class StocksViewModel @Inject constructor(
     private fun isApiKeyValid(apiKey: String): Boolean {
         return apiKey.isNotEmpty() && apiKey != "none"
     }
-
 }
