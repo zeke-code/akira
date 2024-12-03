@@ -2,11 +2,15 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/categoryCardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/spacing_s"
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp"
+    android:checkable="true"
+    app:checkedIcon="@null"
     app:cardBackgroundColor="@color/tertiary_background"
     app:rippleColor="?attr/colorControlHighlight">
 
@@ -15,13 +19,15 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        tools:ignore="UseCompoundDrawables">
 
         <!-- Category Icon -->
         <ImageView
             android:id="@+id/ivCategoryIcon"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:contentDescription="@null"
             android:layout_marginEnd="@dimen/spacing_m" />
 
         <!-- Category Name -->
@@ -29,7 +35,7 @@
             android:id="@+id/tvSelectedCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Category Name"
+            android:text=""
             android:textSize="18sp"
             android:textColor="@color/primary_text"
             android:textStyle="bold" />

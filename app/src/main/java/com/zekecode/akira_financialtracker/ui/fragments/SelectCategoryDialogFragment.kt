@@ -22,6 +22,9 @@ class SelectCategoryDialogFragment : DialogFragment() {
     private val binding get() = _binding!!
 
     private val viewModel: CreateViewModel by activityViewModels()
+    private lateinit var adapter: CategoryAdapter
+
+    private var selectedCategory: CategoryModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,35 +37,47 @@ class SelectCategoryDialogFragment : DialogFragment() {
     ): View {
         _binding = DialogSelectCategoryBinding.inflate(inflater, container, false)
 
+        setupAdapter()
         setupObservers()
         setupListeners()
 
         return binding.root
     }
 
+    private fun setupAdapter() {
+        adapter = CategoryAdapter { category ->
+            selectedCategory = category
+            adapter.setSelectedCategory(category.id)
+        }
+        binding.rvCategoryList.layoutManager = LinearLayoutManager(context)
+        binding.rvCategoryList.adapter = adapter
+    }
+
     private fun setupObservers() {
-        // Observe categories from ViewModel
         viewModel.allCategories.observe(viewLifecycleOwner) { categories ->
-            (binding.rvCategoryList.adapter as? CategoryAdapter)?.submitList(categories)
+            adapter.submitList(categories)
+
+            // If a category was previously selected, reflect that in the adapter
+            val previouslySelectedCategory = viewModel.selectedCategory.value
+            if (previouslySelectedCategory != null) {
+                adapter.setSelectedCategory(previouslySelectedCategory.id)
+                selectedCategory = previouslySelectedCategory
+            }
         }
     }
 
     private fun setupListeners() {
-        // Set up RecyclerView and adapter for categories
-        binding.rvCategoryList.layoutManager = LinearLayoutManager(context)
-        val adapter = CategoryAdapter { category ->
-            viewModel.setSelectedCategory(category)
-        }
-        binding.rvCategoryList.adapter = adapter
-
-        // Cancel button listener
         binding.btnCancel.setOnClickListener {
             dismiss()
         }
 
-        // Save button listener
         binding.btnSave.setOnClickListener {
-            dismiss()
+            if (selectedCategory != null) {
+                viewModel.setSelectedCategory(selectedCategory!!)
+                dismiss()
+            } else {
+                Toast.makeText(context, "Please select a category", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

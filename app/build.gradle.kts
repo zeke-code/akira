@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace = "com.zekecode.akira_financialtracker"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.zekecode.akira_financialtracker"
         minSdk = 29
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -66,7 +66,7 @@ dependencies {
     implementation(libs.retrofit2.retrofit)
     implementation(libs.converter.moshi)
     implementation(libs.moshi)
-    ksp("com.squareup.moshi:moshi-kotlin-codegen:1.15.0")
+    ksp(libs.moshi.kotlin.codegen)
 
     // Room dependencies
     implementation(libs.androidx.room.runtime)

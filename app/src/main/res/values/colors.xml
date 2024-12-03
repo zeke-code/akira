@@ -21,6 +21,8 @@
     <color name="divider">#393939</color>
     <color name="disabled_element">#1c1c1c</color>
     <color name="search_symbol">#C3C3C3</color>
+    <color name="card_color">#333333</color>
+    <color name="selected_card_color">#575757</color>
 
     <!-- Navbar custom colors -->
     <color name="navbar_background">#262626</color>
