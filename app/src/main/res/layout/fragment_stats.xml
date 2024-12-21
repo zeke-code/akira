@@ -8,104 +8,71 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_m">
 
-        <!-- CardView with margin for better spacing -->
-        <androidx.cardview.widget.CardView
+        <!-- Header and Chart for Monthly Expenses -->
+        <TextView
+            android:id="@+id/expenses_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/spacing_m"
-            app:cardElevation="4dp"
-            app:cardCornerRadius="8dp"
-            app:cardBackgroundColor="@color/background">
+            android:text="@string/stats_monthly_expenses_header"
+            android:textSize="20sp"
+            android:textColor="@color/primary_text"
+            android:textStyle="bold"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/spacing_s" />
 
-            <!-- Content inside CardView -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/spacing_m">
+            <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
+                android:id="@+id/expense_chart_view"
+                android:layout_width="wrap_content"
+                android:layout_height="220dp"
+                app:scrollEnabled="true"
+                app:chartStyle="@style/ExpenseChartStyle" />
 
-                <!-- Monthly Expenses Header -->
-                <TextView
-                    android:id="@+id/expenses_header"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/stats_monthly_expenses_header"
-                    android:textSize="20sp"
-                    android:textColor="@color/primary_text"
-                    android:textStyle="bold"
-                    android:gravity="center_horizontal" />
+        <TextView
+            android:id="@+id/noExpensesDataTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/stats_no_data_message"
+            android:textSize="@dimen/text_s"
+            android:textColor="@color/secondary_text"
+            android:gravity="center_horizontal"
+            android:visibility="gone" />
 
-                <!-- Expense Graph -->
-                <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
-                    android:id="@+id/expense_chart_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="300dp"
-                    app:chartStyle="@style/ExpenseChartStyle" />
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider"
+            android:layout_marginVertical="@dimen/spacing_m" />
 
-                <!-- Empty Expense Data Message -->
-                <TextView
-                    android:id="@+id/noExpensesDataTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/stats_no_data_message"
-                    android:textSize="@dimen/text_s"
-                    android:textColor="@color/secondary_text"
-                    android:gravity="center_horizontal"
-                    android:visibility="gone" />
+        <!-- Header and Chart for Monthly Revenue -->
+        <TextView
+            android:id="@+id/revenue_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/stats_monthly_revenue_header"
+            android:textSize="20sp"
+            android:textColor="@color/primary_text"
+            android:textStyle="bold"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/spacing_s" />
 
-                <!-- Divider -->
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginVertical="@dimen/spacing_m"
-                    android:background="@color/divider" />
+            <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
+                android:id="@+id/earning_chart_view"
+                android:layout_width="wrap_content"
+                android:layout_height="220dp"
+                app:chartStyle="@style/RevenueChartStyle" />
 
-                <!-- Monthly Revenue Header -->
-                <TextView
-                    android:id="@+id/revenue_header"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/stats_monthly_revenue_header"
-                    android:textSize="20sp"
-                    android:textColor="@color/primary_text"
-                    android:textStyle="bold"
-                    android:gravity="center_horizontal"
-                    android:layout_marginTop="@dimen/spacing_m" />
-
-                <!-- Revenue Graph -->
-                <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
-                    android:id="@+id/earning_chart_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="300dp"
-                    app:chartStyle="@style/RevenueChartStyle" />
-
-                <!-- Empty Earnings Data Message -->
-                <TextView
-                    android:id="@+id/noEarningsDataTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/stats_no_data_message"
-                    android:textSize="@dimen/text_s"
-                    android:textColor="@color/secondary_text"
-                    android:gravity="center_horizontal"
-                    android:visibility="gone" />
-
-                <!-- Expenses vs Revenue Graph
-                <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
-                    android:id="@+id/expense_vs_revenue_chart"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="300dp"
-                    app:chartStyle="@style/ExpenseVsRevenueChartStyle"
-                    />
-
-                    -->
-
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        <TextView
+            android:id="@+id/noEarningsDataTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/stats_no_data_message"
+            android:textSize="@dimen/text_s"
+            android:textColor="@color/secondary_text"
+            android:gravity="center_horizontal"
+            android:visibility="gone" />
     </LinearLayout>
 </ScrollView>

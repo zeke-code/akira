@@ -1,6 +1,5 @@
 package com.zekecode.akira_financialtracker.data.local.repository
 
-import android.util.Log
 import com.zekecode.akira_financialtracker.data.remote.api.AlphaVentureService
 import com.zekecode.akira_financialtracker.data.remote.models.StockQuoteModel
 import com.zekecode.akira_financialtracker.data.remote.models.TimeSeriesDailyModel

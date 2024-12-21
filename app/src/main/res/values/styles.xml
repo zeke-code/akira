@@ -27,26 +27,26 @@
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
-    <!-- Chart Base Styles -->
+    <!-- CHARTS SECTION -->
 
-    <style name="CustomAxis">
-        <item name="horizontalAxisLabelSpacing">2</item>
+    <!-- Chart Base Styles -->
+    <style name="BaseBottomAxisStyle">
+        <item name="horizontalAxisLabelSpacing">6</item>
     </style>
 
     <style name="BaseColumnStyle">
         <item name="thickness">8dp</item>
     </style>
 
-    <!-- CHARTS SECTION -->
-
     <!-- Expense Chart Styles -->
     <style name="ExpenseChartStyle">
-        <item name="bottomAxisStyle">@style/CustomAxis</item>
+        <item name="bottomAxisStyle">@style/BaseBottomAxisStyle</item>
         <item name="columnLayerStyle">@style/ExpenseChartColumnLayerStyle</item>
         <item name="layers">column</item>
         <item name="showBottomAxis">true</item>
         <item name="showStartAxis">true</item>
-        <item name="scrollEnabled">true</item>
+        <item name="scalableEndLayerPadding">@dimen/spacing_m</item>
+        <item name="scalableStartLayerPadding">@dimen/spacing_m</item>
     </style>
 
     <style name="ExpenseChartColumn1Style" parent="BaseColumnStyle">
@@ -59,12 +59,14 @@
 
     <!-- Revenue Chart Styles -->
     <style name="RevenueChartStyle">
-        <item name="bottomAxisStyle">@style/CustomAxis</item>
+        <item name="bottomAxisStyle">@style/BaseBottomAxisStyle</item>
         <item name="columnLayerStyle">@style/RevenueChartColumnLayerStyle</item>
         <item name="layers">column</item>
         <item name="showBottomAxis">true</item>
         <item name="showStartAxis">true</item>
         <item name="scrollEnabled">true</item>
+        <item name="scalableEndLayerPadding">@dimen/spacing_m</item>
+        <item name="scalableStartLayerPadding">@dimen/spacing_m</item>
     </style>
 
     <style name="RevenueChartColumn1Style" parent="BaseColumnStyle">
@@ -91,12 +93,14 @@
 
     <!-- Expense vs Revenue Chart Styles -->
     <style name="ExpenseVsRevenueChartStyle">
-        <item name="bottomAxisStyle">@style/CustomAxis</item>
+        <item name="bottomAxisStyle">@style/BaseBottomAxisStyle</item>
         <item name="lineLayerStyle">@style/ExpenseVsChartLineLayerStyle</item>
         <item name="layers">line</item>
         <item name="showBottomAxis">true</item>
         <item name="showStartAxis">true</item>
         <item name="scrollEnabled">true</item>
+        <item name="scalableEndLayerPadding">@dimen/spacing_m</item>
+        <item name="scalableStartLayerPadding">@dimen/spacing_m</item>
     </style>
 
     <style name="ExpenseVsChartLineLayerStyle">

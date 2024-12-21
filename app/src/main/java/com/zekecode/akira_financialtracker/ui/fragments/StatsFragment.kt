@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
-import com.patrykandpatrick.vico.core.cartesian.data.CartesianValueFormatter
 import com.zekecode.akira_financialtracker.databinding.FragmentStatsBinding
 import com.zekecode.akira_financialtracker.ui.viewmodels.StatsViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,6 +36,7 @@ class StatsFragment : Fragment() {
         // fix the expense chart’s formatter:
         binding.expenseChartView.post {
             val chart = binding.expenseChartView.chart ?: return@post
+            binding.expenseChartView.isHorizontalScrollBarEnabled = true
             binding.expenseChartView.chart = chart.copy(
                 bottomAxis = (chart.bottomAxis as? HorizontalAxis ?: return@post).copy(
                     valueFormatter = { context, x, _ ->
@@ -44,7 +44,8 @@ class StatsFragment : Fragment() {
                         val labels = context.model.extraStore[viewModel.labelListKey]
                         // safety check the index, fallback to x.toString() if not in range:
                         labels.getOrNull(x.toInt()) ?: x.toString()
-                    }
+                    },
+                    itemPlacer = HorizontalAxis.ItemPlacer.segmented()
                 )
             )
         }
@@ -52,12 +53,14 @@ class StatsFragment : Fragment() {
         // fix the earning chart’s formatter:
         binding.earningChartView.post {
             val chart = binding.earningChartView.chart ?: return@post
+            binding.expenseChartView.isHorizontalScrollBarEnabled = true
             binding.earningChartView.chart = chart.copy(
                 bottomAxis = (chart.bottomAxis as? HorizontalAxis ?: return@post).copy(
                     valueFormatter = { context, x, _ ->
                         val labels = context.model.extraStore[viewModel.labelListKey]
                         labels.getOrNull(x.toInt()) ?: x.toString()
-                    }
+                    },
+                    itemPlacer = HorizontalAxis.ItemPlacer.segmented()
                 )
             )
         }
