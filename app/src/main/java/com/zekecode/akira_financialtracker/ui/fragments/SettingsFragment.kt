@@ -183,8 +183,8 @@ class SettingsFragment : Fragment() {
 
     private fun showDisableNotificationsDialog() {
         AlertDialog.Builder(requireContext())
-            .setTitle("Disable Notifications")
-            .setMessage("To disable notifications, please go to the app settings and turn them off.")
+            .setTitle(R.string.settings_disable_notifications_dialog_title)
+            .setMessage(R.string.settings_disable_notifications_dialog_description)
             .setPositiveButton("Go to Settings") { _, _ ->
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                     data = Uri.fromParts("package", requireContext().packageName, null)

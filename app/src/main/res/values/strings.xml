@@ -33,12 +33,11 @@
     <string name="settings_username">Current name: %s</string>
     <string name="settings_budget">Current budget set: %.2f %2$s</string>
     <string name="settings_notification_status">Toggle notifications: %s</string>
-    <string name="dialog_cancel_button">Cancel</string>
-    <string name="dialog_save_button">Save</string>
-    <string name="dialog_edittext_hint">Enter a new value…</string>
     <string name="settings_current_currency">Current currency: %s</string>
     <string name="settings_currency_dialog_title">Select the desired currency</string>
     <string name="settings_api_key_viewer">"Current Alpha Vantage API key: %s"</string>
+    <string name="settings_disable_notifications_dialog_title">Disable Notifications</string>
+    <string name="settings_disable_notifications_dialog_description">To disable notifications, please go to app settings and disable them.</string>
     <!-- Create fragment -->
     <string name="create_header">Add a transaction</string>
     <string name="create_select_category_arrow">Select a category</string>
@@ -69,4 +68,8 @@
     <string name="expense_amount">-%1$.2f</string>
     <string name="earning_amount">+%1$.2f</string>
     <string name="transaction_date">Date: %s</string>
+    <!-- Custom Dialogs text -->
+    <string name="dialog_cancel_button">Cancel</string>
+    <string name="dialog_save_button">Save</string>
+    <string name="dialog_edittext_hint">Enter a new value…</string>
 </resources>
