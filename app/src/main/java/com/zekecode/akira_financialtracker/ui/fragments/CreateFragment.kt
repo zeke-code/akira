@@ -1,6 +1,5 @@
 package com.zekecode.akira_financialtracker.ui.fragments
 
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,11 +10,12 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.databinding.FragmentCreateBinding
 import com.zekecode.akira_financialtracker.ui.viewmodels.CreateViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Calendar
+
 
 @AndroidEntryPoint
 class CreateFragment : Fragment() {
@@ -100,7 +100,7 @@ class CreateFragment : Fragment() {
 
         // Date picker click listener
         binding.tvCreateDate.setOnClickListener {
-            showDatePickerDialog()
+            showDatePicker()
         }
 
         // Toggle group listener for expense or revenue
@@ -114,25 +114,15 @@ class CreateFragment : Fragment() {
         }
     }
 
-    private fun showDatePickerDialog() {
-        val calendar = Calendar.getInstance().apply {
-            timeInMillis = viewModel.selectedDate.value ?: System.currentTimeMillis()
+    private fun showDatePicker() {
+        val builder = MaterialDatePicker.Builder.datePicker()
+        builder.setTitleText("Select a date")
+        val datePicker = builder.build()
+
+        datePicker.addOnPositiveButtonClickListener { selection ->
+            binding.tvCreateDate.text = datePicker.headerText
         }
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
 
-        val datePickerDialog = DatePickerDialog(
-            requireContext(),
-            { _, selectedYear, selectedMonth, selectedDay ->
-                val selectedDate = Calendar.getInstance().apply {
-                    set(selectedYear, selectedMonth, selectedDay)
-                }
-                viewModel.setSelectedDate(selectedDate.timeInMillis)
-            },
-            year, month, day
-        )
-
-        datePickerDialog.show()
+        datePicker.show(parentFragmentManager, "DATE_PICKER")
     }
 }

@@ -65,155 +65,156 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Create/select category row -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:background="?attr/selectableItemBackground"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="@dimen/spacing_m"
-        android:layout_marginTop="@dimen/spacing_m"
-        android:padding="@dimen/spacing_s">
-
-        <ImageButton
-            android:id="@+id/ib_category_icon"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:background="@drawable/circle_background"
-            android:src="@drawable/ic_question_mark"
-            android:scaleType="center"
-            android:layout_marginEnd="@dimen/spacing_m"
-            android:contentDescription="@string/create_icon_selector_description"/>
 
         <LinearLayout
-            android:layout_width="@dimen/create_divider_width"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginTop="@dimen/spacing_m"
+            android:layout_marginBottom="@dimen/spacing_m"
+            android:orientation="horizontal"
+            android:gravity="center">
 
-            <TextView
-                android:id="@+id/tv_create_category"
-                android:layout_width="match_parent"
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/iv_category_icon"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="@drawable/circle_background"
+                android:src="@drawable/ic_question_mark"
+                android:scaleType="center"
+                android:layout_marginEnd="@dimen/spacing_m"
+                android:contentDescription="@string/create_icon_selector_description" />
+            <LinearLayout
+                android:layout_width="@dimen/create_divider_width"
                 android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="true"
-                android:hint="@string/create_category_hint"
-                android:textColorHint="@color/secondary_text"
-                android:background="@android:color/transparent"
-                android:padding="@dimen/spacing_s"
-                android:textColor="@color/primary_text" />
+                android:orientation="vertical">
 
-            <!-- Divider -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_gravity="bottom"
-                android:layout_marginBottom="@dimen/spacing_s"
-                android:background="@color/divider" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_create_category"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:hint="@string/create_category_hint"
+                    android:textColorHint="@color/secondary_text"
+                    android:background="@android:color/transparent"
+                    android:padding="@dimen/spacing_s"
+                    android:textColor="@color/primary_text" />
+
+                <!-- Divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_gravity="bottom"
+                    android:layout_marginBottom="@dimen/spacing_s"
+                    android:background="@color/divider" />
+            </LinearLayout>
+
         </LinearLayout>
-
-    </LinearLayout>
 
     <!-- Edit date row -->
-    <LinearLayout
-        android:id="@+id/ll_set_date"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:background="?attr/selectableItemBackground"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="@dimen/spacing_m"
-        android:padding="@dimen/spacing_s">
-
-        <ImageButton
-            android:id="@+id/ib_date_icon"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:background="@drawable/circle_background"
-            android:src="@drawable/ic_edit_calendar"
-            android:clickable="true"
-            android:scaleType="center"
-            android:layout_marginEnd="@dimen/spacing_m"
-            android:contentDescription="@string/create_calendar_icon_description"/>
 
         <LinearLayout
-            android:layout_width="@dimen/create_divider_width"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginTop="@dimen/spacing_m"
+            android:layout_marginBottom="@dimen/spacing_m"
+            android:orientation="horizontal"
+            android:gravity="center">
 
-            <TextView
-                android:id="@+id/tv_create_date"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/iv_date_icon"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="@drawable/circle_background"
+                android:src="@drawable/ic_edit_calendar"
                 android:clickable="true"
-                android:focusable="true"
-                android:hint="@string/create_date"
-                android:textColorHint="@color/secondary_text"
-                android:padding="@dimen/spacing_s" />
+                android:scaleType="center"
+                android:layout_marginEnd="@dimen/spacing_m"
+                android:contentDescription="@string/create_calendar_icon_description" />
 
-            <View
+            <LinearLayout
                 android:layout_width="@dimen/create_divider_width"
-                android:layout_height="1dp"
-                android:layout_gravity="bottom"
-                android:layout_marginBottom="@dimen/spacing_s"
-                android:background="@color/divider" />
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_create_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:hint="@string/create_date"
+                    android:textColorHint="@color/secondary_text"
+                    android:padding="@dimen/spacing_s" />
+
+                <View
+                    android:layout_width="@dimen/create_divider_width"
+                    android:layout_height="1dp"
+                    android:layout_gravity="bottom"
+                    android:layout_marginBottom="@dimen/spacing_s"
+                    android:background="@color/divider" />
+
+            </LinearLayout>
 
         </LinearLayout>
-
-    </LinearLayout>
 
     <!-- Edit note row -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:background="?attr/selectableItemBackground"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="@dimen/spacing_m"
-        android:padding="@dimen/spacing_s">
-
-        <ImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:background="@drawable/circle_background"
-            android:src="@drawable/ic_edit_note"
-            android:scaleType="center"
-            android:layout_marginEnd="@dimen/spacing_m"
-            android:contentDescription="@string/create_note_icon_description"/>
-
         <LinearLayout
-            android:layout_width="@dimen/create_divider_width"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/spacing_m"
+            android:layout_marginBottom="@dimen/spacing_m"
+            android:gravity="center">
 
-            <EditText
-                android:id="@+id/et_create_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:autofillHints="notes"
-                android:background="@android:color/transparent"
-                android:hint="@string/create_notes"
-                android:textSize="15sp"
-                android:maxLength="40"
-                android:inputType="text"
-                android:gravity="center_vertical"
-                android:maxLines="1"
-                android:minHeight="48dp"
-                android:padding="@dimen/spacing_s"
-                android:textColorHint="@color/secondary_text" />
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/iv_description"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="@drawable/circle_background"
+                android:src="@drawable/ic_edit_note"
+                android:scaleType="center"
+                android:layout_marginEnd="@dimen/spacing_m"
+                android:contentDescription="@string/create_note_icon_description" />
 
-            <View
+            <LinearLayout
                 android:layout_width="@dimen/create_divider_width"
-                android:layout_height="1dp"
-                android:layout_marginBottom="@dimen/spacing_s"
-                android:layout_gravity="bottom"
-                android:background="@color/divider" />
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_create_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/create_notes"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:counterMaxLength="40">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_create_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autofillHints="notes"
+                        android:maxLines="1"
+                        android:maxLength="30"
+                        android:padding="@dimen/spacing_s"
+                        android:textColorHint="?attr/colorOnSurfaceVariant"
+                        android:textColor="?attr/colorOnSurface" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <View
+                    android:layout_width="@dimen/create_divider_width"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="@dimen/spacing_s"
+                    android:layout_gravity="bottom"
+                    android:background="@color/divider" />
+
+            </LinearLayout>
 
         </LinearLayout>
-
-    </LinearLayout>
 
     <!-- Select Expense or Revenue using MaterialButtonToggleGroup -->
     <com.google.android.material.button.MaterialButtonToggleGroup

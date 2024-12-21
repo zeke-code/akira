@@ -17,5 +17,5 @@
     <dimen name="text_header">18sp</dimen>
     <dimen name="text_m">24sp</dimen>
     <dimen name="text_l">32sp</dimen>
-    <dimen name="create_divider_width">220dp</dimen>
+    <dimen name="create_divider_width">240dp</dimen>
 </resources>

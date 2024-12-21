@@ -81,7 +81,7 @@ class StocksFragment : Fragment() {
         }
 
         searchQueryFlow
-            .debounce(2000)
+            .debounce(6000)
             .distinctUntilChanged()
             .onEach { query ->
                 if (query.isNotEmpty()) {
