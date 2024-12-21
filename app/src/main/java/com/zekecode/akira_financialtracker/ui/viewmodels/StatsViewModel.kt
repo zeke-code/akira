@@ -1,8 +1,11 @@
 package com.zekecode.akira_financialtracker.ui.viewmodels
 
-import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianValueFormatter
 import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
 import com.patrykandpatrick.vico.core.common.data.ExtraStore
 import com.zekecode.akira_financialtracker.data.local.entities.EarningWithCategory
@@ -13,10 +16,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * This class needs some refactoring, as right now it's total garbage.
- * But hey, it works! I hate vico charts.
- */
 @HiltViewModel
 class StatsViewModel @Inject constructor(
     private val repository: FinancialRepository
@@ -29,104 +28,99 @@ class StatsViewModel @Inject constructor(
     private val monthlyEarnings: LiveData<List<EarningWithCategory>> =
         repository.getMonthlyEarnings(currentYearMonth)
 
-    private val _expenseCategoryNames = MediatorLiveData<List<String>>()
-    val expenseCategoryNames: LiveData<List<String>> get() = _expenseCategoryNames
-
-    private val _expenseCategorySums = MediatorLiveData<List<Float>>()
-
-    private val _earningCategoryNames = MediatorLiveData<List<String>>()
-    val earningCategoryNames: LiveData<List<String>> get() = _earningCategoryNames
-
-    private val _earningCategorySums = MediatorLiveData<List<Float>>()
-
     private val _expenseChartModelProducer = CartesianChartModelProducer()
-    val expenseChartModelProducer: CartesianChartModelProducer get() = _expenseChartModelProducer
+    val expenseChartModelProducer: CartesianChartModelProducer
+        get() = _expenseChartModelProducer
 
     private val _earningChartModelProducer = CartesianChartModelProducer()
-    val earningChartModelProducer: CartesianChartModelProducer get() = _earningChartModelProducer
+    val earningChartModelProducer: CartesianChartModelProducer
+        get() = _earningChartModelProducer
 
-    private val _isEarningDataEmpty = MutableLiveData<Boolean>()
-    val isEarningDataEmpty: LiveData<Boolean> get() = _isEarningDataEmpty
+    private val _expenseData = MutableLiveData<Pair<List<String>, List<Double>>>()
+    val expenseData: LiveData<Pair<List<String>, List<Double>>>
+        get() = _expenseData
 
-    private val _isExpenseDataEmpty = MutableLiveData<Boolean>()
-    val isExpenseDataEmpty: LiveData<Boolean> get() = _isExpenseDataEmpty
+    private val _earningData = MutableLiveData<Pair<List<String>, List<Double>>>()
+    val earningData: LiveData<Pair<List<String>, List<Double>>>
+        get() = _earningData
+
+    val labelListKey = ExtraStore.Key<List<String>>()
 
     init {
-        _expenseCategoryNames.addSource(monthlyExpenses) { expenses ->
-            updateExpenseData(expenses)
-        }
+        processFinancialData(
+            data = monthlyExpenses,
+            getCategoryName = { it.category.name },
+            getAmount = { it.expense.amount },
+            onProcessed = { names, sums ->
+                _expenseData.value = names to sums
+                updateChart(
+                    categoryNames = names,
+                    categorySums = sums,
+                    chartModelProducer = _expenseChartModelProducer
+                )
+            }
+        )
 
-        _expenseCategorySums.addSource(monthlyExpenses) { expenses ->
-            updateExpenseData(expenses)
-        }
-
-        _earningCategoryNames.addSource(monthlyEarnings) { earnings ->
-            updateEarningsData(earnings)
-        }
-
-        _earningCategorySums.addSource(monthlyEarnings) {earnings ->
-            updateEarningsData(earnings)
-        }
+        processFinancialData(
+            data = monthlyEarnings,
+            getCategoryName = { it.category.name },
+            getAmount = { it.earning.amount },
+            onProcessed = { names, sums ->
+                _earningData.value = names to sums
+                updateChart(
+                    categoryNames = names,
+                    categorySums = sums,
+                    chartModelProducer = _earningChartModelProducer
+                )
+            }
+        )
     }
 
-    private fun updateExpenseData(expenses: List<ExpenseWithCategory>) {
-        if (expenses.isEmpty()) {
-            Log.w("StatsViewModel", "No expenses available to update the data.")
-            _isExpenseDataEmpty.value = true
-            return
-        }
-
-        val groupedExpenses = expenses.groupBy { it.category.name }
-        val categoryNames = groupedExpenses.keys.toList()
-        val categorySums = groupedExpenses.values.map { group ->
-            group.sumOf { it.expense.amount }.toFloat()
-        }
-
-        _expenseCategoryNames.value = categoryNames
-        _expenseCategorySums.value = categorySums
-
-        viewModelScope.launch {
-            updateExpenseChart(categoryNames, categorySums)
-        }
-    }
-
-    private fun updateEarningsData(earnings: List<EarningWithCategory>) {
-        if (earnings.isEmpty()) {
-            Log.w("StatsViewModel", "No earnings available to update the data.")
-            _isEarningDataEmpty.value = true
-            return
-        }
-
-        val groupedEarnings = earnings.groupBy { it.category.name }
-        val categoryNames = groupedEarnings.keys.toList()
-        val categorySums = groupedEarnings.values.map { group ->
-            group.sumOf { it.earning.amount }.toFloat()
-        }
-
-        _earningCategoryNames.value = categoryNames
-        _earningCategorySums.value = categorySums
-
-        viewModelScope.launch {
-            updateEarningsChart(categoryNames, categorySums)
-        }
-    }
-
-    private suspend fun updateExpenseChart(categoryNames: List<String>, categorySums: List<Float>) {
-        val labelListKey = ExtraStore.Key<List<String>>()
-        _expenseChartModelProducer.runTransaction {
-            columnSeries { series(categorySums) }
-            extras { extraStore ->
-                extraStore[labelListKey] = categoryNames
+    /**
+     * A generic function to transform the data (List<T>) into names and sums.
+     */
+    private fun <T> processFinancialData(
+        data: LiveData<List<T>>,
+        getCategoryName: (T) -> String,
+        getAmount: (T) -> Double,
+        onProcessed: (List<String>, List<Double>) -> Unit
+    ) {
+        data.observeForever { items ->
+            if (!items.isNullOrEmpty()) {
+                val groupedData = items.groupBy(getCategoryName)
+                val categoryNames = groupedData.keys.toList()
+                val categorySums = groupedData.values.map { group -> group.sumOf(getAmount) }
+                onProcessed(categoryNames, categorySums)
+            } else {
+                onProcessed(emptyList(), emptyList())
             }
         }
     }
 
-    private suspend fun updateEarningsChart(categoryNames: List<String>, categorySums: List<Float>) {
-        val labelListKey = ExtraStore.Key<List<String>>()
-        _earningChartModelProducer.runTransaction {
-            columnSeries { series(categorySums) }
-            extras { extraStore ->
-                extraStore[labelListKey] = categoryNames
+    /**
+     * Updates the [chartModelProducer] with new data
+     */
+    private fun updateChart(
+        categoryNames: List<String>,
+        categorySums: List<Double>,
+        chartModelProducer: CartesianChartModelProducer
+    ) {
+        if (categorySums.isEmpty()) {
+            return
+        }
+        else{
+            viewModelScope.launch {
+                chartModelProducer.runTransaction {
+                    // 1) Update the columns:
+                    columnSeries { series(categorySums) }
+                    // 2) Store category names in ExtraStore:
+                    extras { extraStore ->
+                        extraStore[labelListKey] = categoryNames
+                    }
+                }
+                CartesianValueFormatter { context, x, _ ->
+                    context.model.extraStore[labelListKey][x.toInt()]
+                }
             }
         }
     }

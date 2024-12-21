@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!-- Custom style for BottomNavigationView -->
+    <!-- Navigation Styles -->
     <style name="CustomBottomNavigation" parent="Widget.MaterialComponents.BottomNavigationView">
         <item name="itemTextAppearanceActive">@style/BottomNavActiveTextStyle</item>
         <item name="backgroundColor">@color/secondary_background</item>
@@ -11,42 +10,70 @@
         <item name="menuGravity">center</item>
     </style>
 
-    <!-- Style for active text in BottomNavigationView -->
     <style name="BottomNavActiveTextStyle" parent="TextAppearance.MaterialComponents.Caption">
         <item name="android:textColor">#E0E0E0</item>
     </style>
 
-    <!-- General text style for BottomNavigationView -->
     <style name="BottomNavTextStyle" parent="TextAppearance.MaterialComponents.Caption">
         <item name="android:textSize">10sp</item>
         <item name="android:paddingBottom">0dp</item>
         <item name="android:paddingTop">0dp</item>
     </style>
 
+    <!-- Dialog Styles -->
     <style name="CustomDialog" parent="Theme.MaterialComponents.Dialog">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsFloating">true</item>
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
-    <style name="ExpenseChartColumn1Style">
-        <item name="color">@color/accent_red</item>
-        <item name="thickness">8dp</item>
-    </style>
+    <!-- Chart Base Styles -->
 
     <style name="CustomAxis">
         <item name="horizontalAxisLabelSpacing">2</item>
     </style>
 
-    <style name="RevenueChartColumn1Style">
-        <item name="color">@color/accent_green</item>
+    <style name="BaseColumnStyle">
         <item name="thickness">8dp</item>
+    </style>
+
+    <!-- Expense Chart Styles -->
+    <style name="ExpenseChartStyle">
+        <item name="bottomAxisStyle">@style/CustomAxis</item>
+        <item name="columnLayerStyle">@style/ExpenseChartColumnLayerStyle</item>
+        <item name="layers">column</item>
+        <item name="showBottomAxis">true</item>
+        <item name="showStartAxis">true</item>
+        <item name="scrollEnabled">true</item>
+    </style>
+
+    <style name="ExpenseChartColumn1Style" parent="BaseColumnStyle">
+        <item name="android:color">@color/accent_red</item>
     </style>
 
     <style name="ExpenseChartColumnLayerStyle">
         <item name="column1Style">@style/ExpenseChartColumn1Style</item>
     </style>
 
+    <!-- Revenue Chart Styles -->
+    <style name="RevenueChartStyle">
+        <item name="bottomAxisStyle">@style/CustomAxis</item>
+        <item name="columnLayerStyle">@style/RevenueChartColumnLayerStyle</item>
+        <item name="layers">column</item>
+        <item name="showBottomAxis">true</item>
+        <item name="showStartAxis">true</item>
+        <item name="scrollEnabled">true</item>
+    </style>
+
+    <style name="RevenueChartColumn1Style" parent="BaseColumnStyle">
+        <item name="color">@color/accent_green</item>
+    </style>
+
+    <style name="RevenueChartColumnLayerStyle">
+        <item name="column1Style">@style/RevenueChartColumn1Style</item>
+    </style>
+
+    <!-- Stocks Chart Styles -->
     <style name="StocksChartLine1Style">
         <item name="color">@color/accent_blue</item>
     </style>
@@ -60,20 +87,17 @@
         <item name="showGuidelines">false</item>
     </style>
 
-    <style name="RevenueChartColumnLayerStyle">
-        <item name="column1Style">@style/RevenueChartColumn1Style</item>
-    </style>
-    
+    <!-- Expense vs Revenue Chart Styles -->
     <style name="ExpenseVsChartLineLayerStyle">
         <item name="line1Style">@style/ExpenseVsChartExpenseLineStyle</item>
         <item name="line2Style">@style/ExpenseVsChartRevenueLineStyle</item>
     </style>
-    
+
     <style name="ExpenseVsChartExpenseLineStyle" parent="ExpenseVsChartLineLayerStyle">
         <item name="color">@color/accent_red</item>
     </style>
+
     <style name="ExpenseVsChartRevenueLineStyle" parent="ExpenseVsChartLineLayerStyle">
         <item name="color">@color/accent_green</item>
     </style>
-
 </resources>
