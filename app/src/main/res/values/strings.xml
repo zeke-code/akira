@@ -68,4 +68,5 @@
     <!-- TransactionAdapter text -->
     <string name="expense_amount">-%1$.2f</string>
     <string name="earning_amount">+%1$.2f</string>
+    <string name="transaction_date">Date: %s</string>
 </resources>

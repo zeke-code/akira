@@ -94,18 +94,16 @@
                     android:gravity="center_horizontal"
                     android:visibility="gone" />
 
-                <!-- Optional Expenses vs Revenue Graph (commented out)
+                <!-- Expenses vs Revenue Graph
                 <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
-                    android:id="@+id/revenue_vs_expenses_chart_view"
+                    android:id="@+id/expense_vs_revenue_chart"
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    app:scrollEnabled="false"
-                    app:layers="line"
-                    app:lineLayerStyle="@style/ExpenseVsChartLineLayerStyle"
-                    app:showStartAxis="true"
-                    app:showBottomAxis="true"
-                    android:padding="@dimen/spacing_m" />
-                -->
+                    android:layout_height="wrap_content"
+                    android:minHeight="300dp"
+                    app:chartStyle="@style/ExpenseVsRevenueChartStyle"
+                    />
+
+                    -->
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>

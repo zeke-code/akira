@@ -1,6 +1,8 @@
 package com.zekecode.akira_financialtracker.ui.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.zekecode.akira_financialtracker.R
@@ -51,6 +53,8 @@ class TransactionsAdapter(private var transactions: List<TransactionModel>) :
     class ExpenseViewHolder(private val binding: ItemExpenseBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
+        private var isExpanded = false
+
         fun bind(expenseWithCategory: ExpenseWithCategory) {
             val expense = expenseWithCategory.expense
             val category = expenseWithCategory.category
@@ -58,11 +62,26 @@ class TransactionsAdapter(private var transactions: List<TransactionModel>) :
             binding.tvExpenseCategory.text = category.name
             binding.tvExpenseAmount.text = itemView.context.getString(R.string.expense_amount, expense.amount)
             binding.ivExpenseIcon.setImageResource(category.icon)
+            binding.tvExpenseDescription.text = expense.description ?: "No description"
+            binding.tvExpenseDate.text = itemView.context.getString(
+                R.string.transaction_date,
+                android.text.format.DateFormat.format("MMM dd, yyyy", expense.date)
+            )
+
+            // Toggle between collapsed and expanded views
+            binding.root.setOnClickListener {
+                isExpanded = !isExpanded
+                binding.collapsedContent.visibility = if (isExpanded) View.GONE else View.VISIBLE
+                binding.expandedContent.visibility = if (isExpanded) View.VISIBLE else View.GONE
+            }
         }
     }
 
+
     class EarningViewHolder(private val binding: ItemEarningBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
+        private var isExpanded = false
 
         fun bind(earningWithCategory: EarningWithCategory) {
             val earning = earningWithCategory.earning
@@ -71,8 +90,21 @@ class TransactionsAdapter(private var transactions: List<TransactionModel>) :
             binding.tvEarningCategory.text = category.name
             binding.tvEarningAmount.text = itemView.context.getString(R.string.earning_amount, earning.amount)
             binding.ivEarningIcon.setImageResource(category.icon)
+            binding.tvEarningDescription.text = earning.description ?: "No description"
+            binding.tvEarningDate.text = itemView.context.getString(
+                R.string.transaction_date,
+                android.text.format.DateFormat.format("MMM dd, yyyy", earning.date)
+            )
+
+            // Toggle between collapsed and expanded views
+            binding.root.setOnClickListener {
+                isExpanded = !isExpanded
+                binding.collapsedContent.visibility = if (isExpanded) View.GONE else View.VISIBLE
+                binding.expandedContent.visibility = if (isExpanded) View.VISIBLE else View.GONE
+            }
         }
     }
+
 
     companion object {
         private const val VIEW_TYPE_EXPENSE = 1

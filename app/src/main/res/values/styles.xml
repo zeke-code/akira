@@ -37,6 +37,8 @@
         <item name="thickness">8dp</item>
     </style>
 
+    <!-- CHARTS SECTION -->
+
     <!-- Expense Chart Styles -->
     <style name="ExpenseChartStyle">
         <item name="bottomAxisStyle">@style/CustomAxis</item>
@@ -66,7 +68,7 @@
     </style>
 
     <style name="RevenueChartColumn1Style" parent="BaseColumnStyle">
-        <item name="color">@color/accent_green</item>
+        <item name="android:color">@color/accent_green</item>
     </style>
 
     <style name="RevenueChartColumnLayerStyle">
@@ -88,16 +90,29 @@
     </style>
 
     <!-- Expense vs Revenue Chart Styles -->
+    <style name="ExpenseVsRevenueChartStyle">
+        <item name="bottomAxisStyle">@style/CustomAxis</item>
+        <item name="lineLayerStyle">@style/ExpenseVsChartLineLayerStyle</item>
+        <item name="layers">line</item>
+        <item name="showBottomAxis">true</item>
+        <item name="showStartAxis">true</item>
+        <item name="scrollEnabled">true</item>
+    </style>
+
     <style name="ExpenseVsChartLineLayerStyle">
         <item name="line1Style">@style/ExpenseVsChartExpenseLineStyle</item>
         <item name="line2Style">@style/ExpenseVsChartRevenueLineStyle</item>
     </style>
 
-    <style name="ExpenseVsChartExpenseLineStyle" parent="ExpenseVsChartLineLayerStyle">
-        <item name="color">@color/accent_red</item>
+    <style name="ExpenseVsChartExpenseLineStyle" parent="BaseLineStyle">
+        <item name="android:color">@color/accent_red</item>
     </style>
 
-    <style name="ExpenseVsChartRevenueLineStyle" parent="ExpenseVsChartLineLayerStyle">
-        <item name="color">@color/accent_green</item>
+    <style name="ExpenseVsChartRevenueLineStyle" parent="BaseLineStyle">
+        <item name="android:color">@color/accent_green</item>
+    </style>
+
+    <style name="BaseLineStyle">
+        <item name="android:width">2dp</item>
     </style>
 </resources>

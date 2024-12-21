@@ -111,15 +111,10 @@ class StatsViewModel @Inject constructor(
         else{
             viewModelScope.launch {
                 chartModelProducer.runTransaction {
-                    // 1) Update the columns:
                     columnSeries { series(categorySums) }
-                    // 2) Store category names in ExtraStore:
                     extras { extraStore ->
                         extraStore[labelListKey] = categoryNames
                     }
-                }
-                CartesianValueFormatter { context, x, _ ->
-                    context.model.extraStore[labelListKey][x.toInt()]
                 }
             }
         }
