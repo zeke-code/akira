@@ -72,6 +72,24 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun deleteTransaction(transaction: TransactionModel) {
+        viewModelScope.launch {
+            when (transaction) {
+                is TransactionModel.Expense -> financialRepository.deleteExpense(transaction.expenseWithCategory.expense)
+                is TransactionModel.Earning -> financialRepository.deleteEarning(transaction.earningWithCategory.earning)
+            }
+        }
+    }
+
+    fun addTransactionBack(transaction: TransactionModel) {
+        viewModelScope.launch {
+            when (transaction) {
+                is TransactionModel.Expense -> financialRepository.insertExpense(transaction.expenseWithCategory.expense)
+                is TransactionModel.Earning -> financialRepository.insertEarning(transaction.earningWithCategory.earning)
+            }
+        }
+    }
+
     private fun calculateRemainingBudget(
         budget: Double?,
         transactions: List<TransactionModel>

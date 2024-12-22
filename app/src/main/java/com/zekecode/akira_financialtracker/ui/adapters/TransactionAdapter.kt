@@ -51,6 +51,18 @@ class TransactionsAdapter(
         notifyDataSetChanged()
     }
 
+    fun addTransactionAt(position: Int, transaction: TransactionModel) {
+        transactions = transactions.toMutableList().apply { add(position, transaction) }
+        notifyItemInserted(position)
+    }
+
+    fun removeTransactionAt(position: Int): TransactionModel {
+        val removedTransaction = transactions[position]
+        transactions = transactions.toMutableList().apply { removeAt(position) }
+        notifyItemRemoved(position)
+        return removedTransaction
+    }
+
     class ExpenseViewHolder(
         private val binding: ItemExpenseBinding,
         private val onTransactionEdit: (TransactionModel) -> Unit

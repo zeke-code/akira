@@ -8,8 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.snackbar.Snackbar
 import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.data.local.entities.TransactionModel
 import com.zekecode.akira_financialtracker.databinding.DialogEditTransactionBinding
@@ -51,6 +54,8 @@ class HomeFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = transactionsAdapter
         }
+
+        setupSwipeToDelete(binding.homeExpenseRecyclerView, transactionsAdapter)
     }
 
     private fun setUpObservers() {
@@ -162,6 +167,36 @@ class HomeFragment : Fragment() {
         }
 
         dialog.show()
+    }
+
+    private fun setupSwipeToDelete(recyclerView: RecyclerView, adapter: TransactionsAdapter) {
+        val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                // No move operation required
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                // Remove the transaction from the adapter and notify
+                val removedTransaction = adapter.removeTransactionAt(position)
+                viewModel.deleteTransaction(removedTransaction)
+
+                // Show a Snackbar for undo functionality
+                Snackbar.make(recyclerView, "Transaction deleted", Snackbar.LENGTH_LONG)
+                    .setAction("UNDO") {
+                        adapter.addTransactionAt(position, removedTransaction)
+                        viewModel.addTransactionBack(removedTransaction)
+                    }.show()
+            }
+        }
+
+        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
     override fun onDestroyView() {
