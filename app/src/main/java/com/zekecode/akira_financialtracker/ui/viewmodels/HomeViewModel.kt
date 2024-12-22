@@ -42,13 +42,14 @@ class HomeViewModel @Inject constructor(
 
     val usedBudgetPercentage: LiveData<Float> get() = _usedBudgetPercentage
 
-    fun updateTransaction(transaction: TransactionModel, description: String, date: Long) {
+    fun updateTransaction(transaction: TransactionModel, description: String, amount: Double, date: Long) {
         viewModelScope.launch {
             val updatedTransaction = when (transaction) {
                 is TransactionModel.Expense -> transaction.copy(
                     expenseWithCategory = transaction.expenseWithCategory.copy(
                         expense = transaction.expenseWithCategory.expense.copy(
                             description = description,
+                            amount = amount,
                             date = date
                         )
                     )
@@ -57,6 +58,7 @@ class HomeViewModel @Inject constructor(
                     earningWithCategory = transaction.earningWithCategory.copy(
                         earning = transaction.earningWithCategory.earning.copy(
                             description = description,
+                            amount = amount,
                             date = date
                         )
                     )

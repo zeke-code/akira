@@ -1,21 +1,15 @@
 package com.zekecode.akira_financialtracker.ui.adapters
 
-import android.app.AlertDialog
-import android.icu.util.Calendar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.datepicker.MaterialDatePicker
 import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.data.local.entities.EarningWithCategory
 import com.zekecode.akira_financialtracker.data.local.entities.ExpenseWithCategory
 import com.zekecode.akira_financialtracker.data.local.entities.TransactionModel
-import com.zekecode.akira_financialtracker.databinding.DialogEditTransactionBinding
 import com.zekecode.akira_financialtracker.databinding.ItemEarningBinding
 import com.zekecode.akira_financialtracker.databinding.ItemExpenseBinding
-import java.util.Locale
 
 class TransactionsAdapter(
     private var transactions: List<TransactionModel>,

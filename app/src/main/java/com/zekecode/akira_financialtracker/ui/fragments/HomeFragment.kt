@@ -85,7 +85,7 @@ class HomeFragment : Fragment() {
 
     private fun updateCircularProgress(usedBudget: Float) {
         val trackColor = if (usedBudget > 75) {
-            requireContext().getColor(R.color.accent_yellow)
+            requireContext().getColor(R.color.warning_yellow)
         } else {
             requireContext().getColor(R.color.accent_green)
         }
@@ -110,6 +110,7 @@ class HomeFragment : Fragment() {
             is TransactionModel.Expense -> {
                 val expense = transaction.expenseWithCategory.expense
                 binding.etTransactionDescription.setText(expense.description)
+                binding.etTransactionAmount.setText(expense.amount.toString())
                 binding.etTransactionDate.setText(
                     android.text.format.DateFormat.format("MMM dd, yyyy", expense.date)
                 )
@@ -117,6 +118,7 @@ class HomeFragment : Fragment() {
             is TransactionModel.Earning -> {
                 val earning = transaction.earningWithCategory.earning
                 binding.etTransactionDescription.setText(earning.description)
+                binding.etTransactionAmount.setText(earning.amount.toString())
                 binding.etTransactionDate.setText(
                     android.text.format.DateFormat.format("MMM dd, yyyy", earning.date)
                 )
@@ -145,12 +147,13 @@ class HomeFragment : Fragment() {
         // Button click listeners
         binding.btnSave.setOnClickListener {
             val updatedDescription = binding.etTransactionDescription.text.toString()
+            val updatedAmount = binding.etTransactionAmount.text.toString().toDoubleOrNull() ?: 0.0
             val updatedDateString = binding.etTransactionDate.text.toString()
 
             val dateFormat = java.text.SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
             val updatedDate = dateFormat.parse(updatedDateString)?.time ?: return@setOnClickListener
 
-            viewModel.updateTransaction(transaction, updatedDescription, updatedDate)
+            viewModel.updateTransaction(transaction, updatedDescription, updatedAmount, updatedDate)
             dialog.dismiss()
         }
 
