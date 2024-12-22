@@ -68,6 +68,14 @@ class FinancialRepository @Inject constructor(
         earningDao.insertEarning(earning)
     }
 
+    suspend fun updateExpense(expense: ExpenseModel) {
+        expenseDao.updateExpense(expense)
+    }
+
+    suspend fun updateEarning(earning: EarningModel) {
+        earningDao.updateEarning(earning)
+    }
+
     suspend fun deleteExpense(expense: ExpenseModel) {
         expenseDao.deleteExpense(expense)
     }

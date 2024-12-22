@@ -1,17 +1,25 @@
 package com.zekecode.akira_financialtracker.ui.adapters
 
+import android.app.AlertDialog
+import android.icu.util.Calendar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.data.local.entities.EarningWithCategory
 import com.zekecode.akira_financialtracker.data.local.entities.ExpenseWithCategory
 import com.zekecode.akira_financialtracker.data.local.entities.TransactionModel
+import com.zekecode.akira_financialtracker.databinding.DialogEditTransactionBinding
 import com.zekecode.akira_financialtracker.databinding.ItemEarningBinding
 import com.zekecode.akira_financialtracker.databinding.ItemExpenseBinding
+import java.util.Locale
 
-class TransactionsAdapter(private var transactions: List<TransactionModel>) :
+class TransactionsAdapter(
+    private var transactions: List<TransactionModel>,
+    private val onTransactionEdit: (TransactionModel) -> Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemViewType(position: Int): Int {
@@ -25,11 +33,11 @@ class TransactionsAdapter(private var transactions: List<TransactionModel>) :
         return when (viewType) {
             VIEW_TYPE_EXPENSE -> {
                 val binding = ItemExpenseBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-                ExpenseViewHolder(binding)
+                ExpenseViewHolder(binding, onTransactionEdit)
             }
             VIEW_TYPE_EARNING -> {
                 val binding = ItemEarningBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-                EarningViewHolder(binding)
+                EarningViewHolder(binding, onTransactionEdit)
             }
             else -> throw IllegalArgumentException("Invalid view type")
         }
@@ -49,8 +57,10 @@ class TransactionsAdapter(private var transactions: List<TransactionModel>) :
         notifyDataSetChanged()
     }
 
-    class ExpenseViewHolder(private val binding: ItemExpenseBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class ExpenseViewHolder(
+        private val binding: ItemExpenseBinding,
+        private val onTransactionEdit: (TransactionModel) -> Unit
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         private var isExpanded = false
 
@@ -73,12 +83,19 @@ class TransactionsAdapter(private var transactions: List<TransactionModel>) :
                 binding.collapsedContent.visibility = if (isExpanded) View.GONE else View.VISIBLE
                 binding.expandedContent.visibility = if (isExpanded) View.VISIBLE else View.GONE
             }
+
+            // Handle Long Click for Editing
+            binding.root.setOnLongClickListener {
+                onTransactionEdit(TransactionModel.Expense(expenseWithCategory)) // Notify the parent
+                true
+            }
         }
     }
 
-
-    class EarningViewHolder(private val binding: ItemEarningBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class EarningViewHolder(
+        private val binding: ItemEarningBinding,
+        private val onTransactionEdit: (TransactionModel) -> Unit
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         private var isExpanded = false
 
@@ -101,9 +118,14 @@ class TransactionsAdapter(private var transactions: List<TransactionModel>) :
                 binding.collapsedContent.visibility = if (isExpanded) View.GONE else View.VISIBLE
                 binding.expandedContent.visibility = if (isExpanded) View.VISIBLE else View.GONE
             }
+
+            // Handle Long Click for Editing
+            binding.root.setOnLongClickListener {
+                onTransactionEdit(TransactionModel.Earning(earningWithCategory)) // Notify the parent
+                true
+            }
         }
     }
-
 
     companion object {
         private const val VIEW_TYPE_EXPENSE = 1

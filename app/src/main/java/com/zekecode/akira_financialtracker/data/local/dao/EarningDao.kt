@@ -7,6 +7,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.zekecode.akira_financialtracker.data.local.entities.EarningModel
 import com.zekecode.akira_financialtracker.data.local.entities.EarningWithCategory
 
@@ -21,6 +22,9 @@ interface EarningDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEarning(earning: EarningModel)
+
+    @Update
+    suspend fun updateEarning(earning: EarningModel)
 
     @Delete
     suspend fun deleteEarning(earning: EarningModel)

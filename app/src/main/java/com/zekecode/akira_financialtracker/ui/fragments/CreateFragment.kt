@@ -116,7 +116,7 @@ class CreateFragment : Fragment() {
 
     private fun showDatePicker() {
         val builder = MaterialDatePicker.Builder.datePicker()
-        builder.setTitleText("Select a date")
+        builder.setTitleText(R.string.select_date)
         val datePicker = builder.build()
 
         datePicker.addOnPositiveButtonClickListener { selection ->

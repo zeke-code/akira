@@ -1,0 +1,88 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="350dp"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@drawable/rounded_dialog_background">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/tvDialogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/dialog_edit_transaction_title"
+        android:textAppearance="?attr/textAppearanceHeadline6"
+        android:textColor="@color/primary_text"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Description Input -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/dialog_edit_transaction_description"
+        app:hintEnabled="true">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etTransactionDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:textColor="@color/primary_text"
+            android:textColorHint="@color/secondary_text"
+            android:textSize="16sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Date Picker Input -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/dialog_edit_transaction_date_hint"
+        app:hintEnabled="true"
+        android:layout_marginTop="@dimen/spacing_m">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etTransactionDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:importantForAutofill="no"
+            android:focusable="false"
+            android:clickable="true"
+            android:textColor="@color/primary_text"
+            android:textColorHint="@color/secondary_text"
+            android:textSize="16sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/spacing_m">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancel"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
+            android:layout_width="120dp"
+            android:layout_height="48dp"
+            app:cornerRadius="16dp"
+            android:backgroundTint="@color/accent_red"
+            android:text="@string/dialog_cancel_button"
+            android:textColor="@color/primary_text" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSave"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
+            android:layout_width="120dp"
+            android:layout_height="48dp"
+            app:cornerRadius="16dp"
+            android:backgroundTint="@color/accent_blue"
+            android:text="@string/dialog_save_button"
+            android:textColor="@color/primary_text"
+            android:layout_marginStart="@dimen/spacing_m" />
+    </LinearLayout>
+
+</LinearLayout>

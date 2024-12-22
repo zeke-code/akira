@@ -1,18 +1,23 @@
 package com.zekecode.akira_financialtracker.ui.fragments
 
+import android.app.Dialog
+import android.icu.util.Calendar
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.zekecode.akira_financialtracker.R
+import com.zekecode.akira_financialtracker.data.local.entities.TransactionModel
+import com.zekecode.akira_financialtracker.databinding.DialogEditTransactionBinding
 import com.zekecode.akira_financialtracker.databinding.FragmentHomeBinding
 import com.zekecode.akira_financialtracker.ui.adapters.TransactionsAdapter
 import com.zekecode.akira_financialtracker.ui.viewmodels.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Locale
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -34,51 +39,126 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupRecyclerView()
-        setupObservers()
-        Log.d("HomeFragment", "Remaining budget: ${viewModel.remainingMonthlyBudget.value}")
+        setUpObservers()
     }
 
     private fun setupRecyclerView() {
-        transactionsAdapter = TransactionsAdapter(emptyList())
-        binding.homeExpenseRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.homeExpenseRecyclerView.adapter = transactionsAdapter
+        transactionsAdapter = TransactionsAdapter(emptyList()) { transaction ->
+            handleTransactionEdit(transaction)
+        }
+        binding.homeExpenseRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = transactionsAdapter
+        }
     }
 
-    private fun setupObservers() {
+    private fun setUpObservers() {
         viewModel.currentMonthTransactions.observe(viewLifecycleOwner) { transactions ->
             transactionsAdapter.updateTransactions(transactions)
         }
 
         viewModel.usedBudgetPercentage.observe(viewLifecycleOwner) { usedBudget ->
-            val usedBudgetText = when {
-                usedBudget < 0 -> getString(R.string.home_no_budget_used_text)
-                usedBudget < 100 -> getString(R.string.home_used_budget_text, usedBudget)
-                else -> getString(R.string.home_all_budged_used_text)
-            }
+            val usedBudgetText = getBudgetUsageText(usedBudget)
             binding.homeUsedBudgetText.text = usedBudgetText
-
-            val trackColor = if (usedBudget > 75) {
-                requireContext().getColor(R.color.accent_yellow)
-            } else {
-                requireContext().getColor(R.color.accent_green)
-            }
-
-            binding.circularProgress.trackColor = trackColor
-            binding.circularProgress.setProgress(usedBudget.toInt(), true)
+            updateCircularProgress(usedBudget)
         }
 
         viewModel.remainingMonthlyBudget.observe(viewLifecycleOwner) { remainingBudget ->
             viewModel.currencySymbol.observe(viewLifecycleOwner) { symbol ->
-                val formattedText = getString(
+                binding.budgetText.text = getString(
                     R.string.home_remaining_budget_frame_text,
                     remainingBudget ?: 0F,
                     symbol
                 )
-                binding.budgetText.text = formattedText
             }
         }
+    }
+
+    private fun getBudgetUsageText(usedBudget: Float): String {
+        return when {
+            usedBudget < 0 -> getString(R.string.home_no_budget_used_text)
+            usedBudget < 100 -> getString(R.string.home_used_budget_text, usedBudget)
+            else -> getString(R.string.home_all_budged_used_text)
+        }
+    }
+
+    private fun updateCircularProgress(usedBudget: Float) {
+        val trackColor = if (usedBudget > 75) {
+            requireContext().getColor(R.color.accent_yellow)
+        } else {
+            requireContext().getColor(R.color.accent_green)
+        }
+        binding.circularProgress.trackColor = trackColor
+        binding.circularProgress.setProgress(usedBudget.toInt(), true)
+    }
+
+
+    private fun handleTransactionEdit(transaction: TransactionModel) {
+        showEditTransactionDialog(transaction)
+    }
+
+    private fun showEditTransactionDialog(transaction: TransactionModel) {
+        val dialog = Dialog(requireContext())
+        val binding = DialogEditTransactionBinding.inflate(layoutInflater)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        dialog.setContentView(binding.root)
+
+        // Initialize dialog fields with transaction details
+        when (transaction) {
+            is TransactionModel.Expense -> {
+                val expense = transaction.expenseWithCategory.expense
+                binding.etTransactionDescription.setText(expense.description)
+                binding.etTransactionDate.setText(
+                    android.text.format.DateFormat.format("MMM dd, yyyy", expense.date)
+                )
+            }
+            is TransactionModel.Earning -> {
+                val earning = transaction.earningWithCategory.earning
+                binding.etTransactionDescription.setText(earning.description)
+                binding.etTransactionDate.setText(
+                    android.text.format.DateFormat.format("MMM dd, yyyy", earning.date)
+                )
+            }
+        }
+
+        // Date picker logic
+        binding.etTransactionDate.setOnClickListener {
+            val datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText(R.string.select_date)
+                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                .build()
+
+            datePicker.show(parentFragmentManager, "MATERIAL_DATE_PICKER")
+
+            datePicker.addOnPositiveButtonClickListener { selection ->
+                val selectedDate = Calendar.getInstance().apply {
+                    timeInMillis = selection
+                }
+                binding.etTransactionDate.setText(
+                    android.text.format.DateFormat.format("MMM dd, yyyy", selectedDate.time)
+                )
+            }
+        }
+
+        // Button click listeners
+        binding.btnSave.setOnClickListener {
+            val updatedDescription = binding.etTransactionDescription.text.toString()
+            val updatedDateString = binding.etTransactionDate.text.toString()
+
+            val dateFormat = java.text.SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+            val updatedDate = dateFormat.parse(updatedDateString)?.time ?: return@setOnClickListener
+
+            viewModel.updateTransaction(transaction, updatedDescription, updatedDate)
+            dialog.dismiss()
+        }
+
+        binding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     override fun onDestroyView() {

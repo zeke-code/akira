@@ -72,4 +72,8 @@
     <string name="dialog_cancel_button">Cancel</string>
     <string name="dialog_save_button">Save</string>
     <string name="dialog_edittext_hint">Enter a new value…</string>
+    <string name="dialog_edit_transaction_title">Edit your transaction</string>
+    <string name="dialog_edit_transaction_description">Description</string>
+    <string name="dialog_edit_transaction_date_hint">Date</string>
+    <string name="select_date">Select a date</string>
 </resources>
