@@ -58,12 +58,24 @@ class HomeFragment : Fragment() {
                 else -> getString(R.string.home_all_budged_used_text)
             }
             binding.homeUsedBudgetText.text = usedBudgetText
+
+            val trackColor = if (usedBudget > 75) {
+                requireContext().getColor(R.color.accent_yellow)
+            } else {
+                requireContext().getColor(R.color.accent_green)
+            }
+
+            binding.circularProgress.trackColor = trackColor
             binding.circularProgress.setProgress(usedBudget.toInt(), true)
         }
 
         viewModel.remainingMonthlyBudget.observe(viewLifecycleOwner) { remainingBudget ->
             viewModel.currencySymbol.observe(viewLifecycleOwner) { symbol ->
-                val formattedText = getString(R.string.home_remaining_budget_frame_text, remainingBudget ?: 0F, symbol)
+                val formattedText = getString(
+                    R.string.home_remaining_budget_frame_text,
+                    remainingBudget ?: 0F,
+                    symbol
+                )
                 binding.budgetText.text = formattedText
             }
         }

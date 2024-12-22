@@ -18,21 +18,36 @@ class FinancialRepository @Inject constructor(
     private val budgetDao: BudgetDao,
     private val categoryDao: CategoryDao,
 ) {
+
     private val _allExpensesWithCategory = expenseDao.getAllExpensesWithCategories()
     private val _allEarningsWithCategory = earningDao.getAllEarningsWithCategories()
 
-    private val _allTransactions = MediatorLiveData<List<TransactionModel>>().apply {
-        addSource(_allExpensesWithCategory) { expenses ->
-            val earnings = _allEarningsWithCategory.value ?: emptyList()
-            value = mergeTransactions(expenses, earnings)
+    // Reusable live-data combiner function
+    private fun <A, B, R> combineLiveData(
+        sourceA: LiveData<List<A>>,
+        sourceB: LiveData<List<B>>,
+        mergeFunction: (List<A>, List<B>) -> List<R>
+    ): LiveData<List<R>> {
+        val mediator = MediatorLiveData<List<R>>()
+        mediator.addSource(sourceA) { aList ->
+            val bList = sourceB.value ?: emptyList()
+            mediator.value = mergeFunction(aList, bList)
         }
-        addSource(_allEarningsWithCategory) { earnings ->
-            val expenses = _allExpensesWithCategory.value ?: emptyList()
-            value = mergeTransactions(expenses, earnings)
+        mediator.addSource(sourceB) { bList ->
+            val aList = sourceA.value ?: emptyList()
+            mediator.value = mergeFunction(aList, bList)
         }
+        return mediator
     }
 
-    // Methods to expose RoomDB data
+    private val _allTransactions: LiveData<List<TransactionModel>> = combineLiveData(
+        _allExpensesWithCategory,
+        _allEarningsWithCategory,
+        ::mergeTransactions
+    )
+
+    // CRUD methods
+
     fun getAllTransactions(): LiveData<List<TransactionModel>> = _allTransactions
 
     fun getAllCategories(): LiveData<List<CategoryModel>> = categoryDao.getAllCategories()
@@ -70,20 +85,12 @@ class FinancialRepository @Inject constructor(
     }
 
     fun getCurrentMonthTransactions(): LiveData<List<TransactionModel>> {
-        val earningsLiveData = getMonthlyEarnings(getCurrentYearMonth())
-        val expensesLiveData = getMonthlyExpenses(getCurrentYearMonth())
-
-        val currentMonthTransactions = MediatorLiveData<List<TransactionModel>>()
-        currentMonthTransactions.addSource(earningsLiveData) { earnings ->
-            val currentExpenses = expensesLiveData.value ?: emptyList()
-            currentMonthTransactions.value = mergeTransactions(currentExpenses, earnings)
-        }
-
-        currentMonthTransactions.addSource(expensesLiveData) { expenses ->
-            val currentEarnings = earningsLiveData.value ?: emptyList()
-            currentMonthTransactions.value = mergeTransactions(expenses, currentEarnings)
-        }
-        return currentMonthTransactions
+        val yearMonth = getCurrentYearMonth()
+        return combineLiveData(
+            getMonthlyExpenses(yearMonth),
+            getMonthlyEarnings(yearMonth),
+            ::mergeTransactions
+        )
     }
 
     suspend fun insertCategory(category: CategoryModel) {
@@ -94,7 +101,7 @@ class FinancialRepository @Inject constructor(
         categoryDao.deleteCategory(category)
     }
 
-    // Budget-related methods
+    // CRUD Budget-related methods
     suspend fun insertBudget(budget: BudgetModel) {
         budgetDao.insertBudget(budget)
     }
@@ -103,7 +110,7 @@ class FinancialRepository @Inject constructor(
         return budgetDao.getMonthlyBudget(yearMonth)
     }
 
-    // Private function to merge expenses and earnings
+    // Private function to merge expenses and earnings into one list
     private fun mergeTransactions(
         expenses: List<ExpenseWithCategory>,
         earnings: List<EarningWithCategory>
