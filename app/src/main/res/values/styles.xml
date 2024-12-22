@@ -78,8 +78,19 @@
     </style>
 
     <!-- Stocks Chart Styles -->
+    <style name="StocksChartStyle">
+        <item name="bottomAxisStyle">@style/StocksChartBottomAxisStyle</item>
+        <item name="lineLayerStyle">@style/StocksChartLineStyle</item>
+        <item name="layers">line</item>
+        <item name="showBottomAxis">true</item>
+        <item name="showStartAxis">true</item>
+        <item name="scrollEnabled">true</item>
+        <item name="scalableEndLayerPadding">@dimen/spacing_m</item>
+        <item name="scalableStartLayerPadding">@dimen/spacing_m</item>
+    </style>
+
     <style name="StocksChartLine1Style">
-        <item name="color">@color/accent_blue</item>
+        <item name="android:color">@color/accent_blue</item>
     </style>
 
     <style name="StocksChartLineStyle">

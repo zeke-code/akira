@@ -5,12 +5,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
+import com.patrykandpatrick.vico.core.common.data.ExtraStore
 import com.zekecode.akira_financialtracker.data.local.repository.StocksRepository
 import com.zekecode.akira_financialtracker.data.local.repository.UserRepository
 import com.zekecode.akira_financialtracker.data.remote.models.DailyData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,8 +21,11 @@ class StocksViewModel @Inject constructor(
     private val stocksRepository: StocksRepository,
     private val userRepository: UserRepository
 ) : ViewModel() {
+
     private val _chartData = MutableStateFlow<List<Pair<String, Double>>>(emptyList())
-    val chartData: StateFlow<List<Pair<String, Double>>> = _chartData
+
+    private val _stocksChartModelProducer = CartesianChartModelProducer()
+    val stocksChartModelProducer: CartesianChartModelProducer get() = _stocksChartModelProducer
 
     private val _stockName = MutableLiveData<String?>()
     val stockName: LiveData<String?> get() = _stockName
@@ -31,14 +36,17 @@ class StocksViewModel @Inject constructor(
     private val _isApiKeyPresent = MutableLiveData<Boolean>()
     val isApiKeyPresent: LiveData<Boolean> get() = _isApiKeyPresent
 
-    private val _errorMessage = MutableLiveData<String?>(null)
+    private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
 
+    // Label key for chart axis
+    val dateLabels = ExtraStore.Key<List<String>>()
+
     init {
-        setUpObservers()
+        observeApiKey()
     }
 
-    private fun setUpObservers() {
+    private fun observeApiKey() {
         viewModelScope.launch {
             userRepository.apiKeyFlow.collect { apiKey ->
                 _isApiKeyPresent.value = isApiKeyValid(apiKey)
@@ -50,29 +58,32 @@ class StocksViewModel @Inject constructor(
         val apiKey = userRepository.getApiKey()
         if (isApiKeyValid(apiKey)) {
             viewModelScope.launch {
-                val dailyTimeSeriesData = stocksRepository.getDailyTimeSeries(symbol, apiKey)
-                val globalQuoteData = stocksRepository.getStockQuote(symbol, apiKey)
-                dailyTimeSeriesData.onSuccess { data ->
+                val dailyTimeSeriesResult = stocksRepository.getDailyTimeSeries(symbol, apiKey)
+                val globalQuoteResult = stocksRepository.getStockQuote(symbol, apiKey)
+
+                dailyTimeSeriesResult.onSuccess { data ->
                     _stockName.value = data.metaData.symbol
                     val chartData = extractChartData(data.timeSeries)
                     _chartData.value = chartData
-                    Log.d("StocksViewModel", "Response data is: $data")
-                }.onFailure { error ->
-                    _errorMessage.value = "Could not retrieve stock information... try again later."
-                    Log.d("StocksViewModel", "$error")
+                    updateChart(chartData)
+                }.onFailure {
+                    _errorMessage.value = "Failed to retrieve stock data. Please try again."
                 }
-                globalQuoteData.onSuccess { data ->
+
+                globalQuoteResult.onSuccess { data ->
                     _stockPrice.value = data.globalQuote.price
-                    Log.d("StocksViewModel", "Response data is: $data")
-                }.onFailure { error ->
-                    Log.d("StocksViewModel", "$error")
+                }.onFailure {
+                    Log.e("StocksViewModel", "Failed to fetch global quote: $it")
                 }
             }
+        } else {
+            _errorMessage.value = "Invalid API key. Please correct it in the settings."
         }
     }
 
     private fun extractChartData(timeSeries: Map<String, DailyData>): List<Pair<String, Double>> {
         return timeSeries.entries
+            .sortedBy { it.key }
             .mapNotNull { entry ->
                 val date = entry.key
                 val closePrice = entry.value.close.toDoubleOrNull()
@@ -80,7 +91,22 @@ class StocksViewModel @Inject constructor(
                     date to closePrice
                 } else null
             }
-            .sortedBy { it.first }
+    }
+
+    private fun updateChart(chartData: List<Pair<String, Double>>) {
+        val dates = chartData.map { it.first }
+        val prices = chartData.map { it.second }
+
+        viewModelScope.launch {
+            _stocksChartModelProducer.runTransaction {
+                lineSeries {
+                    series(prices)
+                }
+                extras { extraStore ->
+                    extraStore[dateLabels] = dates
+                }
+            }
+        }
     }
 
     private fun isApiKeyValid(apiKey: String): Boolean {

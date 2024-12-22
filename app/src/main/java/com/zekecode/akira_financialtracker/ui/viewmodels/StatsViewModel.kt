@@ -38,16 +38,15 @@ class StatsViewModel @Inject constructor(
     private val _expenseData = MutableLiveData<Pair<List<String>, List<Double>>>()
     private val _earningData = MutableLiveData<Pair<List<String>, List<Double>>>()
 
-    val labelListKey = ExtraStore.Key<List<String>>()
+    val categoriesLabelList = ExtraStore.Key<List<String>>()
 
-    val _isDataAvailable: LiveData<Boolean> = MutableLiveData<Boolean>().apply {
+    private val _isDataAvailable: LiveData<Boolean> = MutableLiveData<Boolean>().apply {
         listOf(_expenseData, _earningData).forEach { source ->
             source.observeForever {
                 value = checkIfDataExists()
             }
         }
     }
-
     val isDataAvailable: LiveData<Boolean> get() = _isDataAvailable
 
     init {
@@ -117,7 +116,7 @@ class StatsViewModel @Inject constructor(
                 chartModelProducer.runTransaction {
                     columnSeries { series(categorySums) }
                     extras { extraStore ->
-                        extraStore[labelListKey] = categoryNames
+                        extraStore[categoriesLabelList] = categoryNames
                     }
                 }
             }

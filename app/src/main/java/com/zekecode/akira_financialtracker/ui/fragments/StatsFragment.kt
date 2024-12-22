@@ -47,7 +47,7 @@ class StatsFragment : Fragment() {
             binding.expenseChartView.chart = chart.copy(
                 bottomAxis = (chart.bottomAxis as? HorizontalAxis ?: return@post).copy(
                     valueFormatter = { context, x, _ ->
-                        val labels = context.model.extraStore[viewModel.labelListKey]
+                        val labels = context.model.extraStore[viewModel.categoriesLabelList]
                         labels.getOrNull(x.toInt()) ?: x.toString()
                     },
                     itemPlacer = HorizontalAxis.ItemPlacer.segmented()
@@ -61,7 +61,7 @@ class StatsFragment : Fragment() {
             binding.earningChartView.chart = chart.copy(
                 bottomAxis = (chart.bottomAxis as? HorizontalAxis ?: return@post).copy(
                     valueFormatter = { context, x, _ ->
-                        val labels = context.model.extraStore[viewModel.labelListKey]
+                        val labels = context.model.extraStore[viewModel.categoriesLabelList]
                         labels.getOrNull(x.toInt()) ?: x.toString()
                     },
                     itemPlacer = HorizontalAxis.ItemPlacer.segmented()

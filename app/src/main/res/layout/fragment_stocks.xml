@@ -87,17 +87,11 @@
 
             <!-- Stock Graph -->
             <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
-                android:id="@+id/chart_view"
+                android:id="@+id/stocks_chart_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:scalableEndLayerPadding="16dp"
-                app:scalableStartLayerPadding="16dp"
-                app:layers="line"
-                app:lineLayerStyle="@style/StocksChartLineStyle"
-                app:showStartAxis="true"
-                app:showBottomAxis="true"
-                app:zoomEnabled="false"
-                android:padding="@dimen/spacing_m" />
+                android:layout_height="220dp"
+                app:scrollEnabled="true"
+                app:chartStyle="@style/StocksChartStyle" />
 
         </LinearLayout>
     </ScrollView>

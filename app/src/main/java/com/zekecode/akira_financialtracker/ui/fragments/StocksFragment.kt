@@ -9,6 +9,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
 import com.zekecode.akira_financialtracker.databinding.FragmentStocksBinding
 import com.zekecode.akira_financialtracker.ui.adapters.SuggestionsAdapter
 import com.zekecode.akira_financialtracker.ui.viewmodels.StocksViewModel
@@ -27,8 +28,6 @@ class StocksFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: StocksViewModel by viewModels()
-
-    private lateinit var suggestionsAdapter: SuggestionsAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,11 +63,28 @@ class StocksFragment : Fragment() {
                 hideView()
             }
         }
+
+        viewModel.stockName.observe(viewLifecycleOwner) { stockName ->
+            binding.stockHeader.text = stockName
+        }
+
+        viewModel.stockPrice.observe(viewLifecycleOwner) { stockPrice ->
+            binding.stockPrice.text = stockPrice
+        }
+
+        viewModel.errorMessage.observe(viewLifecycleOwner) { errorMessage ->
+            errorMessage?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+            }
+        }
+
+        binding.stocksChartView.modelProducer = viewModel.stocksChartModelProducer
+        setupChartFormatter()
     }
 
     private fun setupSuggestionsAdapter() {
         val suggestions = listOf("AAPL", "GOOGL", "TSLA", "EUR", "USD")
-        suggestionsAdapter = SuggestionsAdapter(requireContext(), suggestions)
+        val suggestionsAdapter = SuggestionsAdapter(requireContext(), suggestions)
         binding.stockSearch.setAdapter(suggestionsAdapter)
     }
 
@@ -81,7 +97,7 @@ class StocksFragment : Fragment() {
         }
 
         searchQueryFlow
-            .debounce(6000)
+            .debounce(600)
             .distinctUntilChanged()
             .onEach { query ->
                 if (query.isNotEmpty()) {
@@ -89,6 +105,21 @@ class StocksFragment : Fragment() {
                 }
             }
             .launchIn(viewLifecycleOwner.lifecycleScope)
+    }
+
+    private fun setupChartFormatter() {
+        binding.stocksChartView.post {
+            val chart = binding.stocksChartView.chart ?: return@post
+            binding.stocksChartView.chart = chart.copy(
+                bottomAxis = (chart.bottomAxis as? HorizontalAxis)?.copy(
+                    valueFormatter = { context, x, _ ->
+                        val labels = context.model.extraStore[viewModel.dateLabels]
+                        labels.getOrNull(x.toInt()) ?: x.toString()
+                    },
+                    itemPlacer = HorizontalAxis.ItemPlacer.segmented()
+                )
+            )
+        }
     }
 
     private fun showView() {
