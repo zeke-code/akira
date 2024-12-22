@@ -32,4 +32,7 @@ interface ExpenseDao {
     @Transaction
     @Query("SELECT * FROM expenses WHERE strftime('%Y-%m', date / 1000, 'unixepoch') = :yearMonth")
     fun getMonthlyExpensesWithCategories(yearMonth: String): LiveData<List<ExpenseWithCategory>>
+
+    @Query("DELETE FROM expenses")
+    suspend fun deleteAllExpenses()
 }

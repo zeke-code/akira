@@ -84,6 +84,11 @@ class FinancialRepository @Inject constructor(
         earningDao.deleteEarning(earning)
     }
 
+    suspend fun deleteAllTransactions() {
+        expenseDao.deleteAllExpenses()
+        earningDao.deleteAllEarnings()
+    }
+
     fun getMonthlyExpenses(yearMonth: String): LiveData<List<ExpenseWithCategory>> {
         return expenseDao.getMonthlyExpensesWithCategories(yearMonth)
     }

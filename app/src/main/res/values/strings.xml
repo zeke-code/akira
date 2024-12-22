@@ -35,7 +35,7 @@
     <string name="settings_notification_status">Toggle notifications: %s</string>
     <string name="settings_current_currency">Current currency: %s</string>
     <string name="settings_currency_dialog_title">Select the desired currency</string>
-    <string name="settings_api_key_viewer">"Current Alpha Vantage API key: %s"</string>
+    <string name="settings_api_key_viewer">"Alpha Vantage API key: %s"</string>
     <string name="settings_disable_notifications_dialog_title">Disable Notifications</string>
     <string name="settings_disable_notifications_dialog_description">To disable notifications, please go to app settings and disable them.</string>
     <!-- Create fragment -->
@@ -56,7 +56,7 @@
     <string name="dialog_select_category_new_hint">Or create a new one by writing its name here…</string>
     <string name="category_name_placeholder">Select or create a category</string>
     <!-- Stats Fragment -->
-    <string name="stats_no_data_message">You don\'t have enough data to display this chart. Log more transactions!</string>
+    <string name="stats_no_data_message">You don\'t have enough data to display statistics. Log more transactions!</string>
     <string name="stats_expenses_vs_revenue_header">Expenses vs Revenues this month</string>
     <string name="stats_monthly_expenses_header">Expenses this month</string>
     <string name="stats_monthly_revenue_header">Revenues this month</string>
@@ -77,4 +77,9 @@
     <string name="dialog_edit_transaction_date_hint">Date</string>
     <string name="select_date">Select a date</string>
     <string name="dialog_edit_transaction_amount_hint">Transaction amount</string>
+    <string name="settings_delete_all_transactions">Delete all transactions</string>
+    <string name="dialog_delete_all_transactions_title">Delete all transactions</string>
+    <string name="dialog_delete_all_transactions_description">Are you sure you want to delete all your registered transactions?</string>
+    <string name="dialog_delete_all_transactions_confirm_button">Continue</string>
+    <string name="transactions_deleted_success">Transactions deleted successfully</string>
 </resources>

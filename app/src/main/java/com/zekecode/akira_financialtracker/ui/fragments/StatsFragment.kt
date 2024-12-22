@@ -33,16 +33,21 @@ class StatsFragment : Fragment() {
         binding.expenseChartView.modelProducer = viewModel.expenseChartModelProducer
         binding.earningChartView.modelProducer = viewModel.earningChartModelProducer
 
-        // fix the expense chart’s formatter:
+        setupCharts()
+
+        viewModel.isDataAvailable.observe(viewLifecycleOwner) { isDataAvailable ->
+            updateUI(isDataAvailable)
+        }
+    }
+
+    private fun setupCharts() {
         binding.expenseChartView.post {
             val chart = binding.expenseChartView.chart ?: return@post
             binding.expenseChartView.isHorizontalScrollBarEnabled = true
             binding.expenseChartView.chart = chart.copy(
                 bottomAxis = (chart.bottomAxis as? HorizontalAxis ?: return@post).copy(
                     valueFormatter = { context, x, _ ->
-                        // get the list of labels from the extraStore:
                         val labels = context.model.extraStore[viewModel.labelListKey]
-                        // safety check the index, fallback to x.toString() if not in range:
                         labels.getOrNull(x.toInt()) ?: x.toString()
                     },
                     itemPlacer = HorizontalAxis.ItemPlacer.segmented()
@@ -50,10 +55,9 @@ class StatsFragment : Fragment() {
             )
         }
 
-        // fix the earning chart’s formatter:
         binding.earningChartView.post {
             val chart = binding.earningChartView.chart ?: return@post
-            binding.expenseChartView.isHorizontalScrollBarEnabled = true
+            binding.earningChartView.isHorizontalScrollBarEnabled = true
             binding.earningChartView.chart = chart.copy(
                 bottomAxis = (chart.bottomAxis as? HorizontalAxis ?: return@post).copy(
                     valueFormatter = { context, x, _ ->
@@ -64,38 +68,16 @@ class StatsFragment : Fragment() {
                 )
             )
         }
-
-        // 2) Observe expenseData to hide/show “no data” text.
-        viewModel.expenseData.observe(viewLifecycleOwner) { (categoryNames, _) ->
-            val isDataEmpty = categoryNames.isEmpty()
-            handleChartVisibility(
-                isDataEmpty = isDataEmpty,
-                chartView = binding.expenseChartView,
-                noDataTextView = binding.noExpensesDataTextView
-            )
-        }
-
-        // 3) Observe earningData to hide/show “no data” text.
-        viewModel.earningData.observe(viewLifecycleOwner) { (categoryNames, _) ->
-            val isDataEmpty = categoryNames.isEmpty()
-            handleChartVisibility(
-                isDataEmpty = isDataEmpty,
-                chartView = binding.earningChartView,
-                noDataTextView = binding.noEarningsDataTextView
-            )
-        }
     }
 
-    /**
-     * A helper to toggle between chart vs. "no data" text.
-     */
-    private fun handleChartVisibility(
-        isDataEmpty: Boolean,
-        chartView: View,
-        noDataTextView: View
-    ) {
-        chartView.visibility = if (isDataEmpty) View.GONE else View.VISIBLE
-        noDataTextView.visibility = if (isDataEmpty) View.VISIBLE else View.GONE
+    private fun updateUI(isDataAvailable: Boolean) {
+        binding.noDataTextView.visibility = if (isDataAvailable) View.GONE else View.VISIBLE
+        val visibility = if (isDataAvailable) View.VISIBLE else View.GONE
+        binding.expenseChartView.visibility = visibility
+        binding.earningChartView.visibility = visibility
+        binding.expensesHeader.visibility = visibility
+        binding.revenueHeader.visibility = visibility
+        binding.divider.visibility = visibility
     }
 
     override fun onDestroyView() {

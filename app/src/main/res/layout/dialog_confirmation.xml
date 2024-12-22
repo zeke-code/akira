@@ -1,0 +1,58 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="350dp"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@drawable/rounded_dialog_background">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/tvDialogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/dialog_delete_all_transactions_title"
+        android:textAppearance="?attr/textAppearanceHeadline6"
+        android:textColor="@color/primary_text"
+        android:layout_marginBottom="@dimen/spacing_s" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_m"
+        android:textColor="@color/primary_text"
+        android:gravity="center"
+        android:text="@string/dialog_delete_all_transactions_description" />
+
+    <!-- Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/spacing_m">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancel"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
+            android:layout_width="120dp"
+            android:layout_height="48dp"
+            app:cornerRadius="16dp"
+            android:backgroundTint="@color/accent_red"
+            android:text="@string/dialog_cancel_button"
+            android:textColor="@color/primary_text" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSave"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
+            android:layout_width="120dp"
+            android:layout_height="48dp"
+            app:cornerRadius="16dp"
+            android:backgroundTint="@color/accent_blue"
+            android:text="@string/dialog_delete_all_transactions_confirm_button"
+            android:textColor="@color/primary_text"
+            android:layout_marginStart="@dimen/spacing_m" />
+    </LinearLayout>
+
+</LinearLayout>

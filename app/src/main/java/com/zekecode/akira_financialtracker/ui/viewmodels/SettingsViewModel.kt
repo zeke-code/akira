@@ -3,6 +3,7 @@ package com.zekecode.akira_financialtracker.ui.viewmodels
 import android.app.Application
 import androidx.lifecycle.*
 import com.zekecode.akira_financialtracker.R
+import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
 import com.zekecode.akira_financialtracker.data.local.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -11,6 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
+    private val financialRepository: FinancialRepository,
     private val userRepository: UserRepository,
     private val application: Application
 ) : ViewModel() {
@@ -103,6 +105,12 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             userRepository.updateApiKey(newApiKey)
             _apiKey.postValue(newApiKey)
+        }
+    }
+
+    fun deleteAllTransactions() {
+        viewModelScope.launch {
+            financialRepository.deleteAllTransactions()
         }
     }
 }

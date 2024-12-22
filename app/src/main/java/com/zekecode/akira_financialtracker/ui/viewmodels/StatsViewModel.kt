@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
-import com.patrykandpatrick.vico.core.cartesian.data.CartesianValueFormatter
 import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
 import com.patrykandpatrick.vico.core.common.data.ExtraStore
 import com.zekecode.akira_financialtracker.data.local.entities.EarningWithCategory
@@ -37,14 +36,19 @@ class StatsViewModel @Inject constructor(
         get() = _earningChartModelProducer
 
     private val _expenseData = MutableLiveData<Pair<List<String>, List<Double>>>()
-    val expenseData: LiveData<Pair<List<String>, List<Double>>>
-        get() = _expenseData
-
     private val _earningData = MutableLiveData<Pair<List<String>, List<Double>>>()
-    val earningData: LiveData<Pair<List<String>, List<Double>>>
-        get() = _earningData
 
     val labelListKey = ExtraStore.Key<List<String>>()
+
+    val _isDataAvailable: LiveData<Boolean> = MutableLiveData<Boolean>().apply {
+        listOf(_expenseData, _earningData).forEach { source ->
+            source.observeForever {
+                value = checkIfDataExists()
+            }
+        }
+    }
+
+    val isDataAvailable: LiveData<Boolean> get() = _isDataAvailable
 
     init {
         processFinancialData(
@@ -76,9 +80,12 @@ class StatsViewModel @Inject constructor(
         )
     }
 
-    /**
-     * A generic function to transform the data (List<T>) into names and sums.
-     */
+    private fun checkIfDataExists(): Boolean {
+        val expenseHasData = !_expenseData.value?.first.isNullOrEmpty()
+        val earningHasData = !_earningData.value?.first.isNullOrEmpty()
+        return expenseHasData || earningHasData
+    }
+
     private fun <T> processFinancialData(
         data: LiveData<List<T>>,
         getCategoryName: (T) -> String,
@@ -97,9 +104,6 @@ class StatsViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Updates the [chartModelProducer] with new data
-     */
     private fun updateChart(
         categoryNames: List<String>,
         categorySums: List<Double>,

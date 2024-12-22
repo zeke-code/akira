@@ -32,4 +32,7 @@ interface EarningDao {
     @Transaction
     @Query("SELECT * FROM earnings WHERE strftime('%Y-%m', date / 1000, 'unixepoch') = :yearMonth")
     fun getMonthlyEarningsWithCategories(yearMonth: String): LiveData<List<EarningWithCategory>>
+
+    @Query("DELETE FROM earnings")
+    suspend fun deleteAllEarnings()
 }

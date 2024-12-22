@@ -25,6 +25,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.zekecode.akira_financialtracker.R
+import com.zekecode.akira_financialtracker.databinding.DialogConfirmationBinding
 import com.zekecode.akira_financialtracker.databinding.DialogInputBinding
 import com.zekecode.akira_financialtracker.databinding.DialogSpinnerInputBinding
 import com.zekecode.akira_financialtracker.databinding.FragmentSettingsBinding
@@ -88,7 +89,7 @@ class SettingsFragment : Fragment() {
             val displayText = if (apiKey.isNullOrEmpty()) {
                 getString(R.string.settings_api_key_viewer, "none")
             } else {
-                getString(R.string.settings_api_key_viewer, apiKey)
+                getString(R.string.settings_api_key_viewer, "set")
             }
             binding.tvApiKey.text = displayText
         }
@@ -125,6 +126,10 @@ class SettingsFragment : Fragment() {
             showInputDialog("Set your API key", viewModel.apiKey.value ?: "", { newApiKey ->
                 viewModel.updateApiKey(newApiKey)
             })
+        }
+
+        binding.rlDeleteAllTransactions.setOnClickListener {
+            showDeleteAllTransactionsDialog()
         }
     }
 
@@ -232,6 +237,30 @@ class SettingsFragment : Fragment() {
         }
 
         binding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun showDeleteAllTransactionsDialog() {
+        val dialogBinding = DialogConfirmationBinding.inflate(LayoutInflater.from(requireContext()))
+
+        val dialog = AlertDialog.Builder(requireContext(), R.style.CustomDialog)
+            .setView(dialogBinding.root)
+            .create()
+
+        dialogBinding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialogBinding.btnSave.setOnClickListener {
+            viewModel.deleteAllTransactions()
+            Toast.makeText(
+                requireContext(),
+                R.string.transactions_deleted_success,
+                Toast.LENGTH_SHORT
+            ).show()
             dialog.dismiss()
         }
 
