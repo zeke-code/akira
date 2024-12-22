@@ -6,22 +6,14 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.text.Spannable
-import android.text.SpannableStringBuilder
-import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Spinner
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.zekecode.akira_financialtracker.R
@@ -31,7 +23,6 @@ import com.zekecode.akira_financialtracker.databinding.DialogSpinnerInputBinding
 import com.zekecode.akira_financialtracker.databinding.FragmentSettingsBinding
 import com.zekecode.akira_financialtracker.ui.viewmodels.SettingsViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Locale
 
 @AndroidEntryPoint
 class SettingsFragment : Fragment() {
@@ -87,7 +78,7 @@ class SettingsFragment : Fragment() {
 
         viewModel.apiKey.observe(viewLifecycleOwner) { apiKey ->
             val displayText = if (apiKey.isNullOrEmpty()) {
-                getString(R.string.settings_api_key_viewer, "none")
+                getString(R.string.settings_api_key_viewer, "not set")
             } else {
                 getString(R.string.settings_api_key_viewer, "set")
             }

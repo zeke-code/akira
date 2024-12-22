@@ -81,5 +81,5 @@
     <string name="dialog_delete_all_transactions_title">Delete all transactions</string>
     <string name="dialog_delete_all_transactions_description">Are you sure you want to delete all your registered transactions?</string>
     <string name="dialog_delete_all_transactions_confirm_button">Continue</string>
-    <string name="transactions_deleted_success">Transactions deleted successfully</string>
+    <string name="transactions_deleted_success">All transactions deleted successfully</string>
 </resources>

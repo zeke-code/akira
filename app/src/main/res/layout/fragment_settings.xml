@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,13 +9,12 @@
         android:orientation="vertical">
 
         <!-- Header -->
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/settings_header_text"
             android:textColor="@color/primary_text"
             android:textSize="@dimen/text_header"
-            android:layout_gravity="center"
             android:gravity="center"
             android:textStyle="bold"
             android:padding="@dimen/spacing_m"
@@ -29,31 +27,33 @@
             android:orientation="vertical">
 
             <!-- Name Setting -->
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/rl_name_setting"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/button_l"
-                android:padding="@dimen/spacing_s">
+                android:orientation="horizontal"
+                android:padding="@dimen/spacing_s"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical">
 
                 <ImageView
                     android:id="@+id/iv_name_icon"
                     android:layout_width="@dimen/icon_s"
                     android:layout_height="@dimen/icon_s"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/ic_user" />
+                    android:src="@drawable/ic_user"
+                    android:contentDescription="@string/settings_username" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/tv_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
                     android:layout_marginStart="@dimen/spacing_s"
-                    android:layout_toEndOf="@id/iv_name_icon"
                     android:text="@string/settings_username"
                     android:textColor="@color/primary_text"
                     android:textSize="16sp" />
-            </RelativeLayout>
+            </LinearLayout>
 
             <!-- Divider -->
             <View
@@ -62,31 +62,33 @@
                 android:background="@color/divider" />
 
             <!-- Budget Setting -->
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/rl_budget_setting"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/button_l"
-                android:padding="@dimen/spacing_s">
+                android:orientation="horizontal"
+                android:padding="@dimen/spacing_s"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical">
 
                 <ImageView
                     android:id="@+id/iv_budget_icon"
                     android:layout_width="@dimen/icon_s"
                     android:layout_height="@dimen/icon_s"
                     android:src="@drawable/ic_dollar"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true" />
+                    android:contentDescription="@string/settings_budget" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/tv_budget"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/iv_budget_icon"
                     android:layout_marginStart="@dimen/spacing_s"
                     android:text="@string/settings_budget"
                     android:textColor="@color/primary_text"
-                    android:textSize="16sp"
-                    android:layout_centerVertical="true" />
-            </RelativeLayout>
+                    android:textSize="16sp" />
+            </LinearLayout>
 
             <!-- Divider -->
             <View
@@ -94,33 +96,34 @@
                 android:layout_height="1dp"
                 android:background="@color/divider" />
 
-            <!-- Currency setting -->
-
-            <RelativeLayout
+            <!-- Currency Setting -->
+            <LinearLayout
                 android:id="@+id/rl_currency_setting"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/button_l"
-                android:padding="@dimen/spacing_s">
+                android:orientation="horizontal"
+                android:padding="@dimen/spacing_s"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical">
 
                 <ImageView
                     android:id="@+id/iv_currency_exchange_icon"
                     android:layout_width="@dimen/icon_s"
                     android:layout_height="@dimen/icon_s"
                     android:src="@drawable/ic_currency_exchange"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true" />
+                    android:contentDescription="@string/settings_current_currency" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/tv_currency"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/iv_currency_exchange_icon"
                     android:layout_marginStart="@dimen/spacing_s"
                     android:text="@string/settings_current_currency"
                     android:textColor="@color/primary_text"
-                    android:textSize="16sp"
-                    android:layout_centerVertical="true" />
-            </RelativeLayout>
+                    android:textSize="16sp" />
+            </LinearLayout>
 
             <!-- Divider -->
             <View
@@ -129,31 +132,33 @@
                 android:background="@color/divider" />
 
             <!-- Notifications Setting -->
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/rl_notifications_setting"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/button_l"
-                android:padding="@dimen/spacing_s">
+                android:orientation="horizontal"
+                android:padding="@dimen/spacing_s"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical">
 
                 <ImageView
                     android:id="@+id/iv_notifications_icon"
                     android:layout_width="@dimen/icon_s"
                     android:layout_height="@dimen/icon_s"
                     android:src="@drawable/ic_notifications"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true" />
+                    android:contentDescription="@string/settings_notification_status" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/tv_notifications"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/iv_notifications_icon"
                     android:layout_marginStart="@dimen/spacing_s"
                     android:text="@string/settings_notification_status"
                     android:textColor="@color/primary_text"
-                    android:textSize="16sp"
-                    android:layout_centerVertical="true" />
-            </RelativeLayout>
+                    android:textSize="16sp" />
+            </LinearLayout>
 
             <!-- Divider -->
             <View
@@ -161,32 +166,34 @@
                 android:layout_height="1dp"
                 android:background="@color/divider" />
 
-            <!-- API Key setter -->
-            <RelativeLayout
+            <!-- API Key Setting -->
+            <LinearLayout
                 android:id="@+id/rl_api_key_setter"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/button_l"
-                android:padding="@dimen/spacing_s">
+                android:orientation="horizontal"
+                android:padding="@dimen/spacing_s"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical">
 
                 <ImageView
                     android:id="@+id/iv_api_icon"
                     android:layout_width="@dimen/icon_s"
                     android:layout_height="@dimen/icon_s"
                     android:src="@drawable/ic_api"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true" />
+                    android:contentDescription="@string/settings_api_key_viewer" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/tv_api_key"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/iv_api_icon"
                     android:layout_marginStart="@dimen/spacing_s"
                     android:text="@string/settings_api_key_viewer"
                     android:textColor="@color/primary_text"
-                    android:textSize="16sp"
-                    android:layout_centerVertical="true" />
-            </RelativeLayout>
+                    android:textSize="16sp" />
+            </LinearLayout>
 
             <!-- Divider -->
             <View
@@ -194,39 +201,38 @@
                 android:layout_height="1dp"
                 android:background="@color/divider" />
 
+            <!-- Delete All Transactions -->
+            <LinearLayout
+                android:id="@+id/rl_delete_all_transactions"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_l"
+                android:orientation="horizontal"
+                android:padding="@dimen/spacing_s"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:id="@+id/iv_delete_transactions_icon"
+                    android:layout_width="@dimen/icon_s"
+                    android:layout_height="@dimen/icon_s"
+                    android:src="@drawable/ic_delete_bin"
+                    android:contentDescription="@string/settings_delete_all_transactions" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_delete_all_transactions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_s"
+                    android:text="@string/settings_delete_all_transactions"
+                    android:textColor="@color/primary_text"
+                    android:textSize="16sp" />
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/divider" />
         </LinearLayout>
-
-        <!-- API Key setter -->
-        <RelativeLayout
-            android:id="@+id/rl_delete_all_transactions"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/button_l"
-            android:padding="@dimen/spacing_s">
-
-            <ImageView
-                android:id="@+id/iv_delete_transactions_icon"
-                android:layout_width="@dimen/icon_s"
-                android:layout_height="@dimen/icon_s"
-                android:src="@drawable/ic_delete_bin"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true" />
-
-            <TextView
-                android:id="@+id/tv_delete_all_transactions"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/iv_delete_transactions_icon"
-                android:layout_marginStart="@dimen/spacing_s"
-                android:text="@string/settings_delete_all_transactions"
-                android:textColor="@color/primary_text"
-                android:textSize="16sp"
-                android:layout_centerVertical="true" />
-        </RelativeLayout>
-
-        <!-- Divider -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/divider" />
     </LinearLayout>
 </ScrollView>
