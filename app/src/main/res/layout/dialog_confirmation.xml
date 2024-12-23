@@ -8,22 +8,23 @@
 
     <!-- Title -->
     <TextView
-        android:id="@+id/tvDialogTitle"
+        android:id="@+id/tvConfirmationDialogTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="@string/dialog_delete_all_transactions_title"
+        android:text=""
         android:textAppearance="?attr/textAppearanceHeadline6"
         android:textColor="@color/primary_text"
         android:layout_marginBottom="@dimen/spacing_s" />
 
     <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvConfirmationDialogDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_m"
         android:textColor="@color/primary_text"
         android:gravity="center"
-        android:text="@string/dialog_delete_all_transactions_description" />
+        android:text="" />
 
     <!-- Buttons -->
     <LinearLayout

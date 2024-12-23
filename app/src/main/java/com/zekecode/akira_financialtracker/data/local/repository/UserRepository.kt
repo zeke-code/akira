@@ -1,5 +1,6 @@
 package com.zekecode.akira_financialtracker.data.local.repository
 
+import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,7 +14,8 @@ import javax.inject.Singleton
 
 @Singleton
 class UserRepository @Inject constructor(
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
+    private val context: Context
 ) {
 
     private val _currencySymbol = MutableLiveData<String>()
@@ -93,5 +95,11 @@ class UserRepository @Inject constructor(
     fun setLastLaunchDateToNow() {
         val currentDate = dateFormat.format(Calendar.getInstance().time)
         setLastLaunchDate(currentDate)
+    }
+
+    fun getAppVersion(): String? {
+        val packageManager = context.packageManager
+        val packageName = context.packageName
+        return packageManager.getPackageInfo(packageName, 0).versionName
     }
 }

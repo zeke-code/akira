@@ -50,13 +50,17 @@ class SettingsFragment : Fragment() {
     ): View {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
 
-        setupObservers()
+        setupUI()
         setupClickListeners()
 
         return binding.root
     }
 
-    private fun setupObservers() {
+    private fun setupUI() {
+        viewModel.appVersion.observe(viewLifecycleOwner) { appVersion ->
+            binding.tvAppVersion.text = getString(R.string.settings_app_version, appVersion)
+        }
+
         viewModel.username.observe(viewLifecycleOwner) { username ->
             val fullText = getString(R.string.settings_username, username)
             binding.tvName.text = fullText
@@ -93,34 +97,38 @@ class SettingsFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
-        binding.rlNameSetting.setOnClickListener {
+        binding.llNameSetting.setOnClickListener {
             showInputDialog("Change Username", viewModel.username.value ?: "Username", { newUsername ->
                 viewModel.updateUsername(newUsername)
             }, isNumeric = false)
         }
 
-        binding.rlBudgetSetting.setOnClickListener {
+        binding.llBudgetSetting.setOnClickListener {
             showInputDialog("Change Monthly Budget", viewModel.budget.value.toString(), { newBudget ->
                 viewModel.updateBudget(newBudget)
             }, isNumeric = true)
         }
 
-        binding.rlCurrencySetting.setOnClickListener {
+        binding.llCurrencySetting.setOnClickListener {
             showCurrencySelectionDialog()
         }
 
-        binding.rlNotificationsSetting.setOnClickListener {
+        binding.llNotificationsSetting.setOnClickListener {
             handleNotificationToggle()
         }
 
-        binding.rlApiKeySetter.setOnClickListener {
+        binding.llApiKeySetter.setOnClickListener {
             showInputDialog("Set your API key", viewModel.apiKey.value ?: "", { newApiKey ->
                 viewModel.updateApiKey(newApiKey)
             })
         }
 
-        binding.rlDeleteAllTransactions.setOnClickListener {
+        binding.llDeleteAllTransactions.setOnClickListener {
             showDeleteAllTransactionsDialog()
+        }
+
+        binding.llAppVersion.setOnClickListener {
+            openGitHubReleasesPage()
         }
     }
 
@@ -178,18 +186,32 @@ class SettingsFragment : Fragment() {
     }
 
     private fun showDisableNotificationsDialog() {
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.settings_disable_notifications_dialog_title)
-            .setMessage(R.string.settings_disable_notifications_dialog_description)
-            .setPositiveButton("Go to Settings") { _, _ ->
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                    data = Uri.fromParts("package", requireContext().packageName, null)
-                }
-                startActivity(intent)
+        val dialogBinding = DialogConfirmationBinding.inflate(LayoutInflater.from(requireContext()))
+
+        val dialog = AlertDialog.Builder(requireContext(), R.style.CustomDialog)
+            .setView(dialogBinding.root)
+            .create()
+
+        dialogBinding.tvConfirmationDialogTitle.text = getString(R.string.settings_disable_notifications_dialog_title)
+        dialogBinding.tvConfirmationDialogDescription.text = getString(R.string.settings_disable_notifications_dialog_description)
+        dialogBinding.btnSave.text = getString(R.string.dialog_go_to_settings)
+        dialogBinding.btnCancel.text = getString(R.string.dialog_cancel_button)
+
+        dialogBinding.btnSave.setOnClickListener {
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.fromParts("package", requireContext().packageName, null)
             }
-            .setNegativeButton("Cancel", null)
-            .show()
+            startActivity(intent)
+            dialog.dismiss()
+        }
+
+        dialogBinding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
+
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun requestNotificationPermission() {
@@ -197,18 +219,32 @@ class SettingsFragment : Fragment() {
     }
 
     private fun showPermissionDeniedDialog() {
-        AlertDialog.Builder(requireContext())
-            .setTitle("Notification Permission Denied")
-            .setMessage("To enable notifications, please allow the permission in the app settings.")
-            .setPositiveButton("Go to Settings") { _, _ ->
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                    data = Uri.fromParts("package", requireContext().packageName, null)
-                }
-                startActivity(intent)
+        val dialogBinding = DialogConfirmationBinding.inflate(LayoutInflater.from(requireContext()))
+
+        val dialog = AlertDialog.Builder(requireContext(), R.style.CustomDialog)
+            .setView(dialogBinding.root)
+            .create()
+
+        dialogBinding.tvConfirmationDialogTitle.text = getString(R.string.notification_permission_denied_title)
+        dialogBinding.tvConfirmationDialogDescription.text = getString(R.string.notification_permission_denied_message)
+        dialogBinding.btnSave.text = getString(R.string.dialog_go_to_settings)
+        dialogBinding.btnCancel.text = getString(R.string.dialog_cancel_button)
+
+        dialogBinding.btnSave.setOnClickListener {
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.fromParts("package", requireContext().packageName, null)
             }
-            .setNegativeButton("Cancel", null)
-            .show()
+            startActivity(intent)
+            dialog.dismiss()
+        }
+
+        dialogBinding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
+
 
     private fun showCurrencySelectionDialog() {
         val binding = DialogSpinnerInputBinding.inflate(LayoutInflater.from(requireContext()))
@@ -241,6 +277,9 @@ class SettingsFragment : Fragment() {
             .setView(dialogBinding.root)
             .create()
 
+        dialogBinding.tvConfirmationDialogTitle.text = getString(R.string.dialog_delete_all_transactions_title)
+        dialogBinding.tvConfirmationDialogDescription.text = getString(R.string.dialog_delete_all_transactions_description)
+
         dialogBinding.btnCancel.setOnClickListener {
             dialog.dismiss()
         }
@@ -256,6 +295,22 @@ class SettingsFragment : Fragment() {
         }
 
         dialog.show()
+    }
+
+    private val openBrowserLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        // We can handle action when browser is opened if needed, but we don't at the moment.
+        // Maybe in the future, idk
+    }
+
+    private fun openGitHubReleasesPage() {
+        val releasesUrl = "https://github.com/zeke-code/akira/releases"
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(releasesUrl))
+
+        try {
+            openBrowserLauncher.launch(intent)
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), "No browser found to open the link", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onDestroyView() {

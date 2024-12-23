@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
+import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.databinding.FragmentStatsBinding
 import com.zekecode.akira_financialtracker.ui.viewmodels.StatsViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,11 +34,17 @@ class StatsFragment : Fragment() {
 
         binding.expenseChartView.modelProducer = viewModel.expenseChartModelProducer
         binding.earningChartView.modelProducer = viewModel.earningChartModelProducer
+        binding.chartToggleButton.text = getString(R.string.stats_toggle_button_revenues)
+        binding.chartToggleButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.accent_blue))
 
         setupCharts()
 
         viewModel.isDataAvailable.observe(viewLifecycleOwner) { isDataAvailable ->
             updateUI(isDataAvailable)
+        }
+
+        binding.chartToggleButton.setOnClickListener {
+            toggleCharts()
         }
     }
 
@@ -70,6 +78,21 @@ class StatsFragment : Fragment() {
         }
     }
 
+    private fun toggleCharts() {
+        if (binding.expensesLayout.visibility == View.VISIBLE) {
+            binding.chartToggleButton.text = getString(R.string.stats_toggle_button_expenses)
+            binding.chartToggleButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.accent_red))
+            binding.expensesLayout.visibility = View.GONE
+            binding.revenuesLayout.visibility = View.VISIBLE
+        } else {
+            binding.chartToggleButton.text = getString(R.string.stats_toggle_button_revenues)
+            binding.chartToggleButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.accent_blue))
+            binding.revenuesLayout.visibility = View.GONE
+            binding.expensesLayout.visibility = View.VISIBLE
+        }
+    }
+
+
     private fun updateUI(isDataAvailable: Boolean) {
         binding.noDataTextView.visibility = if (isDataAvailable) View.GONE else View.VISIBLE
         val visibility = if (isDataAvailable) View.VISIBLE else View.GONE
@@ -77,7 +100,7 @@ class StatsFragment : Fragment() {
         binding.earningChartView.visibility = visibility
         binding.expensesHeader.visibility = visibility
         binding.revenueHeader.visibility = visibility
-        binding.divider.visibility = visibility
+        binding.chartToggleButton.visibility = visibility
     }
 
     override fun onDestroyView() {

@@ -1,6 +1,11 @@
 package com.zekecode.akira_financialtracker.ui.viewmodels
 
 import android.app.Application
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.*
 import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
@@ -19,6 +24,9 @@ class SettingsViewModel @Inject constructor(
 
     private val _username = MutableLiveData<String>()
     val username: LiveData<String> get() = _username
+
+    private val _appVersion = MutableLiveData<String>()
+    val appVersion: LiveData<String> get() = _appVersion
 
     private val _currencySymbol = MutableLiveData<String>()
 
@@ -55,6 +63,7 @@ class SettingsViewModel @Inject constructor(
             _notificationsEnabled.postValue(userRepository.isNotificationsEnabled())
             _selectedCurrency.postValue(userRepository.getSelectedCurrency())
             _apiKey.postValue(userRepository.getApiKey())
+            _appVersion.postValue(userRepository.getAppVersion())
         }
     }
 

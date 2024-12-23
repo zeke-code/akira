@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -18,60 +17,82 @@
         android:layout_gravity="center" />
 
     <!-- Content -->
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_m">
 
-        <LinearLayout
+        <!-- FrameLayout for Charts -->
+        <FrameLayout
             android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:layout_marginTop="@dimen/spacing_s"
+            android:layout_gravity="center_horizontal">
+
+            <!-- Chart for Monthly Expenses -->
+            <LinearLayout
+                android:id="@+id/expenses_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/expenses_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/stats_monthly_expenses_header"
+                    android:textSize="20sp"
+                    android:textColor="@color/primary_text"
+                    android:textStyle="bold"
+                    android:gravity="center_horizontal"
+                    android:layout_marginBottom="@dimen/spacing_s" />
+
+                <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
+                    android:id="@+id/expense_chart_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:scrollEnabled="true"
+                    app:chartStyle="@style/ExpenseChartStyle" />
+            </LinearLayout>
+
+            <!-- Chart for Monthly Revenue -->
+            <LinearLayout
+                android:id="@+id/revenues_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/revenue_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/stats_monthly_revenue_header"
+                    android:textSize="20sp"
+                    android:textColor="@color/primary_text"
+                    android:textStyle="bold"
+                    android:gravity="center_horizontal"
+                    android:layout_marginBottom="@dimen/spacing_s" />
+
+                <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
+                    android:id="@+id/earning_chart_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:chartStyle="@style/RevenueChartStyle" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- Toggle Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/chart_toggle_button"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/spacing_m">
+            android:textSize="@dimen/text_s"
+            android:text="@string/stats_toggle_button_expenses"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/spacing_m" />
 
-            <!-- Header and Chart for Monthly Expenses -->
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/expenses_header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/stats_monthly_expenses_header"
-                android:textSize="20sp"
-                android:textColor="@color/primary_text"
-                android:textStyle="bold"
-                android:gravity="center_horizontal"
-                android:layout_marginBottom="@dimen/spacing_s" />
-
-            <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
-                android:id="@+id/expense_chart_view"
-                android:layout_width="match_parent"
-                android:layout_height="220dp"
-                app:scrollEnabled="true"
-                app:chartStyle="@style/ExpenseChartStyle" />
-
-            <!-- Divider -->
-            <View
-                android:id="@+id/divider"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/divider"
-                android:layout_marginVertical="@dimen/spacing_m" />
-
-            <!-- Header and Chart for Monthly Revenue -->
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/revenue_header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/stats_monthly_revenue_header"
-                android:textSize="20sp"
-                android:textColor="@color/primary_text"
-                android:textStyle="bold"
-                android:gravity="center_horizontal"
-                android:layout_marginBottom="@dimen/spacing_s" />
-
-            <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
-                android:id="@+id/earning_chart_view"
-                android:layout_width="match_parent"
-                android:layout_height="220dp"
-                app:chartStyle="@style/RevenueChartStyle" />
-        </LinearLayout>
-    </ScrollView>
+    </LinearLayout>
 </FrameLayout>
