@@ -20,12 +20,16 @@ class StatsViewModel @Inject constructor(
     private val repository: FinancialRepository
 ) : ViewModel() {
 
-    private val currentYearMonth = getCurrentYearMonth()
+    val monthlyExpenses: LiveData<List<ExpenseWithCategory>> =
+        repository.getMonthlyExpenses(getCurrentYearMonth())
+    val monthlyEarnings: LiveData<List<EarningWithCategory>> =
+        repository.getMonthlyEarnings(getCurrentYearMonth())
 
-    private val monthlyExpenses: LiveData<List<ExpenseWithCategory>> =
-        repository.getMonthlyExpenses(currentYearMonth)
-    private val monthlyEarnings: LiveData<List<EarningWithCategory>> =
-        repository.getMonthlyEarnings(currentYearMonth)
+    private val _expenseData = MutableLiveData<Pair<List<String>, List<Double>>>()
+    val expenseData: LiveData<Pair<List<String>, List<Double>>> get() = _expenseData
+
+    private val _earningData = MutableLiveData<Pair<List<String>, List<Double>>>()
+    val earningData: LiveData<Pair<List<String>, List<Double>>> get() = _earningData
 
     private val _expenseChartModelProducer = CartesianChartModelProducer()
     val expenseChartModelProducer: CartesianChartModelProducer
@@ -35,89 +39,75 @@ class StatsViewModel @Inject constructor(
     val earningChartModelProducer: CartesianChartModelProducer
         get() = _earningChartModelProducer
 
-    private val _expenseData = MutableLiveData<Pair<List<String>, List<Double>>>()
-    private val _earningData = MutableLiveData<Pair<List<String>, List<Double>>>()
+    private val _isDataAvailable = MutableLiveData<Boolean>()
+    val isDataAvailable: LiveData<Boolean> get() = _isDataAvailable
 
     val categoriesLabelList = ExtraStore.Key<List<String>>()
 
-    private val _isDataAvailable: LiveData<Boolean> = MutableLiveData<Boolean>().apply {
-        listOf(_expenseData, _earningData).forEach { source ->
-            source.observeForever {
-                value = checkIfDataExists()
-            }
+    /**
+     * Called when monthlyExpenses LiveData emits data.
+     */
+    fun processExpenses(items: List<ExpenseWithCategory>?) {
+        if (!items.isNullOrEmpty()) {
+            val groupedData = items.groupBy { it.category.name }
+            val categoryNames = groupedData.keys.toList()
+            val categorySums = groupedData.values.map { grp -> grp.sumOf { it.expense.amount } }
+
+            _expenseData.value = categoryNames to categorySums
+            updateChart(categoryNames, categorySums, _expenseChartModelProducer)
+        } else {
+            _expenseData.value = emptyList<String>() to emptyList()
         }
-    }
-    val isDataAvailable: LiveData<Boolean> get() = _isDataAvailable
 
-    init {
-        processFinancialData(
-            data = monthlyExpenses,
-            getCategoryName = { it.category.name },
-            getAmount = { it.expense.amount },
-            onProcessed = { names, sums ->
-                _expenseData.value = names to sums
-                updateChart(
-                    categoryNames = names,
-                    categorySums = sums,
-                    chartModelProducer = _expenseChartModelProducer
-                )
-            }
-        )
-
-        processFinancialData(
-            data = monthlyEarnings,
-            getCategoryName = { it.category.name },
-            getAmount = { it.earning.amount },
-            onProcessed = { names, sums ->
-                _earningData.value = names to sums
-                updateChart(
-                    categoryNames = names,
-                    categorySums = sums,
-                    chartModelProducer = _earningChartModelProducer
-                )
-            }
-        )
+        // Check if BOTH expenses AND earnings exist
+        checkIfDataExists()
     }
 
-    private fun checkIfDataExists(): Boolean {
-        val expenseHasData = !_expenseData.value?.first.isNullOrEmpty()
-        val earningHasData = !_earningData.value?.first.isNullOrEmpty()
-        return expenseHasData || earningHasData
-    }
+    /**
+     * Called when monthlyEarnings LiveData emits data.
+     */
+    fun processEarnings(items: List<EarningWithCategory>?) {
+        if (!items.isNullOrEmpty()) {
+            val groupedData = items.groupBy { it.category.name }
+            val categoryNames = groupedData.keys.toList()
+            val categorySums = groupedData.values.map { grp -> grp.sumOf { it.earning.amount } }
 
-    private fun <T> processFinancialData(
-        data: LiveData<List<T>>,
-        getCategoryName: (T) -> String,
-        getAmount: (T) -> Double,
-        onProcessed: (List<String>, List<Double>) -> Unit
-    ) {
-        data.observeForever { items ->
-            if (!items.isNullOrEmpty()) {
-                val groupedData = items.groupBy(getCategoryName)
-                val categoryNames = groupedData.keys.toList()
-                val categorySums = groupedData.values.map { group -> group.sumOf(getAmount) }
-                onProcessed(categoryNames, categorySums)
-            } else {
-                onProcessed(emptyList(), emptyList())
-            }
+            _earningData.value = categoryNames to categorySums
+            updateChart(categoryNames, categorySums, _earningChartModelProducer)
+        } else {
+            _earningData.value = emptyList<String>() to emptyList()
         }
+
+        // Check if BOTH expenses AND earnings exist
+        checkIfDataExists()
     }
 
+    /**
+     * If either expenses or earnings is missing (empty),
+     * we set _isDataAvailable to false. Otherwise true.
+     */
+    private fun checkIfDataExists() {
+        val hasExpenseData = !_expenseData.value?.first.isNullOrEmpty()
+        val hasEarningData = !_earningData.value?.first.isNullOrEmpty()
+
+        // Show data ONLY if BOTH are present
+        _isDataAvailable.value = hasExpenseData && hasEarningData
+    }
+
+    /**
+     * Updates the chart with the given category names & sums.
+     */
     private fun updateChart(
         categoryNames: List<String>,
         categorySums: List<Double>,
         chartModelProducer: CartesianChartModelProducer
     ) {
-        if (categorySums.isEmpty()) {
-            return
-        }
-        else{
-            viewModelScope.launch {
-                chartModelProducer.runTransaction {
-                    columnSeries { series(categorySums) }
-                    extras { extraStore ->
-                        extraStore[categoriesLabelList] = categoryNames
-                    }
+        if (categorySums.isEmpty()) return
+        viewModelScope.launch {
+            chartModelProducer.runTransaction {
+                columnSeries { series(categorySums) }
+                extras { extraStore ->
+                    extraStore[categoriesLabelList] = categoryNames
                 }
             }
         }

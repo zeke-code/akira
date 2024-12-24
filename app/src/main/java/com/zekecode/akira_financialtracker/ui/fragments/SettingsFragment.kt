@@ -225,8 +225,8 @@ class SettingsFragment : Fragment() {
             .setView(dialogBinding.root)
             .create()
 
-        dialogBinding.tvConfirmationDialogTitle.text = getString(R.string.notification_permission_denied_title)
-        dialogBinding.tvConfirmationDialogDescription.text = getString(R.string.notification_permission_denied_message)
+        dialogBinding.tvConfirmationDialogTitle.text = getString(R.string.settings_notification_permission_denied_title)
+        dialogBinding.tvConfirmationDialogDescription.text = getString(R.string.settings_notification_permission_denied_message)
         dialogBinding.btnSave.text = getString(R.string.dialog_go_to_settings)
         dialogBinding.btnCancel.text = getString(R.string.dialog_cancel_button)
 

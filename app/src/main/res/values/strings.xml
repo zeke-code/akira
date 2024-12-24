@@ -38,6 +38,10 @@
     <string name="settings_api_key_viewer">"Alpha Vantage API key: %s"</string>
     <string name="settings_disable_notifications_dialog_title">Disable Notifications</string>
     <string name="settings_disable_notifications_dialog_description">To disable notifications, please go to app settings and disable them.</string>
+    <string name="transactions_deleted_success">All transactions deleted successfully</string>
+    <string name="settings_notification_permission_denied_title">Notification permissions denied</string>
+    <string name="settings_notification_permission_denied_message">To enable notifications, please allow the relative permissions in the app settings.</string>
+    <string name="settings_app_version">App version: %s</string>
     <!-- Create fragment -->
     <string name="create_header">Add a transaction</string>
     <string name="create_select_category_arrow">Select a category</string>
@@ -57,7 +61,8 @@
     <string name="category_name_placeholder">Select or create a category</string>
     <!-- Stats Fragment -->
     <string name="stats_no_data_message">You don\'t have enough data to display statistics. Log more transactions!</string>
-    <string name="stats_expenses_vs_revenue_header">Expenses vs Revenues this month</string>
+    <string name="stats_general_expenses_header">Expenses over this month</string>
+    <string name="stats_general_revenue_header">Expenses over this month</string>
     <string name="stats_monthly_expenses_header">Expenses by category this month</string>
     <string name="stats_monthly_revenue_header">Revenues by category this month</string>
     <string name="stats_toggle_button_expenses">Show expenses</string>
@@ -84,8 +89,4 @@
     <string name="dialog_delete_all_transactions_description">Are you sure you want to delete all your registered transactions?</string>
     <string name="dialog_delete_all_transactions_confirm_button">Continue</string>
     <string name="dialog_go_to_settings">Settings</string>
-    <string name="transactions_deleted_success">All transactions deleted successfully</string>
-    <string name="notification_permission_denied_title">Notification permissions denied</string>
-    <string name="notification_permission_denied_message">To enable notifications, please allow the relative permissions in the app settings.</string>
-    <string name="settings_app_version">App version: %s</string>
 </resources>

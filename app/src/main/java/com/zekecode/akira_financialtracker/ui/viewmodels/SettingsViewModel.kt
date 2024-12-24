@@ -1,15 +1,15 @@
 package com.zekecode.akira_financialtracker.ui.viewmodels
 
 import android.app.Application
-import android.content.Intent
-import android.net.Uri
-import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContextCompat.startActivity
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
 import com.zekecode.akira_financialtracker.data.local.repository.UserRepository
+import com.zekecode.akira_financialtracker.utils.CurrencyUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,6 +19,7 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val financialRepository: FinancialRepository,
     private val userRepository: UserRepository,
+    private val currencyUtils: CurrencyUtils,
     private val application: Application
 ) : ViewModel() {
 
@@ -63,7 +64,7 @@ class SettingsViewModel @Inject constructor(
             _notificationsEnabled.postValue(userRepository.isNotificationsEnabled())
             _selectedCurrency.postValue(userRepository.getSelectedCurrency())
             _apiKey.postValue(userRepository.getApiKey())
-            _appVersion.postValue(userRepository.getAppVersion())
+            _appVersion.postValue(userRepository.getAppVersionName())
         }
     }
 
@@ -104,9 +105,12 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun updateCurrency(newCurrency: String) {
+        _selectedCurrency.value = newCurrency
+        val newSymbol = currencyUtils.getCurrencySymbol(newCurrency)
+        _currencySymbol.value = newSymbol
+
         viewModelScope.launch(Dispatchers.IO) {
             userRepository.updateSelectedCurrency(newCurrency)
-            _selectedCurrency.postValue(newCurrency)
         }
     }
 

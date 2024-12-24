@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -22,7 +23,8 @@ class StatsFragment : Fragment() {
     private val viewModel: StatsViewModel by viewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentStatsBinding.inflate(inflater, container, false)
@@ -32,20 +34,28 @@ class StatsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.monthlyExpenses.observe(viewLifecycleOwner) { expenses ->
+            viewModel.processExpenses(expenses)
+        }
+        viewModel.monthlyEarnings.observe(viewLifecycleOwner) { earnings ->
+            viewModel.processEarnings(earnings)
+        }
+
+        viewModel.isDataAvailable.observe(viewLifecycleOwner) { isAvailable ->
+            updateUI(isAvailable)
+        }
+
         binding.expenseChartView.modelProducer = viewModel.expenseChartModelProducer
         binding.earningChartView.modelProducer = viewModel.earningChartModelProducer
+
         binding.chartToggleButton.text = getString(R.string.stats_toggle_button_revenues)
-        binding.chartToggleButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.accent_blue))
+        binding.chartToggleButton.setBackgroundColor(
+            ContextCompat.getColor(requireContext(), R.color.accent_green)
+        )
 
         setupCharts()
 
-        viewModel.isDataAvailable.observe(viewLifecycleOwner) { isDataAvailable ->
-            updateUI(isDataAvailable)
-        }
-
-        binding.chartToggleButton.setOnClickListener {
-            toggleCharts()
-        }
+        binding.chartToggleButton.setOnClickListener { toggleCharts() }
     }
 
     private fun setupCharts() {
@@ -78,29 +88,57 @@ class StatsFragment : Fragment() {
         }
     }
 
+    /**
+     * Toggle between the expense and revenue charts with animations.
+     */
     private fun toggleCharts() {
-        if (binding.expensesLayout.visibility == View.VISIBLE) {
+        val fadeIn = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_in)
+        val fadeOut = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_out)
+
+        if (binding.expensesContainer.visibility == View.VISIBLE) {
+            binding.expensesContainer.startAnimation(fadeOut)
+            binding.expensesContainer.visibility = View.GONE
+
+            binding.revenuesContainer.startAnimation(fadeIn)
+            binding.revenuesContainer.visibility = View.VISIBLE
+            binding.expensesHeader.text = getString(R.string.stats_monthly_expenses_header)
+
             binding.chartToggleButton.text = getString(R.string.stats_toggle_button_expenses)
-            binding.chartToggleButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.accent_red))
-            binding.expensesLayout.visibility = View.GONE
-            binding.revenuesLayout.visibility = View.VISIBLE
+            binding.chartToggleButton.setBackgroundColor(
+                ContextCompat.getColor(requireContext(), R.color.accent_red)
+            )
         } else {
+            binding.revenuesContainer.startAnimation(fadeOut)
+            binding.revenuesContainer.visibility = View.GONE
+
+            binding.expensesContainer.startAnimation(fadeIn)
+            binding.revenueHeader.text = getString(R.string.stats_monthly_revenue_header)
+            binding.expensesContainer.visibility = View.VISIBLE
+
             binding.chartToggleButton.text = getString(R.string.stats_toggle_button_revenues)
-            binding.chartToggleButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.accent_blue))
-            binding.revenuesLayout.visibility = View.GONE
-            binding.expensesLayout.visibility = View.VISIBLE
+            binding.chartToggleButton.setBackgroundColor(
+                ContextCompat.getColor(requireContext(), R.color.accent_green)
+            )
         }
     }
 
-
+    /**
+     * Hide the view if data is missing.
+     */
     private fun updateUI(isDataAvailable: Boolean) {
-        binding.noDataTextView.visibility = if (isDataAvailable) View.GONE else View.VISIBLE
-        val visibility = if (isDataAvailable) View.VISIBLE else View.GONE
-        binding.expenseChartView.visibility = visibility
-        binding.earningChartView.visibility = visibility
-        binding.expensesHeader.visibility = visibility
-        binding.revenueHeader.visibility = visibility
-        binding.chartToggleButton.visibility = visibility
+        if (isDataAvailable) {
+            binding.noDataTextView.visibility = View.GONE
+            binding.statsCard.visibility = View.VISIBLE
+            binding.chartToggleButton.visibility = View.VISIBLE
+            binding.divider.visibility = View.VISIBLE
+            binding.expenseVsRevenueChart.visibility = View.VISIBLE
+        } else {
+            binding.noDataTextView.visibility = View.VISIBLE
+            binding.statsCard.visibility = View.GONE
+            binding.chartToggleButton.visibility = View.GONE
+            binding.divider.visibility = View.GONE
+            binding.expenseVsRevenueChart.visibility = View.GONE
+        }
     }
 
     override fun onDestroyView() {

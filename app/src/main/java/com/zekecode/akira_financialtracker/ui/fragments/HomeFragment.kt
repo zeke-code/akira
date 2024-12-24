@@ -82,7 +82,7 @@ class HomeFragment : Fragment() {
 
     private fun getBudgetUsageText(usedBudget: Float): String {
         return when {
-            usedBudget < 0 -> getString(R.string.home_no_budget_used_text)
+            usedBudget <= 0 -> getString(R.string.home_no_budget_used_text)
             usedBudget < 100 -> getString(R.string.home_used_budget_text, usedBudget)
             else -> getString(R.string.home_all_budged_used_text)
         }

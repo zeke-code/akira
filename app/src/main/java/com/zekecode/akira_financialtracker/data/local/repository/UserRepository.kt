@@ -15,13 +15,18 @@ import javax.inject.Singleton
 @Singleton
 class UserRepository @Inject constructor(
     private val sharedPreferences: SharedPreferences,
+    private val currencyUtils: CurrencyUtils,
     private val context: Context
 ) {
 
     private val _currencySymbol = MutableLiveData<String>()
     private val dateFormat = getCurrentYearMonth()
+
+    // Used to expose API key changes as a Flow
     private val _apiKeyFlow = MutableStateFlow(getApiKey())
     val apiKeyFlow = _apiKeyFlow.asStateFlow()
+
+    // Exposes the current currency symbol
     val currencySymbolLiveData: LiveData<String> get() = _currencySymbol
 
     init {
@@ -30,20 +35,43 @@ class UserRepository @Inject constructor(
         // Register listener to detect changes in SharedPreferences
         sharedPreferences.registerOnSharedPreferenceChangeListener { _, key ->
             when (key) {
-                "Currency" -> loadCurrencySymbol()
-                "ApiKey" -> _apiKeyFlow.value = getApiKey()
+                "Currency" -> {
+                    loadCurrencySymbol()
+                }
+                "ApiKey" -> {
+                    _apiKeyFlow.value = getApiKey()
+                }
             }
         }
     }
 
+    /**
+     * Loads the currency symbol from the repository’s selected currency code
+     * and updates the LiveData value.
+     */
     private fun loadCurrencySymbol() {
-        _currencySymbol.value = CurrencyUtils.getCurrencySymbol(sharedPreferences)
+        val currentCode = getSelectedCurrency()
+        _currencySymbol.value = currencyUtils.getCurrencySymbol(currentCode)
     }
 
+    /**
+     * Formats the amount with the current user-selected currency.
+     */
+    fun getCurrencySymbol(amount: Double): String {
+        val currencyCode = getSelectedCurrency()
+        return currencyUtils.formatAmountWithCurrency(amount, currencyCode)
+    }
+
+    /**
+     * Checks whether the initial setup is complete.
+     */
     fun isSetupComplete(): Boolean {
         return sharedPreferences.getBoolean("IsSetupComplete", false)
     }
 
+    /**
+     * Saves user data (username, monthly budget, selected currency) in SharedPreferences.
+     */
     fun saveUserData(userName: String, monthlyBudget: Float, selectedCurrency: String) {
         sharedPreferences.edit().apply {
             putString("Username", userName)
@@ -55,15 +83,22 @@ class UserRepository @Inject constructor(
         }
     }
 
+    // Basic getters
     fun getUsername(): String = sharedPreferences.getString("Username", "undefined") ?: "undefined"
     fun getBudget(): Float = sharedPreferences.getFloat("MonthlyBudget", 0.0f)
     fun isNotificationsEnabled(): Boolean = sharedPreferences.getBoolean("notifications_enabled", false)
     fun getSelectedCurrency(): String = sharedPreferences.getString("Currency", "USD") ?: "USD"
     fun getApiKey(): String = sharedPreferences.getString("ApiKey", "none") ?: "none"
+
+    /**
+     * Returns the current currency symbol (not the formatted amount).
+     */
     fun getCurrencySymbol(): String {
-        return CurrencyUtils.getCurrencySymbol(sharedPreferences)
+        val currencyCode = getSelectedCurrency()
+        return currencyUtils.getCurrencySymbol(currencyCode)
     }
 
+    // Basic update methods
     fun updateUsername(newUsername: String) {
         sharedPreferences.edit().putString("Username", newUsername).apply()
     }
@@ -84,6 +119,7 @@ class UserRepository @Inject constructor(
         sharedPreferences.edit().putString("ApiKey", newApiKey).apply()
     }
 
+    // Managing the last launch date for analytics or tracking
     fun getLastLaunchDate(): String? {
         return sharedPreferences.getString("lastLaunchDate", null)
     }
@@ -97,7 +133,8 @@ class UserRepository @Inject constructor(
         setLastLaunchDate(currentDate)
     }
 
-    fun getAppVersion(): String? {
+    // Retrieves the application's version name
+    fun getAppVersionName(): String? {
         val packageManager = context.packageManager
         val packageName = context.packageName
         return packageManager.getPackageInfo(packageName, 0).versionName

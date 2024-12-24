@@ -1,27 +1,32 @@
 package com.zekecode.akira_financialtracker.utils
 
-import android.content.SharedPreferences
 import java.text.NumberFormat
 import java.util.Currency
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object CurrencyUtils {
+@Singleton
+class CurrencyUtils @Inject constructor() {
 
-    // Function to get the currency symbol
-    fun getCurrencySymbol(sharedPreferences: SharedPreferences): String {
-        val currencyCode = sharedPreferences.getString("Currency", "USD") ?: "USD"
+    /**
+     * Returns the symbol for the given currency code, or a fallback symbol if
+     * the provided code is invalid.
+     */
+    fun getCurrencySymbol(currencyCode: String): String {
         return try {
             Currency.getInstance(currencyCode).symbol
         } catch (e: IllegalArgumentException) {
-            "$"  // Fallback to default symbol
+            "$"  // Fallback symbol
         }
     }
 
-    // Function to format the amount with the currency symbol
-    fun formatAmountWithCurrency(amount: Double, sharedPreferences: SharedPreferences): String {
-        val currencyCode = sharedPreferences.getString("Currency", "USD") ?: "USD"
-        val currencyFormat = NumberFormat.getCurrencyInstance().apply {
+    /**
+     * Formats the given amount (Double) as a currency string for the provided currencyCode.
+     */
+    fun formatAmountWithCurrency(amount: Double, currencyCode: String): String {
+        val format = NumberFormat.getCurrencyInstance().apply {
             currency = Currency.getInstance(currencyCode)
         }
-        return currencyFormat.format(amount)
+        return format.format(amount)
     }
 }
