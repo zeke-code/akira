@@ -12,15 +12,17 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.zekecode.akira_financialtracker.R
+import com.zekecode.akira_financialtracker.data.local.entities.SettingItem
 import com.zekecode.akira_financialtracker.databinding.DialogConfirmationBinding
 import com.zekecode.akira_financialtracker.databinding.DialogInputBinding
 import com.zekecode.akira_financialtracker.databinding.DialogSpinnerInputBinding
 import com.zekecode.akira_financialtracker.databinding.FragmentSettingsBinding
+import com.zekecode.akira_financialtracker.ui.adapters.SettingsAdapter
 import com.zekecode.akira_financialtracker.ui.viewmodels.SettingsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -32,16 +34,11 @@ class SettingsFragment : Fragment() {
 
     private val viewModel: SettingsViewModel by viewModels()
 
-    // Register permission launcher
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            viewModel.updateNotificationsEnabled(true)
-        } else {
-            viewModel.updateNotificationsEnabled(false)
-            showPermissionDeniedDialog()
-        }
+    ) { isGranted ->
+        viewModel.updateNotificationsEnabled(isGranted)
+        if (!isGranted) showPermissionDeniedDialog()
     }
 
     override fun onCreateView(
@@ -49,97 +46,91 @@ class SettingsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
-
-        setupUI()
-        setupClickListeners()
-
+        setupRecyclerView()
+        observeViewModel()
         return binding.root
     }
 
-    private fun setupUI() {
-        viewModel.appVersion.observe(viewLifecycleOwner) { appVersion ->
-            binding.tvAppVersion.text = getString(R.string.settings_app_version, appVersion)
-        }
+    private fun setupRecyclerView() {
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerView.adapter = SettingsAdapter(getSettingsItems())
+    }
 
-        viewModel.username.observe(viewLifecycleOwner) { username ->
-            val fullText = getString(R.string.settings_username, username)
-            binding.tvName.text = fullText
-        }
-
-        viewModel.combinedBudgetText.observe(viewLifecycleOwner) { fullText ->
-            binding.tvBudget.text = fullText
-            binding.tvBudget.invalidate()
-        }
-
-        viewModel.selectedCurrency.observe(viewLifecycleOwner) { selectedCurrency ->
-            val fullText = getString(R.string.settings_current_currency, selectedCurrency)
-            binding.tvCurrency.text = fullText
-        }
-
-        viewModel.notificationsEnabled.observe(viewLifecycleOwner) {
-            checkSystemNotificationPermission()
-        }
-
-        viewModel.apiKey.observe(viewLifecycleOwner) { apiKey ->
-            val displayText = if (apiKey.isNullOrEmpty()) {
-                getString(R.string.settings_api_key_viewer, "not set")
-            } else {
-                getString(R.string.settings_api_key_viewer, "set")
-            }
-            binding.tvApiKey.text = displayText
-        }
-
-        viewModel.invalidInputToastText.observe(viewLifecycleOwner) { message ->
-            message?.let {
-                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
-            }
+    private fun observeViewModel() {
+        viewModel.apply {
+            username.observe(viewLifecycleOwner) { updateRecyclerView() }
+            budget.observe(viewLifecycleOwner) { updateRecyclerView() }
+            selectedCurrency.observe(viewLifecycleOwner) { updateRecyclerView() }
+            notificationsEnabled.observe(viewLifecycleOwner) { updateRecyclerView() }
+            apiKey.observe(viewLifecycleOwner) { updateRecyclerView() }
+            appVersion.observe(viewLifecycleOwner) { updateRecyclerView() }
         }
     }
 
-    private fun setupClickListeners() {
-        binding.llNameSetting.setOnClickListener {
-            showInputDialog("Change Username", viewModel.username.value ?: "Username", { newUsername ->
-                viewModel.updateUsername(newUsername)
-            }, isNumeric = false)
-        }
-
-        binding.llBudgetSetting.setOnClickListener {
-            showInputDialog("Change Monthly Budget", viewModel.budget.value.toString(), { newBudget ->
-                viewModel.updateBudget(newBudget)
-            }, isNumeric = true)
-        }
-
-        binding.llCurrencySetting.setOnClickListener {
-            showCurrencySelectionDialog()
-        }
-
-        binding.llNotificationsSetting.setOnClickListener {
-            handleNotificationToggle()
-        }
-
-        binding.llApiKeySetter.setOnClickListener {
-            showInputDialog("Set your API key", viewModel.apiKey.value ?: "", { newApiKey ->
-                viewModel.updateApiKey(newApiKey)
-            })
-        }
-
-        binding.llDeleteAllTransactions.setOnClickListener {
-            showDeleteAllTransactionsDialog()
-        }
-
-        binding.llAppVersion.setOnClickListener {
-            openGitHubReleasesPage()
-        }
+    private fun updateRecyclerView() {
+        (binding.recyclerView.adapter as? SettingsAdapter)?.updateItems(getSettingsItems())
     }
 
-    private fun showInputDialog(title: String, currentValue: String, onSave: (String) -> Unit, isNumeric: Boolean = false) {
-        val binding = DialogInputBinding.inflate(LayoutInflater.from(requireContext())).apply {
+    private fun getSettingsItems(): List<SettingItem> {
+        return listOf(
+            SettingItem(
+                iconResId = R.drawable.ic_user,
+                title = getString(R.string.settings_username),
+                subtitle = viewModel.username.value,
+                onClickAction = { showInputDialog("Change Username", viewModel.username.value.orEmpty()) { viewModel.updateUsername(it) } }
+            ),
+            SettingItem(
+                iconResId = R.drawable.ic_dollar,
+                title = getString(R.string.settings_budget),
+                subtitle = viewModel.budget.value.toString(),
+                onClickAction = { showInputDialog("Change Monthly Budget", viewModel.budget.value.toString(), isNumeric = true) { viewModel.updateBudget(it) } }
+            ),
+            SettingItem(
+                iconResId = R.drawable.ic_currency_exchange,
+                title = getString(R.string.settings_current_currency),
+                subtitle = viewModel.selectedCurrency.value,
+                onClickAction = { showCurrencySelectionDialog() }
+            ),
+            SettingItem(
+                iconResId = R.drawable.ic_api,
+                title = getString(R.string.settings_api_key),
+                subtitle = getString(
+                    R.string.settings_api_key_status_description,
+                    if (viewModel.apiKey.value.isNullOrEmpty()) "Unset" else "Set"
+                ),
+                onClickAction = { showInputDialog("Set API Key", viewModel.apiKey.value.orEmpty()) { viewModel.updateApiKey(it) } }
+            ),
+            SettingItem(
+                iconResId = R.drawable.ic_notifications,
+                title = getString(R.string.settings_notification_status),
+                subtitle = getString(R.string.settings_notification_status_description, if (viewModel.notificationsEnabled.value == true) "On" else "Off"),
+                onClickAction = { toggleNotifications() }
+            ),
+            SettingItem(
+                iconResId = R.drawable.ic_delete_bin,
+                title = getString(R.string.settings_delete_all_transactions),
+                onClickAction = { showConfirmationDialog("Delete All Transactions", "Are you sure you want to delete all transactions?") { viewModel.deleteAllTransactions() } }
+            ),
+            SettingItem(
+                iconResId = R.drawable.ic_info,
+                title = getString(R.string.settings_app_version),
+                subtitle = viewModel.appVersion.value,
+                onClickAction = { openGitHubReleasesPage() }
+            )
+        )
+    }
+
+    private fun showInputDialog(
+        title: String,
+        currentValue: String,
+        isNumeric: Boolean = false,
+        onSave: (String) -> Unit
+    ) {
+        val binding = DialogInputBinding.inflate(LayoutInflater.from(requireContext()))
+        binding.apply {
             tvDialogTitle.text = title
             etInput.setText(currentValue)
-
-            if (isNumeric) {
-                etInput.inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
-            }
+            if (isNumeric) etInput.inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
         }
 
         AlertDialog.Builder(requireContext(), R.style.CustomDialog)
@@ -155,16 +146,66 @@ class SettingsFragment : Fragment() {
             .show()
     }
 
+    private fun showCurrencySelectionDialog() {
+        val binding = DialogSpinnerInputBinding.inflate(LayoutInflater.from(requireContext()))
+        val adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            resources.getStringArray(R.array.currency_options)
+        )
+        binding.currencySpinner.adapter = adapter
 
-    private fun handleNotificationToggle() {
+        AlertDialog.Builder(requireContext(), R.style.CustomDialog)
+            .setView(binding.root)
+            .create()
+            .apply {
+                binding.btnSave.setOnClickListener {
+                    viewModel.updateCurrency(binding.currencySpinner.selectedItem.toString())
+                    dismiss()
+                }
+                binding.btnCancel.setOnClickListener { dismiss() }
+            }
+            .show()
+    }
+
+    private fun showConfirmationDialog(
+        title: String,
+        message: String,
+        onConfirm: () -> Unit
+    ) {
+        val binding = DialogConfirmationBinding.inflate(LayoutInflater.from(requireContext()))
+        binding.apply {
+            tvConfirmationDialogTitle.text = title
+            tvConfirmationDialogDescription.text = message
+        }
+
+        AlertDialog.Builder(requireContext(), R.style.CustomDialog)
+            .setView(binding.root)
+            .create()
+            .apply {
+                binding.btnSave.setOnClickListener {
+                    onConfirm()
+                    dismiss()
+                }
+                binding.btnCancel.setOnClickListener { dismiss() }
+            }
+            .show()
+    }
+
+    private fun toggleNotifications() {
         val notificationsEnabled = viewModel.notificationsEnabled.value ?: false
 
         if (notificationsEnabled) {
-            showDisableNotificationsDialog()
+            showConfirmationDialog(
+                "Disable Notifications",
+                "Are you sure you want to disable notifications?"
+            ) {
+                viewModel.updateNotificationsEnabled(false)
+            }
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 if (requireContext().checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                    requestNotificationPermission()
+                    requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
                 } else {
                     viewModel.updateNotificationsEnabled(true)
                 }
@@ -174,143 +215,36 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    private fun checkSystemNotificationPermission() {
-        val notificationsEnabled = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requireContext().checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-        } else {
-            true
-        }
-
-        viewModel.updateNotificationsEnabled(notificationsEnabled)
-        binding.tvNotifications.text = getString(R.string.settings_notification_status, if (notificationsEnabled) "on" else "off")
-    }
-
-    private fun showDisableNotificationsDialog() {
-        val dialogBinding = DialogConfirmationBinding.inflate(LayoutInflater.from(requireContext()))
-
-        val dialog = AlertDialog.Builder(requireContext(), R.style.CustomDialog)
-            .setView(dialogBinding.root)
-            .create()
-
-        dialogBinding.tvConfirmationDialogTitle.text = getString(R.string.settings_disable_notifications_dialog_title)
-        dialogBinding.tvConfirmationDialogDescription.text = getString(R.string.settings_disable_notifications_dialog_description)
-        dialogBinding.btnSave.text = getString(R.string.dialog_go_to_settings)
-        dialogBinding.btnCancel.text = getString(R.string.dialog_cancel_button)
-
-        dialogBinding.btnSave.setOnClickListener {
-            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                data = Uri.fromParts("package", requireContext().packageName, null)
-            }
-            startActivity(intent)
-            dialog.dismiss()
-        }
-
-        dialogBinding.btnCancel.setOnClickListener {
-            dialog.dismiss()
-        }
-
-        dialog.show()
-    }
-
-
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private fun requestNotificationPermission() {
-        requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
-    }
-
     private fun showPermissionDeniedDialog() {
-        val dialogBinding = DialogConfirmationBinding.inflate(LayoutInflater.from(requireContext()))
-
-        val dialog = AlertDialog.Builder(requireContext(), R.style.CustomDialog)
-            .setView(dialogBinding.root)
-            .create()
-
-        dialogBinding.tvConfirmationDialogTitle.text = getString(R.string.settings_notification_permission_denied_title)
-        dialogBinding.tvConfirmationDialogDescription.text = getString(R.string.settings_notification_permission_denied_message)
-        dialogBinding.btnSave.text = getString(R.string.dialog_go_to_settings)
-        dialogBinding.btnCancel.text = getString(R.string.dialog_cancel_button)
-
-        dialogBinding.btnSave.setOnClickListener {
-            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                data = Uri.fromParts("package", requireContext().packageName, null)
-            }
-            startActivity(intent)
-            dialog.dismiss()
+        val binding = DialogConfirmationBinding.inflate(LayoutInflater.from(requireContext()))
+        binding.apply {
+            tvConfirmationDialogTitle.text = getString(R.string.settings_notification_permission_denied_title)
+            tvConfirmationDialogDescription.text = getString(R.string.settings_notification_permission_denied_message)
         }
 
-        dialogBinding.btnCancel.setOnClickListener {
-            dialog.dismiss()
-        }
-
-        dialog.show()
-    }
-
-
-    private fun showCurrencySelectionDialog() {
-        val binding = DialogSpinnerInputBinding.inflate(LayoutInflater.from(requireContext()))
-        val currencyOptions = resources.getStringArray(R.array.currency_options)
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, currencyOptions)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.currencySpinner.adapter = adapter
-
-        val dialog = AlertDialog.Builder(requireContext(), R.style.CustomDialog)
+        AlertDialog.Builder(requireContext(), R.style.CustomDialog)
             .setView(binding.root)
             .create()
-
-        binding.btnSave.setOnClickListener {
-            val selectedCurrency = binding.currencySpinner.selectedItem.toString()
-            viewModel.updateCurrency(selectedCurrency)
-            dialog.dismiss()
-        }
-
-        binding.btnCancel.setOnClickListener {
-            dialog.dismiss()
-        }
-
-        dialog.show()
-    }
-
-    private fun showDeleteAllTransactionsDialog() {
-        val dialogBinding = DialogConfirmationBinding.inflate(LayoutInflater.from(requireContext()))
-
-        val dialog = AlertDialog.Builder(requireContext(), R.style.CustomDialog)
-            .setView(dialogBinding.root)
-            .create()
-
-        dialogBinding.tvConfirmationDialogTitle.text = getString(R.string.dialog_delete_all_transactions_title)
-        dialogBinding.tvConfirmationDialogDescription.text = getString(R.string.dialog_delete_all_transactions_description)
-
-        dialogBinding.btnCancel.setOnClickListener {
-            dialog.dismiss()
-        }
-
-        dialogBinding.btnSave.setOnClickListener {
-            viewModel.deleteAllTransactions()
-            Toast.makeText(
-                requireContext(),
-                R.string.transactions_deleted_success,
-                Toast.LENGTH_SHORT
-            ).show()
-            dialog.dismiss()
-        }
-
-        dialog.show()
-    }
-
-    private val openBrowserLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        // We can handle action when browser is opened if needed, but we don't at the moment.
-        // Maybe in the future, idk
+            .apply {
+                binding.btnSave.setOnClickListener {
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.fromParts("package", requireActivity().packageName, null)
+                    }
+                    try {
+                        startActivity(intent)
+                    } catch (e: Exception) {
+                        Toast.makeText(requireContext(), "Unable to open settings.", Toast.LENGTH_SHORT).show()
+                    }
+                    dismiss()
+                }
+                binding.btnCancel.setOnClickListener { dismiss() }
+            }
+            .show()
     }
 
     private fun openGitHubReleasesPage() {
-        val releasesUrl = "https://github.com/zeke-code/akira/releases"
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(releasesUrl))
-
-        try {
-            openBrowserLauncher.launch(intent)
-        } catch (e: Exception) {
-            Toast.makeText(requireContext(), "No browser found to open the link", Toast.LENGTH_SHORT).show()
-        }
+        val url = "https://github.com/zeke-code/akira/releases"
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     }
 
     override fun onDestroyView() {

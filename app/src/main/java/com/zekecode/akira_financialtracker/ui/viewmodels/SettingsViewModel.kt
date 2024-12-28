@@ -1,12 +1,9 @@
 package com.zekecode.akira_financialtracker.ui.viewmodels
 
-import android.app.Application
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
 import com.zekecode.akira_financialtracker.data.local.repository.UserRepository
 import com.zekecode.akira_financialtracker.utils.CurrencyUtils
@@ -19,8 +16,7 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val financialRepository: FinancialRepository,
     private val userRepository: UserRepository,
-    private val currencyUtils: CurrencyUtils,
-    private val application: Application
+    private val currencyUtils: CurrencyUtils
 ) : ViewModel() {
 
     private val _username = MutableLiveData<String>()
@@ -33,12 +29,6 @@ class SettingsViewModel @Inject constructor(
 
     private val _budget = MutableLiveData<Float?>()
     val budget: LiveData<Float?> get() = _budget
-
-    private val _combinedBudgetText = MediatorLiveData<String>().apply {
-        addSource(budget) { value = combineBudgetAndSymbol() }
-        addSource(_currencySymbol) { value = combineBudgetAndSymbol() }
-    }
-    val combinedBudgetText: LiveData<String> get() = _combinedBudgetText
 
     private val _notificationsEnabled = MutableLiveData<Boolean>()
     val notificationsEnabled: LiveData<Boolean> get() = _notificationsEnabled
@@ -68,11 +58,6 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    private fun combineBudgetAndSymbol(): String {
-        val currentBudget = budget.value ?: 0F
-        val currentSymbol = _currencySymbol.value ?: ""
-        return application.getString(R.string.settings_budget, currentBudget, currentSymbol)
-    }
 
     fun updateUsername(newUsername: String) {
         if (newUsername.isNotBlank()) {
