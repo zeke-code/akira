@@ -4,9 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zekecode.akira_financialtracker.data.local.entities.BudgetModel
 import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
 import com.zekecode.akira_financialtracker.data.local.repository.UserRepository
 import com.zekecode.akira_financialtracker.utils.CurrencyUtils
+import com.zekecode.akira_financialtracker.utils.DateUtils.getCurrentYearMonth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -50,7 +52,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             _username.postValue(userRepository.getUsername())
             _currencySymbol.postValue(userRepository.getCurrencySymbol())
-            _budget.postValue(userRepository.getBudget())
+            _budget.postValue(userRepository.getBudget().toFloat())
             _notificationsEnabled.postValue(userRepository.isNotificationsEnabled())
             _selectedCurrency.postValue(userRepository.getSelectedCurrency())
             _apiKey.postValue(userRepository.getApiKey())
@@ -71,14 +73,22 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun updateBudget(newBudget: String) {
-        val budgetValue = newBudget.toFloatOrNull()
-        if (budgetValue != null && budgetValue > 0) {
+        val budgetValue = newBudget.toDoubleOrNull()
+        val displayBudget = newBudget.toFloatOrNull()
+        if (budgetValue != null && budgetValue > 0 && displayBudget != null) {
+            val currentYearMonth = getCurrentYearMonth()
+
             viewModelScope.launch(Dispatchers.IO) {
-                userRepository.updateBudget(budgetValue)
-                _budget.postValue(budgetValue)
+                val budgetModel = BudgetModel(
+                    yearMonth = currentYearMonth,
+                    amount = budgetValue
+                )
+                financialRepository.insertBudget(budgetModel)
+                userRepository.updateBudget(displayBudget)
+                _budget.postValue(displayBudget)
             }
         } else {
-            _invalidInputToastText.value = "Budget cannot be nothing and must be bigger than 0."
+            _invalidInputToastText.postValue("Budget cannot be empty and must be greater than 0.")
         }
     }
 

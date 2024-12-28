@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.data.local.entities.SettingItem
@@ -54,6 +55,9 @@ class SettingsFragment : Fragment() {
     private fun setupRecyclerView() {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = SettingsAdapter(getSettingsItems())
+
+        val dividerItemDecoration = DividerItemDecoration(binding.recyclerView.context, LinearLayoutManager.VERTICAL)
+        binding.recyclerView.addItemDecoration(dividerItemDecoration)
     }
 
     private fun observeViewModel() {
@@ -109,6 +113,7 @@ class SettingsFragment : Fragment() {
             SettingItem(
                 iconResId = R.drawable.ic_delete_bin,
                 title = getString(R.string.settings_delete_all_transactions),
+                subtitle = getString(R.string.settings_delete_all_transactions_description),
                 onClickAction = { showConfirmationDialog("Delete All Transactions", "Are you sure you want to delete all transactions?") { viewModel.deleteAllTransactions() } }
             ),
             SettingItem(

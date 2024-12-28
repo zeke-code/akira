@@ -119,7 +119,8 @@ class FinancialRepository @Inject constructor(
         budgetDao.insertBudget(budget)
     }
 
-    fun getMonthlyBudget(yearMonth: String): LiveData<Double?> {
+    fun getMonthlyBudget(): LiveData<Double?> {
+        val yearMonth = getCurrentYearMonth()
         return budgetDao.getMonthlyBudget(yearMonth)
     }
 

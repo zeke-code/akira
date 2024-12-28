@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.zekecode.akira_financialtracker.data.local.entities.TransactionModel
 import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
 import com.zekecode.akira_financialtracker.data.local.repository.UserRepository
-import com.zekecode.akira_financialtracker.utils.DateUtils.getCurrentYearMonth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,7 +21,7 @@ class HomeViewModel @Inject constructor(
     private val _currencySymbol: LiveData<String> = userRepository.currencySymbolLiveData
     val currencySymbol: LiveData<String> get() = _currencySymbol
 
-    private val _monthlyBudget: LiveData<Double?> = financialRepository.getMonthlyBudget(getCurrentYearMonth())
+    private val _monthlyBudget: LiveData<Double?> = financialRepository.getMonthlyBudget()
 
     private val _currentMonthTransactions: LiveData<List<TransactionModel>> = financialRepository.getCurrentMonthTransactions()
     val currentMonthTransactions: LiveData<List<TransactionModel>> get() = _currentMonthTransactions
