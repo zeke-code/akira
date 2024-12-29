@@ -33,8 +33,8 @@ class StocksViewModel @Inject constructor(
     private val _stockPrice = MutableLiveData<String?>()
     val stockPrice: LiveData<String?> get() = _stockPrice
 
-    private val _isApiKeyPresent = MutableLiveData<Boolean>()
-    val isApiKeyPresent: LiveData<Boolean> get() = _isApiKeyPresent
+    private val _isApiKeyValid = MutableLiveData<Boolean>()
+    val isApiKeyValid: LiveData<Boolean> get() = _isApiKeyValid
 
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
@@ -49,7 +49,7 @@ class StocksViewModel @Inject constructor(
     private fun observeApiKey() {
         viewModelScope.launch {
             userRepository.apiKeyFlow.collect { apiKey ->
-                _isApiKeyPresent.value = isApiKeyValid(apiKey)
+                _isApiKeyValid.value = isApiKeyValid(apiKey)
             }
         }
     }

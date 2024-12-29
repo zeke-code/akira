@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.zekecode.akira_financialtracker.data.remote.api.GithubApiService
+import com.zekecode.akira_financialtracker.data.remote.models.GitHubRelease
 import com.zekecode.akira_financialtracker.utils.CurrencyUtils
 import com.zekecode.akira_financialtracker.utils.DateUtils.getCurrentYearMonth
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +18,7 @@ import javax.inject.Singleton
 class UserRepository @Inject constructor(
     private val sharedPreferences: SharedPreferences,
     private val currencyUtils: CurrencyUtils,
+    private val githubApiService: GithubApiService,
     private val context: Context
 ) {
 
@@ -138,5 +141,15 @@ class UserRepository @Inject constructor(
         val packageManager = context.packageManager
         val packageName = context.packageName
         return packageManager.getPackageInfo(packageName, 0).versionName
+    }
+
+    /** Methods related to GitHub API **/
+    suspend fun fetchLatestRelease(): GitHubRelease? {
+        return try {
+            githubApiService.getLatestRelease()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 }

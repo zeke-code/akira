@@ -121,6 +121,7 @@ class CreateFragment : Fragment() {
 
         datePicker.addOnPositiveButtonClickListener { selection ->
             binding.tvCreateDate.text = datePicker.headerText
+            viewModel.setSelectedDate(selection)
         }
 
         datePicker.show(parentFragmentManager, "DATE_PICKER")

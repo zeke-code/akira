@@ -45,7 +45,7 @@ class StocksFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        viewModel.isApiKeyPresent.observe(viewLifecycleOwner) { isPresent ->
+        viewModel.isApiKeyValid.observe(viewLifecycleOwner) { isPresent ->
             if (isPresent) {
                 showView()
                 viewModel.stockName.observe(viewLifecycleOwner) { stockName ->
@@ -61,20 +61,6 @@ class StocksFragment : Fragment() {
                 }
             } else {
                 hideView()
-            }
-        }
-
-        viewModel.stockName.observe(viewLifecycleOwner) { stockName ->
-            binding.stockHeader.text = stockName
-        }
-
-        viewModel.stockPrice.observe(viewLifecycleOwner) { stockPrice ->
-            binding.stockPrice.text = stockPrice
-        }
-
-        viewModel.errorMessage.observe(viewLifecycleOwner) { errorMessage ->
-            errorMessage?.let {
-                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
             }
         }
 
