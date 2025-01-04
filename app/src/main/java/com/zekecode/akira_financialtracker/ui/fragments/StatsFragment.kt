@@ -46,11 +46,12 @@ class StatsFragment : Fragment() {
             updateUI(isAvailable)
         }
 
-        binding.expenseChartView.modelProducer = viewModel.expenseChartModelProducer
-        binding.earningChartView.modelProducer = viewModel.earningChartModelProducer
         binding.sumsChartView.modelProducer = viewModel.expenseSumsChartModelProducer
+        binding.categoryChartView.modelProducer = viewModel.categoryChartModelProducer
 
+        // Initial state: show expenses, options to toggle
         binding.chartToggleButton.text = getString(R.string.stats_toggle_button_revenues)
+        binding.categorySumsHeader.text = getString(R.string.stats_monthly_expenses_header)
         binding.chartToggleButton.setBackgroundColor(
             ContextCompat.getColor(requireContext(), R.color.accent_green)
         )
@@ -60,25 +61,14 @@ class StatsFragment : Fragment() {
         binding.chartToggleButton.setOnClickListener { toggleCharts() }
     }
 
+    /**
+     * Setup chart formatters
+     **/
     private fun setupCharts() {
-        binding.expenseChartView.post {
-            val chart = binding.expenseChartView.chart ?: return@post
-            binding.expenseChartView.isHorizontalScrollBarEnabled = true
-            binding.expenseChartView.chart = chart.copy(
-                bottomAxis = (chart.bottomAxis as? HorizontalAxis ?: return@post).copy(
-                    valueFormatter = { context, x, _ ->
-                        val labels = context.model.extraStore[viewModel.categoriesLabelList]
-                        labels.getOrNull(x.toInt()) ?: x.toString()
-                    },
-                    itemPlacer = HorizontalAxis.ItemPlacer.segmented()
-                )
-            )
-        }
-
-        binding.earningChartView.post {
-            val chart = binding.earningChartView.chart ?: return@post
-            binding.earningChartView.isHorizontalScrollBarEnabled = true
-            binding.earningChartView.chart = chart.copy(
+        binding.categoryChartView.post {
+            val chart = binding.categoryChartView.chart ?: return@post
+            binding.categoryChartView.isHorizontalScrollBarEnabled = true
+            binding.categoryChartView.chart = chart.copy(
                 bottomAxis = (chart.bottomAxis as? HorizontalAxis ?: return@post).copy(
                     valueFormatter = { context, x, _ ->
                         val labels = context.model.extraStore[viewModel.categoriesLabelList]
@@ -105,31 +95,40 @@ class StatsFragment : Fragment() {
     }
 
     /**
-     * Toggle between the expense and revenue charts with animations.
+     * Toggle between expense and revenue data in the same chart, with fade animations on the header.
      */
     private fun toggleCharts() {
         val fadeIn = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_in)
         val fadeOut = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_out)
 
-        if (binding.expensesContainer.visibility == View.VISIBLE) {
-            binding.expensesContainer.startAnimation(fadeOut)
-            binding.expensesContainer.visibility = View.GONE
+        val isShowingExpenses =
+            binding.categorySumsHeader.text == getString(R.string.stats_monthly_expenses_header)
 
-            binding.revenuesContainer.startAnimation(fadeIn)
-            binding.revenuesContainer.visibility = View.VISIBLE
-            binding.expensesHeader.text = getString(R.string.stats_monthly_expenses_header)
+        if (isShowingExpenses) {
+            // Animate out the current text
+            binding.categorySumsHeader.startAnimation(fadeOut)
+            binding.categorySumsHeader.postOnAnimation {
+                binding.categorySumsHeader.text = getString(R.string.stats_monthly_revenue_header)
+                binding.categorySumsHeader.startAnimation(fadeIn)
+            }
+
+            // Update the chart data to show revenues
+            viewModel.updateCategoryChart(showRevenues = true)
 
             binding.chartToggleButton.text = getString(R.string.stats_toggle_button_expenses)
             binding.chartToggleButton.setBackgroundColor(
                 ContextCompat.getColor(requireContext(), R.color.accent_red)
             )
         } else {
-            binding.revenuesContainer.startAnimation(fadeOut)
-            binding.revenuesContainer.visibility = View.GONE
+            // Animate out the current text
+            binding.categorySumsHeader.startAnimation(fadeOut)
+            binding.categorySumsHeader.postOnAnimation {
+                binding.categorySumsHeader.text = getString(R.string.stats_monthly_expenses_header)
+                binding.categorySumsHeader.startAnimation(fadeIn)
+            }
 
-            binding.expensesContainer.startAnimation(fadeIn)
-            binding.revenueHeader.text = getString(R.string.stats_monthly_revenue_header)
-            binding.expensesContainer.visibility = View.VISIBLE
+            // Update the chart data to show expenses
+            viewModel.updateCategoryChart(showRevenues = false)
 
             binding.chartToggleButton.text = getString(R.string.stats_toggle_button_revenues)
             binding.chartToggleButton.setBackgroundColor(
@@ -139,7 +138,7 @@ class StatsFragment : Fragment() {
     }
 
     /**
-     * Hide the view if data is missing.
+     * Show or hide the main UI based on availability of both expense and revenue data.
      */
     private fun updateUI(isDataAvailable: Boolean) {
         if (isDataAvailable) {

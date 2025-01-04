@@ -50,44 +50,14 @@
     </style>
 
     <style name="ExpenseChartColumn1Style" parent="BaseColumnStyle">
-        <item name="android:color">@color/accent_red</item>
+        <item name="android:color">@color/accent_purple</item>
     </style>
 
     <style name="ExpenseChartColumnLayerStyle">
         <item name="column1Style">@style/ExpenseChartColumn1Style</item>
     </style>
 
-    <!-- Revenue Chart Styles -->
-    <style name="RevenueChartStyle">
-        <item name="bottomAxisStyle">@style/BaseBottomAxisStyle</item>
-        <item name="columnLayerStyle">@style/RevenueChartColumnLayerStyle</item>
-        <item name="layers">column</item>
-        <item name="showBottomAxis">true</item>
-        <item name="showStartAxis">true</item>
-        <item name="scrollEnabled">true</item>
-        <item name="scalableEndLayerPadding">@dimen/spacing_m</item>
-        <item name="scalableStartLayerPadding">@dimen/spacing_m</item>
-    </style>
-
-    <style name="RevenueChartColumn1Style" parent="BaseColumnStyle">
-        <item name="android:color">@color/accent_green</item>
-    </style>
-
-    <style name="RevenueChartColumnLayerStyle">
-        <item name="column1Style">@style/RevenueChartColumn1Style</item>
-    </style>
-
-    <!-- Stocks Chart Styles -->
-    <style name="StocksChartStyle">
-        <item name="bottomAxisStyle">@style/StocksChartBottomAxisStyle</item>
-        <item name="lineLayerStyle">@style/StocksChartLineStyle</item>
-        <item name="layers">line</item>
-        <item name="showBottomAxis">true</item>
-        <item name="showStartAxis">true</item>
-        <item name="scrollEnabled">true</item>
-        <item name="scalableEndLayerPadding">@dimen/spacing_m</item>
-        <item name="scalableStartLayerPadding">@dimen/spacing_m</item>
-    </style>
+    <!-- Stocks Chart Style -->
 
     <style name="StocksChartLine1Style">
         <item name="android:color">@color/accent_blue</item>

@@ -14,6 +14,7 @@ import com.zekecode.akira_financialtracker.data.local.repository.FinancialReposi
 import com.zekecode.akira_financialtracker.utils.DateUtils.getCurrentYearMonth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,80 +27,63 @@ class StatsViewModel @Inject constructor(
     val monthlyEarnings: LiveData<List<EarningWithCategory>> =
         repository.getMonthlyEarnings(getCurrentYearMonth())
 
-    private val _expenseData = MutableLiveData<Pair<List<String>, List<Double>>>()
-    val expenseData: LiveData<Pair<List<String>, List<Double>>> get() = _expenseData
-
-    private val _earningData = MutableLiveData<Pair<List<String>, List<Double>>>()
-    val earningData: LiveData<Pair<List<String>, List<Double>>> get() = _earningData
-
-    private val _expenseChartModelProducer = CartesianChartModelProducer()
-    val expenseChartModelProducer: CartesianChartModelProducer
-        get() = _expenseChartModelProducer
-
-    private val _earningChartModelProducer = CartesianChartModelProducer()
-    val earningChartModelProducer: CartesianChartModelProducer
-        get() = _earningChartModelProducer
+    private val _categoryChartModelProducer = CartesianChartModelProducer()
+    val categoryChartModelProducer: CartesianChartModelProducer
+        get() = _categoryChartModelProducer
 
     private val _expenseSumsChartModelProducer = CartesianChartModelProducer()
-    val expenseSumsChartModelProducer: CartesianChartModelProducer get() = _expenseSumsChartModelProducer
+    val expenseSumsChartModelProducer: CartesianChartModelProducer
+        get() = _expenseSumsChartModelProducer
 
-    private val _isDataAvailable = MutableLiveData<Boolean>()
-    val isDataAvailable: LiveData<Boolean> get() = _isDataAvailable
-
+    // Axis label keys for each chart
     val categoriesLabelList = ExtraStore.Key<List<String>>()
     val dateLabelList = ExtraStore.Key<List<String>>()
 
+    // Category chart data
+    private var categoryNamesExpense: List<String> = emptyList()
+    private var categorySumsExpense: List<Double> = emptyList()
+
+    private var categoryNamesRevenue: List<String> = emptyList()
+    private var categorySumsRevenue: List<Double> = emptyList()
+
+    // For enabling/disabling UI if data is missing
+    private val _isDataAvailable = MutableLiveData(false)
+    val isDataAvailable: LiveData<Boolean> get() = _isDataAvailable
+
     /**
-     * Called when monthlyExpenses LiveData emits data.
+     * Process monthly expenses grouped by category (fills categoryNamesExpense, categorySumsExpense).
      */
     fun processExpenses(items: List<ExpenseWithCategory>?) {
         if (!items.isNullOrEmpty()) {
             val groupedData = items.groupBy { it.category.name }
-            val categoryNames = groupedData.keys.toList()
-            val categorySums = groupedData.values.map { grp -> grp.sumOf { it.expense.amount } }
-
-            _expenseData.value = categoryNames to categorySums
-            updateChart(categoryNames, categorySums, _expenseChartModelProducer)
+            categoryNamesExpense = groupedData.keys.toList()
+            categorySumsExpense = groupedData.values.map { grp -> grp.sumOf { it.expense.amount } }
         } else {
-            _expenseData.value = emptyList<String>() to emptyList()
+            categoryNamesExpense = emptyList()
+            categorySumsExpense = emptyList()
         }
 
-        // Check if BOTH expenses AND earnings exist
+        // By default, show expenses in the category chart
+        updateCategoryChart(showRevenues = false)
         checkIfDataExists()
     }
 
     /**
-     * Sums expenses by day within the current month.
-     * Call this inside the monthlyExpenses Observer in your fragment.
+     * Process monthly expenses by day (fills daily sums for the second chart).
      */
     fun processExpenseSumsByDay(items: List<ExpenseWithCategory>?) {
-        if (items.isNullOrEmpty()) {
-            return
-        }
+        if (items.isNullOrEmpty()) return
 
-        // Group by day of the month (using Unix epoch date)
-        val dailyGrouped = items.groupBy { expenseWithCat ->
-            // Convert epoch to day-of-month, for example:
-            val epoch = expenseWithCat.expense.date
-            val calendar = java.util.Calendar.getInstance().apply { timeInMillis = epoch }
-            calendar.get(java.util.Calendar.DAY_OF_MONTH)
+        val dailyGrouped = items.groupBy {
+            val calendar = Calendar.getInstance().apply { timeInMillis = it.expense.date }
+            calendar.get(Calendar.DAY_OF_MONTH)
         }
-
-        // Sort days in ascending order
         val sortedDays = dailyGrouped.keys.sorted()
+        val dailySums = sortedDays.map { day -> dailyGrouped[day]?.sumOf { it.expense.amount } ?: 0.0 }
 
-        // Calculate sum per day in ascending order
-        val dailySums = sortedDays.map { day ->
-            dailyGrouped[day]?.sumOf { it.expense.amount } ?: 0.0
-        }
-
-        // Update the sums chart producer
         viewModelScope.launch {
             _expenseSumsChartModelProducer.runTransaction {
-                lineSeries {
-                    series(dailySums)
-                }
-                // Store the day labels as strings
+                lineSeries { series(dailySums) }
                 extras { extraStore ->
                     extraStore[dateLabelList] = sortedDays.map { it.toString() }
                 }
@@ -108,52 +92,43 @@ class StatsViewModel @Inject constructor(
     }
 
     /**
-     * Called when monthlyEarnings LiveData emits data.
+     * Process monthly earnings grouped by category (fills categoryNamesRevenue, categorySumsRevenue).
      */
     fun processEarnings(items: List<EarningWithCategory>?) {
         if (!items.isNullOrEmpty()) {
             val groupedData = items.groupBy { it.category.name }
-            val categoryNames = groupedData.keys.toList()
-            val categorySums = groupedData.values.map { grp -> grp.sumOf { it.earning.amount } }
-
-            _earningData.value = categoryNames to categorySums
-            updateChart(categoryNames, categorySums, _earningChartModelProducer)
+            categoryNamesRevenue = groupedData.keys.toList()
+            categorySumsRevenue = groupedData.values.map { grp -> grp.sumOf { it.earning.amount } }
         } else {
-            _earningData.value = emptyList<String>() to emptyList()
+            categoryNamesRevenue = emptyList()
+            categorySumsRevenue = emptyList()
         }
-
-        // Check if BOTH expenses AND earnings exist
         checkIfDataExists()
     }
 
     /**
-     * If either expenses or earnings is missing (empty),
-     * we set _isDataAvailable to false. Otherwise true.
+     * Update the category chart to show either expenses or revenues.
+     * This version matches the toggleCharts() usage with a boolean "showRevenues" flag.
      */
-    private fun checkIfDataExists() {
-        val hasExpenseData = !_expenseData.value?.first.isNullOrEmpty()
-        val hasEarningData = !_earningData.value?.first.isNullOrEmpty()
+    fun updateCategoryChart(showRevenues: Boolean) {
+        val chosenNames = if (showRevenues) categoryNamesRevenue else categoryNamesExpense
+        val chosenSums = if (showRevenues) categorySumsRevenue else categorySumsExpense
 
-        // Show data ONLY if BOTH are present
-        _isDataAvailable.value = hasExpenseData && hasEarningData
-    }
-
-    /**
-     * Updates the chart with the given category names & sums.
-     */
-    private fun updateChart(
-        categoryNames: List<String>,
-        categorySums: List<Double>,
-        chartModelProducer: CartesianChartModelProducer
-    ) {
-        if (categorySums.isEmpty()) return
         viewModelScope.launch {
-            chartModelProducer.runTransaction {
-                columnSeries { series(categorySums) }
+            _categoryChartModelProducer.runTransaction {
+                columnSeries { series(chosenSums) }
                 extras { extraStore ->
-                    extraStore[categoriesLabelList] = categoryNames
+                    extraStore[categoriesLabelList] = chosenNames
                 }
             }
         }
+    }
+
+    /**
+     * Check if both expense and revenue category data exist, to manage UI visibility.
+     */
+    private fun checkIfDataExists() {
+        _isDataAvailable.value =
+            categoryNamesExpense.isNotEmpty() && categoryNamesRevenue.isNotEmpty()
     }
 }

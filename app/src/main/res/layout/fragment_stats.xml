@@ -47,7 +47,7 @@
 
                     <!-- Expenses Container -->
                     <LinearLayout
-                        android:id="@+id/expenses_container"
+                        android:id="@+id/category_sums_container"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
@@ -55,7 +55,7 @@
                         android:padding="@dimen/spacing_s">
 
                         <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/expenses_header"
+                            android:id="@+id/category_sums_header"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/stats_monthly_expenses_header"
@@ -66,39 +66,13 @@
                             android:layout_marginBottom="@dimen/spacing_s" />
 
                         <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
-                            android:id="@+id/expense_chart_view"
+                            android:id="@+id/category_chart_view"
                             android:layout_width="match_parent"
                             android:layout_height="220dp"
-                            app:scrollEnabled="true"
-                            app:chartStyle="@style/ExpenseChartStyle" />
+                            app:chartStyle="@style/ExpenseChartStyle"
+                            android:layout_margin="@dimen/spacing_m"/>
                     </LinearLayout>
 
-                    <!-- Revenues Container -->
-                    <LinearLayout
-                        android:id="@+id/revenues_container"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:visibility="gone"
-                        android:padding="@dimen/spacing_s">
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/revenue_header"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/stats_monthly_revenue_header"
-                            android:textSize="@dimen/text_s"
-                            android:textColor="@color/primary_text"
-                            android:textStyle="bold"
-                            android:gravity="center_horizontal"
-                            android:layout_marginBottom="@dimen/spacing_s" />
-
-                        <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
-                            android:id="@+id/earning_chart_view"
-                            android:layout_width="match_parent"
-                            android:layout_height="220dp"
-                            app:chartStyle="@style/RevenueChartStyle" />
-                    </LinearLayout>
                 </FrameLayout>
             </com.google.android.material.card.MaterialCardView>
 
