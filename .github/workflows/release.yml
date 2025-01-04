@@ -1,17 +1,12 @@
-name: Build
+name: Release
 
 on:
   push:
-    branches:
-      - '*'
-    tags-ignore:
+    tags:
       - 'release-*'
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
 
     steps:
@@ -30,5 +25,13 @@ jobs:
       - name: Set chmod to Gradlew
         run: chmod +x ./gradlew
 
-      - name: Build Akira Application
-        run: ./gradlew build
+      - name: Build release APK
+        run: ./gradlew assembleRelease
+
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "app/build/outputs/apk/release/app-release.apk"
+          artifactContentType: "application/vnd.android.package-archive"
+          name: "Release ${{ github.ref }}"
+          tag: ${{ github.ref }}
