@@ -39,7 +39,11 @@ class SettingsFragment : Fragment() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         viewModel.updateNotificationsEnabled(isGranted)
-        if (!isGranted) showPermissionDeniedDialog()
+        if (!isGranted) {
+            showPermissionDeniedDialog()
+        } else {
+            updateRecyclerView()
+        }
     }
 
     override fun onCreateView(
@@ -52,11 +56,26 @@ class SettingsFragment : Fragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val hasPermission = requireContext().checkSelfPermission(
+                android.Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+
+            viewModel.updateNotificationsEnabled(hasPermission)
+        }
+    }
+
+
     private fun setupRecyclerView() {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = SettingsAdapter(getSettingsItems())
 
-        val dividerItemDecoration = DividerItemDecoration(binding.recyclerView.context, LinearLayoutManager.VERTICAL)
+        val dividerItemDecoration = DividerItemDecoration(
+            binding.recyclerView.context,
+            LinearLayoutManager.VERTICAL
+        )
         binding.recyclerView.addItemDecoration(dividerItemDecoration)
     }
 
@@ -198,26 +217,60 @@ class SettingsFragment : Fragment() {
     }
 
     private fun toggleNotifications() {
-        val notificationsEnabled = viewModel.notificationsEnabled.value ?: false
+        val currentlyEnabled = viewModel.notificationsEnabled.value ?: false
 
-        if (notificationsEnabled) {
-            showConfirmationDialog(
-                "Disable Notifications",
-                "Are you sure you want to disable notifications?"
-            ) {
-                viewModel.updateNotificationsEnabled(false)
+        // Check if we're on Android 13 or higher
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val permissionGranted = requireContext().checkSelfPermission(
+                android.Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+
+            if (currentlyEnabled && permissionGranted) {
+                // If notifications are currently enabled and the OS permission is already granted,
+                // ask the user if they'd like to open system settings.
+                showConfirmationDialog(
+                    "Notification Permissions",
+                    "Notifications are already enabled. Do you want to open the system settings?"
+                ) {
+                    // Only open settings if user accepts
+                    openAppNotificationSettings()
+                }
+            }
+            else if (currentlyEnabled && !permissionGranted) {
+                // If notifications are enabled in the app but OS permission was revoked,
+                // try requesting it again:
+                requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+            }
+            else {
+                // If notifications are currently disabled in the app:
+                if (permissionGranted) {
+                    // Ask user if they want to disable them in the app
+                    showConfirmationDialog(
+                        "Disable Notifications",
+                        "Are you sure you want to disable notifications?"
+                    ) {
+                        viewModel.updateNotificationsEnabled(false)
+                        Toast.makeText(requireContext(), "Notifications disabled", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    // Permission not granted; request it
+                    requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                }
             }
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                if (requireContext().checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
-                } else {
-                    viewModel.updateNotificationsEnabled(true)
-                }
-            } else {
-                viewModel.updateNotificationsEnabled(true)
-            }
+            // For devices running below Android 13 (minSdk is 29)
+            Toast.makeText(requireContext(), "Cannot disable notifications on older Android versions", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    /**
+     * Opens the app notification settings screen so the user can control notification permissions directly.
+     */
+    private fun openAppNotificationSettings() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+            data = Uri.fromParts("package", requireActivity().packageName, null)
+        }
+        startActivity(intent)
     }
 
     private fun showPermissionDeniedDialog() {

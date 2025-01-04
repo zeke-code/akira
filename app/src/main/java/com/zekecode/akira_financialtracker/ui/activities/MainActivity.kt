@@ -19,7 +19,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private lateinit var mainViewModel: MainViewModel
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
