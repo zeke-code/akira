@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
+import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import com.patrykandpatrick.vico.core.common.data.ExtraStore
 import com.zekecode.akira_financialtracker.data.local.entities.EarningWithCategory
 import com.zekecode.akira_financialtracker.data.local.entities.ExpenseWithCategory
@@ -39,10 +40,14 @@ class StatsViewModel @Inject constructor(
     val earningChartModelProducer: CartesianChartModelProducer
         get() = _earningChartModelProducer
 
+    private val _expenseSumsChartModelProducer = CartesianChartModelProducer()
+    val expenseSumsChartModelProducer: CartesianChartModelProducer get() = _expenseSumsChartModelProducer
+
     private val _isDataAvailable = MutableLiveData<Boolean>()
     val isDataAvailable: LiveData<Boolean> get() = _isDataAvailable
 
     val categoriesLabelList = ExtraStore.Key<List<String>>()
+    val dateLabelList = ExtraStore.Key<List<String>>()
 
     /**
      * Called when monthlyExpenses LiveData emits data.
@@ -61,6 +66,45 @@ class StatsViewModel @Inject constructor(
 
         // Check if BOTH expenses AND earnings exist
         checkIfDataExists()
+    }
+
+    /**
+     * Sums expenses by day within the current month.
+     * Call this inside the monthlyExpenses Observer in your fragment.
+     */
+    fun processExpenseSumsByDay(items: List<ExpenseWithCategory>?) {
+        if (items.isNullOrEmpty()) {
+            return
+        }
+
+        // Group by day of the month (using Unix epoch date)
+        val dailyGrouped = items.groupBy { expenseWithCat ->
+            // Convert epoch to day-of-month, for example:
+            val epoch = expenseWithCat.expense.date
+            val calendar = java.util.Calendar.getInstance().apply { timeInMillis = epoch }
+            calendar.get(java.util.Calendar.DAY_OF_MONTH)
+        }
+
+        // Sort days in ascending order
+        val sortedDays = dailyGrouped.keys.sorted()
+
+        // Calculate sum per day in ascending order
+        val dailySums = sortedDays.map { day ->
+            dailyGrouped[day]?.sumOf { it.expense.amount } ?: 0.0
+        }
+
+        // Update the sums chart producer
+        viewModelScope.launch {
+            _expenseSumsChartModelProducer.runTransaction {
+                lineSeries {
+                    series(dailySums)
+                }
+                // Store the day labels as strings
+                extras { extraStore ->
+                    extraStore[dateLabelList] = sortedDays.map { it.toString() }
+                }
+            }
+        }
     }
 
     /**

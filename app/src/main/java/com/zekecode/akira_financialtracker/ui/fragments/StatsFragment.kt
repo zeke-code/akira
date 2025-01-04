@@ -36,6 +36,7 @@ class StatsFragment : Fragment() {
 
         viewModel.monthlyExpenses.observe(viewLifecycleOwner) { expenses ->
             viewModel.processExpenses(expenses)
+            viewModel.processExpenseSumsByDay(expenses)
         }
         viewModel.monthlyEarnings.observe(viewLifecycleOwner) { earnings ->
             viewModel.processEarnings(earnings)
@@ -47,6 +48,7 @@ class StatsFragment : Fragment() {
 
         binding.expenseChartView.modelProducer = viewModel.expenseChartModelProducer
         binding.earningChartView.modelProducer = viewModel.earningChartModelProducer
+        binding.sumsChartView.modelProducer = viewModel.expenseSumsChartModelProducer
 
         binding.chartToggleButton.text = getString(R.string.stats_toggle_button_revenues)
         binding.chartToggleButton.setBackgroundColor(
@@ -80,6 +82,20 @@ class StatsFragment : Fragment() {
                 bottomAxis = (chart.bottomAxis as? HorizontalAxis ?: return@post).copy(
                     valueFormatter = { context, x, _ ->
                         val labels = context.model.extraStore[viewModel.categoriesLabelList]
+                        labels.getOrNull(x.toInt()) ?: x.toString()
+                    },
+                    itemPlacer = HorizontalAxis.ItemPlacer.segmented()
+                )
+            )
+        }
+
+        binding.sumsChartView.post {
+            val chart = binding.sumsChartView.chart ?: return@post
+            binding.sumsChartView.isHorizontalScrollBarEnabled = true
+            binding.sumsChartView.chart = chart.copy(
+                bottomAxis = (chart.bottomAxis as? HorizontalAxis ?: return@post).copy(
+                    valueFormatter = { context, x, _ ->
+                        val labels = context.model.extraStore[viewModel.dateLabelList]
                         labels.getOrNull(x.toInt()) ?: x.toString()
                     },
                     itemPlacer = HorizontalAxis.ItemPlacer.segmented()
@@ -131,13 +147,13 @@ class StatsFragment : Fragment() {
             binding.statsCard.visibility = View.VISIBLE
             binding.chartToggleButton.visibility = View.VISIBLE
             binding.divider.visibility = View.VISIBLE
-            binding.expenseVsRevenueChart.visibility = View.VISIBLE
+            binding.sumsContainer.visibility = View.VISIBLE
         } else {
             binding.noDataTextView.visibility = View.VISIBLE
             binding.statsCard.visibility = View.GONE
             binding.chartToggleButton.visibility = View.GONE
             binding.divider.visibility = View.GONE
-            binding.expenseVsRevenueChart.visibility = View.GONE
+            binding.sumsContainer.visibility = View.GONE
         }
     }
 

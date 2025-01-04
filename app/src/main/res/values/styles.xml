@@ -102,10 +102,10 @@
         <item name="showGuidelines">false</item>
     </style>
 
-    <!-- Expense vs Revenue Chart Styles -->
-    <style name="ExpenseVsRevenueChartStyle">
+    <!-- Expense and Revenue sums Chart Styles -->
+    <style name="SumsExpenseChartStyle">
         <item name="bottomAxisStyle">@style/BaseBottomAxisStyle</item>
-        <item name="lineLayerStyle">@style/ExpenseVsChartLineLayerStyle</item>
+        <item name="lineLayerStyle">@style/SumsExpenseChartLineLayerStyle</item>
         <item name="layers">line</item>
         <item name="showBottomAxis">true</item>
         <item name="showStartAxis">true</item>
@@ -114,16 +114,30 @@
         <item name="scalableStartLayerPadding">@dimen/spacing_m</item>
     </style>
 
-    <style name="ExpenseVsChartLineLayerStyle">
-        <item name="line1Style">@style/ExpenseVsChartExpenseLineStyle</item>
-        <item name="line2Style">@style/ExpenseVsChartRevenueLineStyle</item>
+    <style name="SumsRevenueChartStyle">
+        <item name="bottomAxisStyle">@style/BaseBottomAxisStyle</item>
+        <item name="lineLayerStyle">@style/SumsRevenueChartLineLayerStyle</item>
+        <item name="layers">line</item>
+        <item name="showBottomAxis">true</item>
+        <item name="showStartAxis">true</item>
+        <item name="scrollEnabled">true</item>
+        <item name="scalableEndLayerPadding">@dimen/spacing_m</item>
+        <item name="scalableStartLayerPadding">@dimen/spacing_m</item>
     </style>
 
-    <style name="ExpenseVsChartExpenseLineStyle" parent="BaseLineStyle">
+    <style name="SumsExpenseChartLineLayerStyle">
+        <item name="line1Style">@style/SumsExpenseLine1Style</item>
+    </style>
+
+    <style name="SumsRevenueChartLineLayerStyle">
+        <item name="line1Style">@style/SumsRevenueLine1Style</item>
+    </style>
+
+    <style name="SumsExpenseLine1Style" parent="BaseLineStyle">
         <item name="android:color">@color/accent_red</item>
     </style>
 
-    <style name="ExpenseVsChartRevenueLineStyle" parent="BaseLineStyle">
+    <style name="SumsRevenueLine1Style" parent="BaseLineStyle">
         <item name="android:color">@color/accent_green</item>
     </style>
 

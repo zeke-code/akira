@@ -124,7 +124,7 @@
 
             <!-- Second Card to hold second chart -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/expenseVsRevenueChart"
+                android:id="@+id/sums_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_s"
@@ -152,10 +152,10 @@
                         android:layout_marginBottom="@dimen/spacing_s" />
 
                     <com.patrykandpatrick.vico.views.cartesian.CartesianChartView
-                        android:id="@+id/additional_chart_view"
+                        android:id="@+id/sums_chart_view"
                         android:layout_width="match_parent"
                         android:layout_height="220dp"
-                        app:chartStyle="@style/ExpenseVsRevenueChartStyle" />
+                        app:chartStyle="@style/SumsExpenseChartStyle" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
