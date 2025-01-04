@@ -11,6 +11,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
+
         applicationId = "com.zekecode.akira_financialtracker"
         minSdk = 29
         targetSdk = 35
