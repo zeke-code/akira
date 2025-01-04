@@ -31,7 +31,7 @@ jobs:
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "app/build/outputs/apk/release/app-release.apk"
+          artifacts: "app/build/outputs/apk/release/*.apk"
           artifactContentType: "application/vnd.android.package-archive"
-          name: "Release ${{ github.ref }}"
-          tag: ${{ github.ref }}
+          name: "Release ${{ github.ref_name }}"
+          tag: ${{ github.ref_name }}
