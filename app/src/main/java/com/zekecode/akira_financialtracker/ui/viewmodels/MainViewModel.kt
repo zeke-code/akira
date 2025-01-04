@@ -1,5 +1,8 @@
 package com.zekecode.akira_financialtracker.ui.viewmodels
 
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zekecode.akira_financialtracker.data.local.entities.BudgetModel
@@ -15,6 +18,13 @@ class MainViewModel @Inject constructor(
     private val financialRepository: FinancialRepository,
     private val userRepository: UserRepository
 ) : ViewModel() {
+
+    private val _isUpdateAvailable = MutableLiveData<Boolean>()
+    val isUpdateAvailable: LiveData<Boolean> get() = _isUpdateAvailable
+
+    init {
+        checkForUpdates("zeke-code", "akira")
+    }
 
     fun isSetupComplete(): Boolean {
         return userRepository.isSetupComplete()
@@ -37,6 +47,31 @@ class MainViewModel @Inject constructor(
                     )
                 )
                 userRepository.setLastLaunchDateToNow()
+            }
+        }
+    }
+
+    /**
+     * Function to check for updates and return the APK URL if an update is available
+     */
+    private fun checkForUpdates(owner: String, repo: String) {
+        viewModelScope.launch {
+            val latestRelease = userRepository.fetchLatestRelease(owner, repo)
+            if (latestRelease == null) {
+                Log.d("MainViewModel", "No releases found or error fetching latest release.")
+                _isUpdateAvailable.postValue(false)
+                return@launch
+            }
+            Log.d("MainViewModel", "Latest release response is: ${latestRelease.toString()}")
+            latestRelease.let {
+                val latestVersionCode = it.tagName.toIntOrNull() ?: 0
+                val currentVersionCode = userRepository.getAppVersionCode()
+
+                if (latestVersionCode > currentVersionCode) {
+                    _isUpdateAvailable.postValue(true)
+                } else {
+                    _isUpdateAvailable.postValue(false)
+                }
             }
         }
     }

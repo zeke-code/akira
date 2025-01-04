@@ -144,12 +144,18 @@ class UserRepository @Inject constructor(
     }
 
     /** Methods related to GitHub API **/
-    suspend fun fetchLatestRelease(): GitHubRelease? {
+    suspend fun fetchLatestRelease(owner: String, repo: String): GitHubRelease? {
         return try {
-            githubApiService.getLatestRelease()
+            githubApiService.getLatestRelease(owner, repo)
         } catch (e: Exception) {
             e.printStackTrace()
             null
         }
+    }
+
+    fun getAppVersionCode(): Long {
+        val packageManager = context.packageManager
+        val packageName = context.packageName
+        return packageManager.getPackageInfo(packageName, 0).longVersionCode
     }
 }
