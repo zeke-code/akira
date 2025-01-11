@@ -90,9 +90,9 @@
     </style>
 
     <!-- Expense and Revenue sums Chart Styles -->
-    <style name="SumsExpenseChartStyle">
+    <style name="SumsChartStyle">
         <item name="bottomAxisStyle">@style/BaseBottomAxisStyle</item>
-        <item name="lineLayerStyle">@style/SumsExpenseChartLineLayerStyle</item>
+        <item name="lineLayerStyle">@style/SumsChartLineLayerStyle</item>
         <item name="layers">line</item>
         <item name="showBottomAxis">true</item>
         <item name="showStartAxis">true</item>
@@ -101,31 +101,12 @@
         <item name="scalableStartLayerPadding">@dimen/spacing_m</item>
     </style>
 
-    <style name="SumsRevenueChartStyle">
-        <item name="bottomAxisStyle">@style/BaseBottomAxisStyle</item>
-        <item name="lineLayerStyle">@style/SumsRevenueChartLineLayerStyle</item>
-        <item name="layers">line</item>
-        <item name="showBottomAxis">true</item>
-        <item name="showStartAxis">true</item>
-        <item name="scrollEnabled">true</item>
-        <item name="scalableEndLayerPadding">@dimen/spacing_m</item>
-        <item name="scalableStartLayerPadding">@dimen/spacing_m</item>
+    <style name="SumsChartLineLayerStyle">
+        <item name="line1Style">@style/SumsLine1Style</item>
     </style>
 
-    <style name="SumsExpenseChartLineLayerStyle">
-        <item name="line1Style">@style/SumsExpenseLine1Style</item>
-    </style>
-
-    <style name="SumsRevenueChartLineLayerStyle">
-        <item name="line1Style">@style/SumsRevenueLine1Style</item>
-    </style>
-
-    <style name="SumsExpenseLine1Style" parent="BaseLineStyle">
-        <item name="android:color">@color/accent_red</item>
-    </style>
-
-    <style name="SumsRevenueLine1Style" parent="BaseLineStyle">
-        <item name="android:color">@color/accent_green</item>
+    <style name="SumsLine1Style" parent="BaseLineStyle">
+        <item name="android:color">@color/accent_purple</item>
     </style>
 
     <style name="BaseLineStyle">

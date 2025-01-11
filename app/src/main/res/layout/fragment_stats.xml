@@ -115,7 +115,7 @@
                     android:padding="@dimen/spacing_s">
 
                     <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/additional_chart_header"
+                        android:id="@+id/sums_chart_header"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/stats_general_expenses_header"
@@ -129,9 +129,18 @@
                         android:id="@+id/sums_chart_view"
                         android:layout_width="match_parent"
                         android:layout_height="220dp"
-                        app:chartStyle="@style/SumsExpenseChartStyle" />
+                        app:chartStyle="@style/SumsChartStyle" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/sums_toggle_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="@dimen/spacing_xl"
+                android:text="@string/stats_toggle_button_expenses"
+                android:textSize="@dimen/text_s" />
         </LinearLayout>
     </ScrollView>
 </FrameLayout>

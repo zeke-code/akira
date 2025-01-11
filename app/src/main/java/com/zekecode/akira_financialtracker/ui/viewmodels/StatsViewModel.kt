@@ -31,9 +31,9 @@ class StatsViewModel @Inject constructor(
     val categoryChartModelProducer: CartesianChartModelProducer
         get() = _categoryChartModelProducer
 
-    private val _expenseSumsChartModelProducer = CartesianChartModelProducer()
-    val expenseSumsChartModelProducer: CartesianChartModelProducer
-        get() = _expenseSumsChartModelProducer
+    private val _sumsChartModelProducer = CartesianChartModelProducer()
+    val sumsChartModelProducer: CartesianChartModelProducer
+        get() = _sumsChartModelProducer
 
     // Axis label keys for each chart
     val categoriesLabelList = ExtraStore.Key<List<String>>()
@@ -42,9 +42,14 @@ class StatsViewModel @Inject constructor(
     // Category chart data
     private var categoryNamesExpense: List<String> = emptyList()
     private var categorySumsExpense: List<Double> = emptyList()
-
     private var categoryNamesRevenue: List<String> = emptyList()
     private var categorySumsRevenue: List<Double> = emptyList()
+
+    private var isShowingRevenueForSums = false
+    private var dailyExpenseSums: List<Double> = emptyList()
+    private var expenseDays: List<String> = emptyList()
+    private var dailyRevenueSums: List<Double> = emptyList()
+    private var revenueDays: List<String> = emptyList()
 
     // For enabling/disabling UI if data is missing
     private val _isDataAvailable = MutableLiveData(false)
@@ -69,7 +74,7 @@ class StatsViewModel @Inject constructor(
     }
 
     /**
-     * Process monthly expenses by day (fills daily sums for the second chart).
+     * Process monthly expenses by day
      */
     fun processExpenseSumsByDay(items: List<ExpenseWithCategory>?) {
         if (items.isNullOrEmpty()) return
@@ -78,16 +83,14 @@ class StatsViewModel @Inject constructor(
             val calendar = Calendar.getInstance().apply { timeInMillis = it.expense.date }
             calendar.get(Calendar.DAY_OF_MONTH)
         }
-        val sortedDays = dailyGrouped.keys.sorted()
-        val dailySums = sortedDays.map { day -> dailyGrouped[day]?.sumOf { it.expense.amount } ?: 0.0 }
+        expenseDays = dailyGrouped.keys.sorted().map { it.toString() }
+        dailyExpenseSums = expenseDays.map { day ->
+            dailyGrouped[day.toInt()]?.sumOf { it.expense.amount } ?: 0.0
+        }
 
-        viewModelScope.launch {
-            _expenseSumsChartModelProducer.runTransaction {
-                lineSeries { series(dailySums) }
-                extras { extraStore ->
-                    extraStore[dateLabelList] = sortedDays.map { it.toString() }
-                }
-            }
+        // Only update if we're showing expenses
+        if (!isShowingRevenueForSums) {
+            updateSumsChart(showRevenues = false)
         }
     }
 
@@ -104,6 +107,46 @@ class StatsViewModel @Inject constructor(
             categorySumsRevenue = emptyList()
         }
         checkIfDataExists()
+    }
+
+    /**
+     * Process monthly earnings by day
+     */
+    fun processEarningsSumsByDay(items: List<EarningWithCategory>?) {
+        if (items.isNullOrEmpty()) return
+
+        val dailyGrouped = items.groupBy {
+            val calendar = Calendar.getInstance().apply { timeInMillis = it.earning.date }
+            calendar.get(Calendar.DAY_OF_MONTH)
+        }
+        revenueDays = dailyGrouped.keys.sorted().map { it.toString() }
+        dailyRevenueSums = revenueDays.map { day ->
+            dailyGrouped[day.toInt()]?.sumOf { it.earning.amount } ?: 0.0
+        }
+
+        // Only update if we're showing revenues
+        if (isShowingRevenueForSums) {
+            updateSumsChart(showRevenues = true)
+        }
+    }
+
+    /**
+     * Update the sums chart to show either expenses or revenues
+     */
+    fun updateSumsChart(showRevenues: Boolean) {
+        isShowingRevenueForSums = showRevenues
+
+        val chosenDays = if (showRevenues) revenueDays else expenseDays
+        val chosenSums = if (showRevenues) dailyRevenueSums else dailyExpenseSums
+
+        viewModelScope.launch {
+            _sumsChartModelProducer.runTransaction {
+                lineSeries { series(chosenSums) }
+                extras { extraStore ->
+                    extraStore[dateLabelList] = chosenDays
+                }
+            }
+        }
     }
 
     /**

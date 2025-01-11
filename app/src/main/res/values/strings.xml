@@ -64,7 +64,7 @@
     <!-- Stats Fragment -->
     <string name="stats_no_data_message">You don\'t have enough data to display statistics. Log more transactions!</string>
     <string name="stats_general_expenses_header">Expenses over this month</string>
-    <string name="stats_general_revenue_header">Expenses over this month</string>
+    <string name="stats_general_revenue_header">Revenues over this month</string>
     <string name="stats_monthly_expenses_header">Expenses by category this month</string>
     <string name="stats_monthly_revenue_header">Revenues by category this month</string>
     <string name="stats_toggle_button_expenses">Show expenses</string>
