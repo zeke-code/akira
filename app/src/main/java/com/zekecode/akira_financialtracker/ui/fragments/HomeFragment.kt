@@ -3,6 +3,7 @@ package com.zekecode.akira_financialtracker.ui.fragments
 import android.app.Dialog
 import android.icu.util.Calendar
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,6 +45,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         setUpObservers()
+        setupButtons()
     }
 
     private fun setupRecyclerView() {
@@ -59,7 +61,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setUpObservers() {
-        viewModel.currentMonthTransactions.observe(viewLifecycleOwner) { transactions ->
+        viewModel.filteredTransactions.observe(viewLifecycleOwner) { transactions ->
             transactionsAdapter.updateTransactions(transactions)
         }
 
@@ -80,6 +82,21 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun setupButtons() {
+        binding.buttonDaily.setOnClickListener {
+            Log.d("HomeFragment", "Daily button clicked")
+            viewModel.setTransactionFilter(HomeViewModel.Filter.DAILY)
+        }
+
+        binding.buttonWeekly.setOnClickListener {
+            viewModel.setTransactionFilter(HomeViewModel.Filter.WEEKLY)
+        }
+
+        binding.buttonMonthly.setOnClickListener {
+            viewModel.setTransactionFilter(HomeViewModel.Filter.MONTHLY)
+        }
+    }
+
     private fun getBudgetUsageText(usedBudget: Float): String {
         return when {
             usedBudget <= 0 -> getString(R.string.home_no_budget_used_text)
@@ -97,7 +114,6 @@ class HomeFragment : Fragment() {
         binding.circularProgress.trackColor = trackColor
         binding.circularProgress.setProgress(usedBudget.toInt(), true)
     }
-
 
     private fun handleTransactionEdit(transaction: TransactionModel) {
         showEditTransactionDialog(transaction)

@@ -25,9 +25,9 @@
     <string name="navbar_stats">Stats</string>
     <string name="navbar_stocks">Stocks</string>
     <string name="navigation_settings">Settings</string>
-    <string name="home_dayTab">Day</string>
-    <string name="home_weekTab">Week</string>
-    <string name="home_monthTab">Month</string>
+    <string name="home_daily_filter_button">Daily</string>
+    <string name="home_weekly_filter_button">Weekly</string>
+    <string name="home_monthly_filter_button">Monthly</string>
     <!-- Settings Fragment -->
     <string name="settings_header_text">Settings</string>
     <string name="settings_username">Current name</string>
@@ -54,7 +54,7 @@
     <string name="create_revenue_selector">Revenue</string>
     <string name="create_cancel_button">Cancel your transaction</string>
     <string name="create_confirm_button">Create your transaction</string>
-    <string name="create_category_hint">Create a new category or choose a new one…</string>
+    <string name="create_category_hint">Select a category…</string>
     <string name="create_date">Select a date for the transaction here…</string>
     <string name="create_notes">Describe your transaction here…</string>
     <string name="create_amount_hint">00.00</string>
@@ -91,4 +91,5 @@
     <string name="dialog_delete_all_transactions_description">Are you sure you want to delete all your registered transactions?</string>
     <string name="dialog_delete_all_transactions_confirm_button">Continue</string>
     <string name="settings_delete_all_transactions_description">Start on a fresh plate</string>
+    <string name="dialog_edit_category">Transaction category</string>
 </resources>

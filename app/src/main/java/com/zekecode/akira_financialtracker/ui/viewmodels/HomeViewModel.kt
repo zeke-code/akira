@@ -1,6 +1,7 @@
 package com.zekecode.akira_financialtracker.ui.viewmodels
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
@@ -10,6 +11,7 @@ import com.zekecode.akira_financialtracker.data.local.repository.FinancialReposi
 import com.zekecode.akira_financialtracker.data.local.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,7 +26,6 @@ class HomeViewModel @Inject constructor(
     private val _monthlyBudget: LiveData<Double?> = financialRepository.getMonthlyBudget()
 
     private val _currentMonthTransactions: LiveData<List<TransactionModel>> = financialRepository.getCurrentMonthTransactions()
-    val currentMonthTransactions: LiveData<List<TransactionModel>> get() = _currentMonthTransactions
 
     private val _remainingMonthlyBudget: LiveData<Double> = _monthlyBudget.switchMap { budget ->
         _currentMonthTransactions.map { transactions ->
@@ -38,8 +39,20 @@ class HomeViewModel @Inject constructor(
             calculateUsedBudgetPercentage(budget, remainingBudget)
         }
     }
-
     val usedBudgetPercentage: LiveData<Float> get() = _usedBudgetPercentage
+
+    private val _transactionFilter = MutableLiveData<Filter>(Filter.MONTHLY)
+    val transactionFilter: LiveData<Filter> get() = _transactionFilter
+
+    val filteredTransactions: LiveData<List<TransactionModel>> = _transactionFilter.switchMap { filter ->
+        _currentMonthTransactions.map { transactions ->
+            filterTransactions(filter, transactions)
+        }
+    }
+
+    fun setTransactionFilter(filter: Filter) {
+        _transactionFilter.value = filter
+    }
 
     fun updateTransaction(transaction: TransactionModel, description: String, amount: Double, date: Long) {
         viewModelScope.launch {
@@ -110,5 +123,45 @@ class HomeViewModel @Inject constructor(
         } else {
             0f
         }
+    }
+
+    fun TransactionModel.getDate(): Long {
+        return when (this) {
+            is TransactionModel.Expense -> this.expenseWithCategory.expense.date
+            is TransactionModel.Earning -> this.earningWithCategory.earning.date
+        }
+    }
+
+    // Filter logic in HomeViewModel
+    private fun filterTransactions(
+        filter: Filter,
+        transactions: List<TransactionModel>
+    ): List<TransactionModel> {
+        val calendar = Calendar.getInstance()
+        return when (filter) {
+            Filter.DAILY -> {
+                val today = calendar.apply {
+                    set(Calendar.HOUR_OF_DAY, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }.timeInMillis
+                transactions.filter { it.getDate() >= today }
+            }
+            Filter.WEEKLY -> {
+                calendar.set(Calendar.DAY_OF_WEEK, calendar.firstDayOfWeek)
+                val startOfWeek = calendar.timeInMillis
+                transactions.filter { it.getDate() >= startOfWeek }
+            }
+            Filter.MONTHLY -> {
+                calendar.set(Calendar.DAY_OF_MONTH, 1)
+                val startOfMonth = calendar.timeInMillis
+                transactions.filter { it.getDate() >= startOfMonth }
+            }
+        }
+    }
+
+    enum class Filter {
+        DAILY, WEEKLY, MONTHLY
     }
 }
