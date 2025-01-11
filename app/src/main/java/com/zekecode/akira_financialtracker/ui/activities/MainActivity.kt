@@ -62,14 +62,9 @@ class MainActivity : AppCompatActivity() {
             .setTitle("Update Available")
             .setMessage("A new version of the app is available. Would you like to update now?")
             .setPositiveButton("Update") { _, _ ->
-                downloadAndUpdate()
+                viewModel.downloadAndInstallApk(this, "zeke-code", "akira")
             }
             .setNegativeButton("Later", null)
             .show()
-    }
-
-    private fun downloadAndUpdate() {
-        // Implement the logic to download the APK and prompt the user to install it
-        // This part requires handling file downloads and initiating the installation intent
     }
 }

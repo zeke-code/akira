@@ -1,5 +1,10 @@
 package com.zekecode.akira_financialtracker.ui.viewmodels
 
+import android.app.DownloadManager
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Environment
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -10,6 +15,7 @@ import com.zekecode.akira_financialtracker.data.local.repository.FinancialReposi
 import com.zekecode.akira_financialtracker.data.local.repository.UserRepository
 import com.zekecode.akira_financialtracker.utils.DateUtils.getCurrentYearMonth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -98,5 +104,56 @@ class MainViewModel @Inject constructor(
             }
         }
         return false
+    }
+
+    fun downloadAndInstallApk(context: Context, owner: String, repo: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val latestRelease = userRepository.fetchLatestRelease(owner, repo)
+                if (latestRelease != null) {
+                    val apkAsset = latestRelease.assets.find { it.name.endsWith(".apk") }
+                    apkAsset?.let { asset ->
+                        val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                        val uri = Uri.parse(asset.browserDownloadUrl)
+                        val request = DownloadManager.Request(uri).apply {
+                            setTitle("Downloading update")
+                            setDescription("Downloading new version of the app")
+                            setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, asset.name)
+                            setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                            setAllowedOverMetered(true)
+                            setAllowedOverRoaming(true)
+                        }
+
+                        val downloadId = downloadManager.enqueue(request)
+
+                        var downloading = true
+                        while (downloading) {
+                            val cursor = downloadManager.query(DownloadManager.Query().setFilterById(downloadId))
+                            if (cursor.moveToFirst()) {
+                                val statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
+                                if (statusIndex != -1) {
+                                    val status = cursor.getInt(statusIndex)
+                                    if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                                        downloading = false
+                                        installApk(context, downloadManager.getUriForDownloadedFile(downloadId))
+                                    }
+                                }
+                            }
+                            cursor.close()
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun installApk(context: Context, apkUri: Uri) {
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(apkUri, "application/vnd.android.package-archive")
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
+        }
+        context.startActivity(intent)
     }
 }
