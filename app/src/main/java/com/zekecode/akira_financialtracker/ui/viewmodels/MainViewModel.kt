@@ -64,15 +64,39 @@ class MainViewModel @Inject constructor(
             }
             Log.d("MainViewModel", "Latest release response is: ${latestRelease.toString()}")
             latestRelease.let {
-                val latestVersionCode = it.tagName.removePrefix("v").toIntOrNull() ?: 0
-                val currentVersionCode = userRepository.getAppVersionCode()
+                Log.d("MainViewModel", "Tag name is: ${it.tagName}")
+                val latestVersion = it.tagName.removePrefix("v")
+                Log.d("MainViewModel", "Latest version is: $latestVersion")
+                val currentVersion = userRepository.getAppVersionName()
 
-                if (latestVersionCode > currentVersionCode) {
+                if (currentVersion.isNullOrEmpty()) {
+                    Log.d("MainViewModel", "Can't retrieve current version...")
+                    _isUpdateAvailable.postValue(false)
+                    return@let
+                }
+
+                if (isNewerVersion(latestVersion, currentVersion)) {
                     _isUpdateAvailable.postValue(true)
                 } else {
                     _isUpdateAvailable.postValue(false)
                 }
             }
         }
+    }
+
+    private fun isNewerVersion(latestVersion: String, currentVersion: String): Boolean {
+        val latestParts = latestVersion.split(".")
+        val currentParts = currentVersion.split(".")
+
+        for (i in latestParts.indices) {
+            val latestPart = latestParts.getOrNull(i)?.toIntOrNull() ?: 0
+            val currentPart = currentParts.getOrNull(i)?.toIntOrNull() ?: 0
+            if (latestPart > currentPart) {
+                return true
+            } else if (latestPart < currentPart) {
+                return false
+            }
+        }
+        return false
     }
 }
