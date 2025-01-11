@@ -64,7 +64,7 @@ class MainViewModel @Inject constructor(
             }
             Log.d("MainViewModel", "Latest release response is: ${latestRelease.toString()}")
             latestRelease.let {
-                val latestVersionCode = it.tagName.toIntOrNull() ?: 0
+                val latestVersionCode = it.tagName.removePrefix("v").toIntOrNull() ?: 0
                 val currentVersionCode = userRepository.getAppVersionCode()
 
                 if (latestVersionCode > currentVersionCode) {

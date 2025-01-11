@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'release-*'
+      - 'v[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
   release:
@@ -33,5 +33,5 @@ jobs:
         with:
           artifacts: "app/build/outputs/apk/release/*.apk"
           artifactContentType: "application/vnd.android.package-archive"
-          name: "Release ${{ github.ref_name }}"
+          name: ${{ github.ref_name }}
           tag: ${{ github.ref_name }}

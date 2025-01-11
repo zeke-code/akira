@@ -15,7 +15,7 @@ android {
         minSdk = 29
         targetSdk = 35
         versionCode = 2
-        versionName = "0.0.2"
+        versionName = "0.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -41,11 +41,18 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    applicationVariants.all {
+        val variant = this
+
+        variant.outputs.map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }.forEach { output ->
+            val newFileName = "akira_${variant.buildType.name}_${variant.versionName}.apk"
+            output.outputFileName = newFileName
+        }
+    }
 }
 
-// All dependencies versions can be found in ../gradle/libs.versions.toml
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -62,24 +69,19 @@ dependencies {
     implementation(libs.androidx.hilt.common)
     ksp(libs.hilt.android.compiler)
 
-    // Retrofit and Moshi dependencies
     implementation(libs.retrofit2.retrofit)
     implementation(libs.converter.moshi)
     implementation(libs.moshi)
     ksp(libs.moshi.kotlin.codegen)
 
-    // Room dependencies
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
 
-    // Charts library
     implementation(libs.vico.views)
 
-    // KSP is a Kotlin based processor. We use it instead of KAPT which is now in maintenance mode
     ksp(libs.androidx.room.compiler)
     androidTestImplementation(libs.androidx.room.testing)
 
-    // Coroutine dependencies
     implementation(libs.jetbrains.kotlinx.coroutines.android)
 
     testImplementation(libs.junit)
