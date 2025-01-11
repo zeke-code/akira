@@ -14,6 +14,9 @@ import com.zekecode.akira_financialtracker.data.remote.models.DailyData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -82,14 +85,23 @@ class StocksViewModel @Inject constructor(
     }
 
     private fun extractChartData(timeSeries: Map<String, DailyData>): List<Pair<String, Double>> {
+        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val outputFormatter = DateTimeFormatter.ofPattern("dd/MM")
+
         return timeSeries.entries
             .sortedBy { it.key }
             .mapNotNull { entry ->
-                val date = entry.key
-                val closePrice = entry.value.close.toDoubleOrNull()
-                if (closePrice != null) {
-                    date to closePrice
-                } else null
+                try {
+                    val date = LocalDate.parse(entry.key, dateFormatter)
+                    val formattedDate = date.format(outputFormatter)
+                    val closePrice = entry.value.close.toDoubleOrNull()
+                    if (closePrice != null) {
+                        formattedDate to closePrice
+                    } else null
+                } catch (e: Exception) {
+                    Log.e("StocksViewModel", "Error parsing date: ${entry.key}", e)
+                    null
+                }
             }
     }
 
