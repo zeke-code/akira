@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showUpdateDialog() {
-        AlertDialog.Builder(this, R.style.CustomDialog)
+        AlertDialog.Builder(this, R.style.CustomDialogUpdate)
             .setTitle("Update Available")
             .setMessage("A new version of the app is available. Would you like to update now?")
             .setPositiveButton("Update") { _, _ ->
