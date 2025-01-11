@@ -1,9 +1,7 @@
 package com.zekecode.akira_financialtracker.ui.fragments
 
 import android.app.Dialog
-import android.icu.util.Calendar
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,23 +13,28 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
 import com.zekecode.akira_financialtracker.R
+import com.zekecode.akira_financialtracker.data.local.entities.CategoryModel
 import com.zekecode.akira_financialtracker.data.local.entities.TransactionModel
 import com.zekecode.akira_financialtracker.databinding.DialogEditTransactionBinding
 import com.zekecode.akira_financialtracker.databinding.FragmentHomeBinding
 import com.zekecode.akira_financialtracker.ui.adapters.TransactionsAdapter
 import com.zekecode.akira_financialtracker.ui.viewmodels.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Calendar
 import java.util.Locale
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
+    private var dialogBinding: DialogEditTransactionBinding? = null
+    private var currentEditDialog: Dialog? = null
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: HomeViewModel by viewModels()
 
     private lateinit var transactionsAdapter: TransactionsAdapter
+    private var selectedCategory: CategoryModel? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,6 +49,17 @@ class HomeFragment : Fragment() {
         setupRecyclerView()
         setUpObservers()
         setupButtons()
+
+        // Set up the fragment result listener once
+        parentFragmentManager.setFragmentResultListener("requestKey", viewLifecycleOwner) { _, bundle ->
+            selectedCategory = bundle.getParcelable("selectedCategory")
+            // Update dialog if it's showing
+            dialogBinding?.let { binding ->
+                selectedCategory?.let { category ->
+                    binding.tvCategory.setText(category.name)
+                }
+            }
+        }
     }
 
     private fun setupRecyclerView() {
@@ -84,7 +98,6 @@ class HomeFragment : Fragment() {
 
     private fun setupButtons() {
         binding.buttonDaily.setOnClickListener {
-            Log.d("HomeFragment", "Daily button clicked")
             viewModel.setTransactionFilter(HomeViewModel.Filter.DAILY)
         }
 
@@ -121,33 +134,48 @@ class HomeFragment : Fragment() {
 
     private fun showEditTransactionDialog(transaction: TransactionModel) {
         val dialog = Dialog(requireContext())
-        val binding = DialogEditTransactionBinding.inflate(layoutInflater)
+        dialogBinding = DialogEditTransactionBinding.inflate(layoutInflater)
+        currentEditDialog = dialog
+
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.setContentView(dialogBinding!!.root)
 
-        dialog.setContentView(binding.root)
-
-        // Initialize dialog fields with transaction details
+        // Populate existing fields
         when (transaction) {
             is TransactionModel.Expense -> {
                 val expense = transaction.expenseWithCategory.expense
-                binding.etTransactionDescription.setText(expense.description)
-                binding.etTransactionAmount.setText(expense.amount.toString())
-                binding.etTransactionDate.setText(
+                dialogBinding!!.etTransactionDescription.setText(expense.description)
+                dialogBinding!!.etTransactionAmount.setText(expense.amount.toString())
+                dialogBinding!!.etTransactionDate.setText(
                     android.text.format.DateFormat.format("MMM dd, yyyy", expense.date)
                 )
+                dialogBinding!!.tvCategory.setText(transaction.expenseWithCategory.category.name)
             }
             is TransactionModel.Earning -> {
                 val earning = transaction.earningWithCategory.earning
-                binding.etTransactionDescription.setText(earning.description)
-                binding.etTransactionAmount.setText(earning.amount.toString())
-                binding.etTransactionDate.setText(
+                dialogBinding!!.etTransactionDescription.setText(earning.description)
+                dialogBinding!!.etTransactionAmount.setText(earning.amount.toString())
+                dialogBinding!!.etTransactionDate.setText(
                     android.text.format.DateFormat.format("MMM dd, yyyy", earning.date)
                 )
+                dialogBinding!!.tvCategory.setText(transaction.earningWithCategory.category.name)
             }
         }
 
-        // Date picker logic
-        binding.etTransactionDate.setOnClickListener {
+        dialogBinding!!.tvCategory.setOnClickListener {
+            val dialogFragment = SelectCategoryDialogFragment()
+            dialogFragment.show(parentFragmentManager, "SelectCategoryDialogFragment")
+        }
+
+        // Listen for category selection result
+        parentFragmentManager.setFragmentResultListener("requestKey", this) { _, bundle ->
+            selectedCategory = bundle.getParcelable("selectedCategory")
+            if (selectedCategory != null) {
+                dialogBinding!!.tvCategory.setText(selectedCategory!!.name)
+            }
+        }
+
+        dialogBinding!!.etTransactionDate.setOnClickListener {
             val datePicker = MaterialDatePicker.Builder.datePicker()
                 .setTitleText(R.string.select_date)
                 .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
@@ -159,27 +187,63 @@ class HomeFragment : Fragment() {
                 val selectedDate = Calendar.getInstance().apply {
                     timeInMillis = selection
                 }
-                binding.etTransactionDate.setText(
+                dialogBinding!!.etTransactionDate.setText(
                     android.text.format.DateFormat.format("MMM dd, yyyy", selectedDate.time)
                 )
             }
         }
 
-        // Button click listeners
-        binding.btnSave.setOnClickListener {
-            val updatedDescription = binding.etTransactionDescription.text.toString()
-            val updatedAmount = binding.etTransactionAmount.text.toString().toDoubleOrNull() ?: 0.0
-            val updatedDateString = binding.etTransactionDate.text.toString()
+        dialogBinding!!.btnSave.setOnClickListener {
+            val updatedDescription = dialogBinding!!.etTransactionDescription.text.toString()
+            if (updatedDescription.isEmpty()) {
+                dialogBinding!!.etTransactionDescription.error = "Description required"
+                return@setOnClickListener
+            }
 
+            val updatedAmount = dialogBinding!!.etTransactionAmount.text.toString().toDoubleOrNull()
+            if (updatedAmount == null) {
+                dialogBinding!!.etTransactionAmount.error = "Valid amount required"
+                return@setOnClickListener
+            }
+
+            val updatedDateString = dialogBinding!!.etTransactionDate.text.toString()
             val dateFormat = java.text.SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-            val updatedDate = dateFormat.parse(updatedDateString)?.time ?: return@setOnClickListener
+            val updatedDate = try {
+                dateFormat.parse(updatedDateString)?.time
+            } catch (e: Exception) {
+                dialogBinding!!.etTransactionDate.error = "Invalid date format"
+                return@setOnClickListener
+            }
 
-            viewModel.updateTransaction(transaction, updatedDescription, updatedAmount, updatedDate)
+            if (updatedDate == null) {
+                dialogBinding!!.etTransactionDate.error = "Valid date required"
+                return@setOnClickListener
+            }
+
+            if (selectedCategory == null) {
+                Snackbar.make(dialogBinding!!.root, "Please select a category", Snackbar.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            viewModel.updateTransaction(
+                transaction,
+                updatedDescription,
+                updatedAmount,
+                updatedDate,
+                selectedCategory!!
+            )
+
+            Snackbar.make(binding.root, "Transaction updated successfully", Snackbar.LENGTH_SHORT).show()
             dialog.dismiss()
         }
 
-        binding.btnCancel.setOnClickListener {
+        dialogBinding!!.btnCancel.setOnClickListener {
             dialog.dismiss()
+        }
+
+        dialog.setOnDismissListener {
+            dialogBinding = null
+            currentEditDialog = null
         }
 
         dialog.show()

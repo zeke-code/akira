@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import com.zekecode.akira_financialtracker.data.local.entities.CategoryModel
 import com.zekecode.akira_financialtracker.data.local.entities.TransactionModel
 import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
 import com.zekecode.akira_financialtracker.data.local.repository.UserRepository
@@ -42,7 +43,6 @@ class HomeViewModel @Inject constructor(
     val usedBudgetPercentage: LiveData<Float> get() = _usedBudgetPercentage
 
     private val _transactionFilter = MutableLiveData<Filter>(Filter.MONTHLY)
-    val transactionFilter: LiveData<Filter> get() = _transactionFilter
 
     val filteredTransactions: LiveData<List<TransactionModel>> = _transactionFilter.switchMap { filter ->
         _currentMonthTransactions.map { transactions ->
@@ -54,7 +54,7 @@ class HomeViewModel @Inject constructor(
         _transactionFilter.value = filter
     }
 
-    fun updateTransaction(transaction: TransactionModel, description: String, amount: Double, date: Long) {
+    fun updateTransaction(transaction: TransactionModel, description: String, amount: Double, date: Long, category: CategoryModel) {
         viewModelScope.launch {
             val updatedTransaction = when (transaction) {
                 is TransactionModel.Expense -> transaction.copy(
@@ -62,8 +62,10 @@ class HomeViewModel @Inject constructor(
                         expense = transaction.expenseWithCategory.expense.copy(
                             description = description,
                             amount = amount,
-                            date = date
-                        )
+                            date = date,
+                            categoryId = category.id
+                        ),
+                        category = category
                     )
                 )
                 is TransactionModel.Earning -> transaction.copy(
@@ -71,8 +73,10 @@ class HomeViewModel @Inject constructor(
                         earning = transaction.earningWithCategory.earning.copy(
                             description = description,
                             amount = amount,
-                            date = date
-                        )
+                            date = date,
+                            categoryId = category.id
+                        ),
+                        category = category
                     )
                 )
             }
@@ -125,7 +129,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun TransactionModel.getDate(): Long {
+    private fun TransactionModel.getDate(): Long {
         return when (this) {
             is TransactionModel.Expense -> this.expenseWithCategory.expense.date
             is TransactionModel.Earning -> this.earningWithCategory.earning.date
@@ -138,25 +142,74 @@ class HomeViewModel @Inject constructor(
         transactions: List<TransactionModel>
     ): List<TransactionModel> {
         val calendar = Calendar.getInstance()
+
         return when (filter) {
             Filter.DAILY -> {
-                val today = calendar.apply {
+                // Set to start of day
+                calendar.apply {
                     set(Calendar.HOUR_OF_DAY, 0)
                     set(Calendar.MINUTE, 0)
                     set(Calendar.SECOND, 0)
                     set(Calendar.MILLISECOND, 0)
-                }.timeInMillis
-                transactions.filter { it.getDate() >= today }
+                }
+                val startOfDay = calendar.timeInMillis
+
+                // Set to end of day
+                calendar.apply {
+                    set(Calendar.HOUR_OF_DAY, 23)
+                    set(Calendar.MINUTE, 59)
+                    set(Calendar.SECOND, 59)
+                    set(Calendar.MILLISECOND, 999)
+                }
+                val endOfDay = calendar.timeInMillis
+
+                transactions.filter { it.getDate() in startOfDay..endOfDay }
             }
             Filter.WEEKLY -> {
+                // Set to start of week
                 calendar.set(Calendar.DAY_OF_WEEK, calendar.firstDayOfWeek)
+                calendar.apply {
+                    set(Calendar.HOUR_OF_DAY, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }
                 val startOfWeek = calendar.timeInMillis
-                transactions.filter { it.getDate() >= startOfWeek }
+
+                // Set to end of week
+                calendar.add(Calendar.DAY_OF_WEEK, 6)
+                calendar.apply {
+                    set(Calendar.HOUR_OF_DAY, 23)
+                    set(Calendar.MINUTE, 59)
+                    set(Calendar.SECOND, 59)
+                    set(Calendar.MILLISECOND, 999)
+                }
+                val endOfWeek = calendar.timeInMillis
+
+                transactions.filter { it.getDate() in startOfWeek..endOfWeek }
             }
             Filter.MONTHLY -> {
+                // Set to start of month
                 calendar.set(Calendar.DAY_OF_MONTH, 1)
+                calendar.apply {
+                    set(Calendar.HOUR_OF_DAY, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }
                 val startOfMonth = calendar.timeInMillis
-                transactions.filter { it.getDate() >= startOfMonth }
+
+                // Set to end of month
+                calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+                calendar.apply {
+                    set(Calendar.HOUR_OF_DAY, 23)
+                    set(Calendar.MINUTE, 59)
+                    set(Calendar.SECOND, 59)
+                    set(Calendar.MILLISECOND, 999)
+                }
+                val endOfMonth = calendar.timeInMillis
+
+                transactions.filter { it.getDate() in startOfMonth..endOfMonth }
             }
         }
     }

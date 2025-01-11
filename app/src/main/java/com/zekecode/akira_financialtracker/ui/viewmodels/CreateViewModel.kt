@@ -24,13 +24,10 @@ class CreateViewModel @Inject constructor(
     val amount: LiveData<Double>
         get() = _amount
 
-    val allCategories: LiveData<List<CategoryModel>> = repository.getAllCategories()
-
     private val _selectedCategory = MutableLiveData<CategoryModel?>()
     val selectedCategory: LiveData<CategoryModel?> get() = _selectedCategory
 
     private val _selectedDate = MutableLiveData<Long>()
-    val selectedDate: LiveData<Long> get() = _selectedDate
 
     val formattedSelectedDate: LiveData<String> = _selectedDate.map { dateInMillis ->
         val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())

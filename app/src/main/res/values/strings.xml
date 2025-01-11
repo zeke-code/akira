@@ -18,9 +18,9 @@
     <!-- Home Fragment -->
     <string name="home_welcome_text">Welcome, %1$s!</string>
     <string name="home_remaining_budget_frame_text">%s %s</string>
-    <string name="home_used_budget_text">You have used <b>%1$.0f%%</b> of your budget</string>
-    <string name="home_no_budget_used_text">You haven\'t used your budget yet.</string>
-    <string name="home_all_budged_used_text">You have used all your budget</string>
+    <string name="home_used_budget_text"><b>%1$.0f%%</b> of monthly budget used</string>
+    <string name="home_no_budget_used_text">You haven\'t used your monthly budget yet</string>
+    <string name="home_all_budged_used_text">You have used all your monthly budget</string>
     <string name="navbar_home">Home</string>
     <string name="navbar_stats">Stats</string>
     <string name="navbar_stocks">Stocks</string>

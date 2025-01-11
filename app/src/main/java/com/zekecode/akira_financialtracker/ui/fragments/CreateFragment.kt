@@ -12,10 +12,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.zekecode.akira_financialtracker.R
+import com.zekecode.akira_financialtracker.data.local.entities.CategoryModel
 import com.zekecode.akira_financialtracker.databinding.FragmentCreateBinding
 import com.zekecode.akira_financialtracker.ui.viewmodels.CreateViewModel
 import dagger.hilt.android.AndroidEntryPoint
-
 
 @AndroidEntryPoint
 class CreateFragment : Fragment() {
@@ -110,6 +110,14 @@ class CreateFragment : Fragment() {
                     R.id.btn_expense -> viewModel.setIsExpense(true)
                     R.id.btn_revenue -> viewModel.setIsExpense(false)
                 }
+            }
+        }
+
+        // Listen for category selection result
+        childFragmentManager.setFragmentResultListener("requestKey", this) { _, bundle ->
+            val selectedCategory = bundle.getParcelable<CategoryModel>("selectedCategory")
+            if (selectedCategory != null) {
+                viewModel.setSelectedCategory(selectedCategory)
             }
         }
     }

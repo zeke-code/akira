@@ -6,13 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.data.local.entities.CategoryModel
 import com.zekecode.akira_financialtracker.databinding.DialogSelectCategoryBinding
 import com.zekecode.akira_financialtracker.ui.adapters.CategoryAdapter
-import com.zekecode.akira_financialtracker.ui.viewmodels.CreateViewModel
+import com.zekecode.akira_financialtracker.ui.viewmodels.SelectCategoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,7 +21,7 @@ class SelectCategoryDialogFragment : DialogFragment() {
     private var _binding: DialogSelectCategoryBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: CreateViewModel by activityViewModels()
+    private val viewModel: SelectCategoryViewModel by viewModels()
     private lateinit var adapter: CategoryAdapter
 
     private var selectedCategory: CategoryModel? = null
@@ -74,6 +74,10 @@ class SelectCategoryDialogFragment : DialogFragment() {
         binding.btnSave.setOnClickListener {
             if (selectedCategory != null) {
                 viewModel.setSelectedCategory(selectedCategory!!)
+                val result = Bundle().apply {
+                    putParcelable("selectedCategory", selectedCategory)
+                }
+                parentFragmentManager.setFragmentResult("requestKey", result)
                 dismiss()
             } else {
                 Toast.makeText(context, "Please select a category", Toast.LENGTH_SHORT).show()
