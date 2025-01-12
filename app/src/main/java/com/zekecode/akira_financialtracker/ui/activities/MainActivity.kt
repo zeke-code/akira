@@ -21,6 +21,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private lateinit var viewModel: MainViewModel
 
+    companion object {
+        const val REQUEST_INSTALL_PERMISSION = 1001
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -39,6 +43,13 @@ class MainActivity : AppCompatActivity() {
         setupNavigation()
 
         setUpObservers()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_INSTALL_PERMISSION && resultCode == RESULT_OK) {
+            viewModel.downloadAndInstallApk(this, "zeke-code", "akira")
+        }
     }
 
     private fun setupNavigation() {

@@ -1,11 +1,16 @@
 package com.zekecode.akira_financialtracker.ui.viewmodels
 
+import android.app.Activity
 import android.app.DownloadManager
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
 import android.os.Environment
+import android.provider.Settings
 import android.util.Log
+import androidx.core.content.FileProvider
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,10 +18,12 @@ import androidx.lifecycle.viewModelScope
 import com.zekecode.akira_financialtracker.data.local.entities.BudgetModel
 import com.zekecode.akira_financialtracker.data.local.repository.FinancialRepository
 import com.zekecode.akira_financialtracker.data.local.repository.UserRepository
+import com.zekecode.akira_financialtracker.ui.activities.MainActivity
 import com.zekecode.akira_financialtracker.utils.DateUtils.getCurrentYearMonth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -68,7 +75,7 @@ class MainViewModel @Inject constructor(
                 _isUpdateAvailable.postValue(false)
                 return@launch
             }
-            Log.d("MainViewModel", "Latest release response is: ${latestRelease.toString()}")
+            Log.d("MainViewModel", "Latest release response is: $latestRelease")
             latestRelease.let {
                 Log.d("MainViewModel", "Tag name is: ${it.tagName}")
                 val latestVersion = it.tagName.removePrefix("v")
@@ -107,53 +114,111 @@ class MainViewModel @Inject constructor(
     }
 
     fun downloadAndInstallApk(context: Context, owner: String, repo: String) {
+        cleanupOldUpdateFiles()
+
+        // Check if the app can request package installs
+        if (!context.packageManager.canRequestPackageInstalls()) {
+            val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
+                .setData(Uri.parse("package:${context.packageName}"))
+            if (context is Activity) {
+                context.startActivityForResult(intent, MainActivity.REQUEST_INSTALL_PERMISSION)
+                return
+            }
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val latestRelease = userRepository.fetchLatestRelease(owner, repo)
                 if (latestRelease != null) {
+                    // Find the first .apk in release assets
                     val apkAsset = latestRelease.assets.find { it.name.endsWith(".apk") }
                     apkAsset?.let { asset ->
                         val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+
+                        // Use the public downloads directory
+                        val fileName = "akira_update_${System.currentTimeMillis()}.apk"
                         val uri = Uri.parse(asset.browserDownloadUrl)
+
                         val request = DownloadManager.Request(uri).apply {
-                            setTitle("Downloading update")
-                            setDescription("Downloading new version of the app")
-                            setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, asset.name)
+                            setTitle("Akira Update")
+                            setDescription("Downloading new version...")
                             setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                            setAllowedOverMetered(true)
+                            // Downloading directly to the public Downloads directory
+                            setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
+                            // Request read access for older devices or scope conflict
                             setAllowedOverRoaming(true)
+                            setAllowedOverMetered(true)
                         }
 
                         val downloadId = downloadManager.enqueue(request)
 
-                        var downloading = true
-                        while (downloading) {
-                            val cursor = downloadManager.query(DownloadManager.Query().setFilterById(downloadId))
-                            if (cursor.moveToFirst()) {
-                                val statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
-                                if (statusIndex != -1) {
-                                    val status = cursor.getInt(statusIndex)
-                                    if (status == DownloadManager.STATUS_SUCCESSFUL) {
-                                        downloading = false
-                                        installApk(context, downloadManager.getUriForDownloadedFile(downloadId))
+                        val onComplete = object : BroadcastReceiver() {
+                            override fun onReceive(ctxt: Context, intent: Intent) {
+                                if (intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1) == downloadId) {
+                                    viewModelScope.launch(Dispatchers.Main) {
+                                        try {
+                                            val downloadedFile = File(
+                                                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                                                fileName
+                                            )
+
+                                            if (downloadedFile.exists()) {
+                                                // Build the content Uri for the downloaded file
+                                                val apkUri = FileProvider.getUriForFile(
+                                                    ctxt,
+                                                    "${context.packageName}.provider", // match your authority
+                                                    downloadedFile
+                                                )
+
+                                                val install = Intent(Intent.ACTION_VIEW).apply {
+                                                    setDataAndType(apkUri, "application/vnd.android.package-archive")
+                                                    // Required flags: Grant read permission & start a new task
+                                                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                                }
+                                                // Start the installer Activity
+                                                ctxt.startActivity(install)
+                                            } else {
+                                                Log.e("MainViewModel", "Downloaded file not found")
+                                            }
+                                        } catch (e: Exception) {
+                                            Log.e("MainViewModel", "Error installing APK", e)
+                                        }
                                     }
+                                    context.unregisterReceiver(this)
                                 }
                             }
-                            cursor.close()
                         }
+
+                        // Register broadcast receiver for download completion
+                        context.registerReceiver(
+                            onComplete,
+                            IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE).apply {
+                                addCategory(Intent.CATEGORY_DEFAULT)
+                            },
+                            null,
+                            null
+                        )
                     }
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("MainViewModel", "Error downloading APK", e)
             }
         }
     }
 
-    private fun installApk(context: Context, apkUri: Uri) {
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(apkUri, "application/vnd.android.package-archive")
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
+    private fun cleanupOldUpdateFiles() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                downloadsDir.listFiles()?.forEach { file ->
+                    if (file.name.startsWith("akira_update_") && file.name.endsWith(".apk")) {
+                        file.delete()
+                        Log.d("MainViewModel", "Deleted old update file: ${file.name}")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("MainViewModel", "Error cleaning up old update files", e)
+            }
         }
-        context.startActivity(intent)
     }
 }
