@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.androidx.preference.ktx)
     implementation(libs.androidx.hilt.common)
     implementation(libs.androidx.hilt.work)
+    implementation(libs.androidx.lifecycle.process)
     ksp(libs.hilt.android.compiler)
 
     implementation(libs.retrofit2.retrofit)

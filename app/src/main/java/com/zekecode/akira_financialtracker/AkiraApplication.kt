@@ -1,8 +1,12 @@
 package com.zekecode.akira_financialtracker
 
 import android.app.Application
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import androidx.work.WorkManager
 import com.zekecode.akira_financialtracker.utils.NotificationScheduler
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
@@ -18,15 +22,17 @@ class AkiraApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
-        setupNotifications()
-    }
+        WorkManager.getInstance(applicationContext).cancelAllWork() // Clear any existing work
 
-    private fun setupNotifications() {
-        notificationScheduler.scheduleDailyReminder()
+        // Check work status after initialization
+        Handler(Looper.getMainLooper()).postDelayed({
+            notificationScheduler.checkWorkStatus()
+        }, 5000)
     }
 
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
             .setWorkerFactory(workerFactory)
+            .setMinimumLoggingLevel(Log.DEBUG)
             .build()
 }

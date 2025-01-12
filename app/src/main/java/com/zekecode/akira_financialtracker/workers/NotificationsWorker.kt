@@ -5,10 +5,9 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
-import androidx.work.Worker
+import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.zekecode.akira_financialtracker.R
 import com.zekecode.akira_financialtracker.ui.activities.MainActivity
@@ -19,31 +18,27 @@ import dagger.assisted.AssistedInject
 class DailyReminderWorker @AssistedInject constructor(
     @Assisted private val context: Context,
     @Assisted workerParams: WorkerParameters
-) : Worker(context, workerParams) {
+) : CoroutineWorker(context, workerParams) {
 
-    companion object {
-        const val CHANNEL_ID = "transaction_reminder_channel"
-        const val NOTIFICATION_ID = 1
-    }
-
-    override fun doWork(): Result {
+    override suspend fun doWork(): Result {
         createNotificationChannel()
         showNotification()
         return Result.success()
     }
 
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "Daily Transaction Reminders"
-            val descriptionText = "Reminds you to log your daily transactions"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                description = descriptionText
-            }
-
-            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            "Daily Transaction Reminders",
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = "Reminds you to log your daily transactions"
+            enableLights(true)
+            enableVibration(true)
         }
+
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 
     private fun showNotification() {
@@ -62,12 +57,17 @@ class DailyReminderWorker @AssistedInject constructor(
             .setSmallIcon(R.drawable.ic_notifications)
             .setContentTitle("Log Your Transactions")
             .setContentText("Don't forget to log today's transactions!")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
             .build()
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(NOTIFICATION_ID, notification)
+    }
+
+    companion object {
+        const val CHANNEL_ID = "akira_reminders"
+        const val NOTIFICATION_ID = 1
     }
 }
