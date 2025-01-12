@@ -163,30 +163,51 @@ class MainViewModel @Inject constructor(
                                             Log.d("MainViewModel", "File exists: ${downloadedFile.exists()}")
                                             Log.d("MainViewModel", "File path: ${downloadedFile.absolutePath}")
 
-                                            if (downloadedFile.exists()) {
-                                                val apkUri = FileProvider.getUriForFile(
-                                                    applicationContext,
-                                                    "${applicationContext.packageName}.provider",
-                                                    downloadedFile
-                                                )
-
-                                                Log.d("MainViewModel", "APK URI: $apkUri")
-
-                                                val install = Intent(Intent.ACTION_VIEW).apply {
-                                                    setDataAndType(apkUri, "application/vnd.android.package-archive")
-                                                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                                                            Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                                                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
-                                                            Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                                                            Intent.FLAG_ACTIVITY_NO_HISTORY
-                                                    addCategory(Intent.CATEGORY_DEFAULT)
-                                                }
-
-                                                Log.d("MainViewModel", "Starting installation intent")
-                                                applicationContext.startActivity(install)
-                                            } else {
-                                                Log.e("MainViewModel", "Downloaded file not found")
+                                            val query = DownloadManager.Query().apply {
+                                                setFilterById(downloadId)
                                             }
+                                            val cursor = downloadManager.query(query)
+
+                                            if (cursor.moveToFirst()) {
+                                                val columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
+                                                val status = cursor.getInt(columnIndex)
+
+                                                when (status) {
+                                                    DownloadManager.STATUS_SUCCESSFUL -> {
+                                                        if (downloadedFile.exists()) {
+                                                            val apkUri = FileProvider.getUriForFile(
+                                                                applicationContext,
+                                                                "${applicationContext.packageName}.provider",
+                                                                downloadedFile
+                                                            )
+
+                                                            Log.d("MainViewModel", "APK URI: $apkUri")
+
+                                                            val install = Intent(Intent.ACTION_VIEW).apply {
+                                                                setDataAndType(apkUri, "application/vnd.android.package-archive")
+                                                                flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                                                                        Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                                                                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
+                                                                        Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                                                                        Intent.FLAG_ACTIVITY_NO_HISTORY
+                                                                addCategory(Intent.CATEGORY_DEFAULT)
+                                                            }
+
+                                                            Log.d("MainViewModel", "Starting installation intent")
+                                                            applicationContext.startActivity(install)
+                                                        } else {
+                                                            Log.e("MainViewModel", "Downloaded file not found")
+                                                        }
+                                                    }
+                                                    DownloadManager.STATUS_FAILED -> {
+                                                        val columnReason = cursor.getColumnIndex(DownloadManager.COLUMN_REASON)
+                                                        val reason = cursor.getInt(columnReason)
+                                                        Log.e("MainViewModel", "Download failed: $reason")
+                                                    }
+                                                }
+                                            }
+                                            cursor.close()
+
                                         } catch (e: Exception) {
                                             Log.e("MainViewModel", "Error installing APK", e)
                                             e.printStackTrace()
@@ -197,15 +218,18 @@ class MainViewModel @Inject constructor(
                             }
                         }
 
-                        val intentFilter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE).apply {
-                            addCategory(Intent.CATEGORY_DEFAULT)
-                        }
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                            applicationContext.registerReceiver(onComplete, intentFilter, Context.RECEIVER_NOT_EXPORTED)
-                        } else {
-                            applicationContext.registerReceiver(onComplete, intentFilter)
-                        }
+                        val intentFilter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
+
+                        // Register receiver using ContextCompat for all Android versions
+                        ContextCompat.registerReceiver(
+                            applicationContext,
+                            onComplete,
+                            intentFilter,
+                            ContextCompat.RECEIVER_NOT_EXPORTED
+                        )
                     }
+                } else {
+                    Log.e("MainViewModel", "No release found or release data is null")
                 }
             } catch (e: Exception) {
                 Log.e("MainViewModel", "Error downloading APK", e)
