@@ -1,7 +1,7 @@
 [versions]
 agp = "8.5.2"
 fragmentKtx = "1.8.5"
-hiltAndroidCompiler = "2.51.1"
+hiltAndroidCompiler = "2.55"
 kotlin = "2.1.0"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -24,6 +24,7 @@ vico = "2.0.0-beta.5"
 preferenceKtx = "1.2.1"
 workRuntimeKtx = "2.10.0"
 hiltCommon = "1.2.0"
+hiltWork = "1.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -54,6 +55,7 @@ androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation
 vico-views = { group = "com.patrykandpatrick.vico", name = "views", version.ref = "vico" }
 androidx-preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preferenceKtx" }
 androidx-hilt-common = { group = "androidx.hilt", name = "hilt-common", version.ref = "hiltCommon" }
+androidx-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hiltWork" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
