@@ -44,11 +44,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        viewModel.checkAndUpdateBudget()
+
+        if (!viewModel.isSetupComplete()) {
+            startActivity(Intent(this, FirstSetupActivity::class.java))
+            finish()
+            return
+        }
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-
         setupNavigation()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             checkNotificationPermission()
