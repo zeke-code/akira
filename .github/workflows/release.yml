@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - "v[0-9]+.[0-9]+.[0-9]+"
 
 jobs:
   release:
@@ -31,7 +31,7 @@ jobs:
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "app/build/outputs/apk/release/*.apk"
+          artifacts: "app/build/outputs/apk/debug/*.apk"
           artifactContentType: "application/vnd.android.package-archive"
           name: ${{ github.ref_name }}
           tag: ${{ github.ref_name }}
