@@ -55,9 +55,6 @@ class StatsViewModel @Inject constructor(
     private val _isDataAvailable = MutableLiveData(false)
     val isDataAvailable: LiveData<Boolean> get() = _isDataAvailable
 
-    /**
-     * Process monthly expenses grouped by category (fills categoryNamesExpense, categorySumsExpense).
-     */
     fun processExpenses(items: List<ExpenseWithCategory>?) {
         if (!items.isNullOrEmpty()) {
             val groupedData = items.groupBy { it.category.name }
@@ -68,14 +65,10 @@ class StatsViewModel @Inject constructor(
             categorySumsExpense = emptyList()
         }
 
-        // By default, show expenses in the category chart
         updateCategoryChart(showRevenues = false)
         checkIfDataExists()
     }
 
-    /**
-     * Process monthly expenses by day
-     */
     fun processExpenseSumsByDay(items: List<ExpenseWithCategory>?) {
         if (items.isNullOrEmpty()) return
 
@@ -88,15 +81,11 @@ class StatsViewModel @Inject constructor(
             dailyGrouped[day.toInt()]?.sumOf { it.expense.amount } ?: 0.0
         }
 
-        // Only update if we're showing expenses
         if (!isShowingRevenueForSums) {
             updateSumsChart(showRevenues = false)
         }
     }
 
-    /**
-     * Process monthly earnings grouped by category (fills categoryNamesRevenue, categorySumsRevenue).
-     */
     fun processEarnings(items: List<EarningWithCategory>?) {
         if (!items.isNullOrEmpty()) {
             val groupedData = items.groupBy { it.category.name }
@@ -109,9 +98,6 @@ class StatsViewModel @Inject constructor(
         checkIfDataExists()
     }
 
-    /**
-     * Process monthly earnings by day
-     */
     fun processEarningsSumsByDay(items: List<EarningWithCategory>?) {
         if (items.isNullOrEmpty()) return
 
@@ -124,52 +110,65 @@ class StatsViewModel @Inject constructor(
             dailyGrouped[day.toInt()]?.sumOf { it.earning.amount } ?: 0.0
         }
 
-        // Only update if we're showing revenues
         if (isShowingRevenueForSums) {
             updateSumsChart(showRevenues = true)
         }
     }
 
-    /**
-     * Update the sums chart to show either expenses or revenues
-     */
     fun updateSumsChart(showRevenues: Boolean) {
         isShowingRevenueForSums = showRevenues
 
         val chosenDays = if (showRevenues) revenueDays else expenseDays
         val chosenSums = if (showRevenues) dailyRevenueSums else dailyExpenseSums
 
-        viewModelScope.launch {
-            _sumsChartModelProducer.runTransaction {
-                lineSeries { series(chosenSums) }
-                extras { extraStore ->
-                    extraStore[dateLabelList] = chosenDays
+        // Handle empty series
+        if (chosenSums.isEmpty()) {
+            viewModelScope.launch {
+                _sumsChartModelProducer.runTransaction {
+                    lineSeries { series(listOf(0.0)) }  // Dummy value to avoid crash
+                    extras { extraStore ->
+                        extraStore[dateLabelList] = listOf("")
+                    }
+                }
+            }
+        } else {
+            viewModelScope.launch {
+                _sumsChartModelProducer.runTransaction {
+                    lineSeries { series(chosenSums) }
+                    extras { extraStore ->
+                        extraStore[dateLabelList] = chosenDays
+                    }
                 }
             }
         }
     }
 
-    /**
-     * Update the category chart to show either expenses or revenues.
-     * This version matches the toggleCharts() usage with a boolean "showRevenues" flag.
-     */
     fun updateCategoryChart(showRevenues: Boolean) {
         val chosenNames = if (showRevenues) categoryNamesRevenue else categoryNamesExpense
         val chosenSums = if (showRevenues) categorySumsRevenue else categorySumsExpense
 
-        viewModelScope.launch {
-            _categoryChartModelProducer.runTransaction {
-                columnSeries { series(chosenSums) }
-                extras { extraStore ->
-                    extraStore[categoriesLabelList] = chosenNames
+        // Handle empty series
+        if (chosenSums.isEmpty()) {
+            viewModelScope.launch {
+                _categoryChartModelProducer.runTransaction {
+                    columnSeries { series(listOf(0.0)) }  // Dummy value to avoid crash
+                    extras { extraStore ->
+                        extraStore[categoriesLabelList] = listOf("")
+                    }
+                }
+            }
+        } else {
+            viewModelScope.launch {
+                _categoryChartModelProducer.runTransaction {
+                    columnSeries { series(chosenSums) }
+                    extras { extraStore ->
+                        extraStore[categoriesLabelList] = chosenNames
+                    }
                 }
             }
         }
     }
 
-    /**
-     * Check if both expense and revenue category data exist, to manage UI visibility.
-     */
     private fun checkIfDataExists() {
         _isDataAvailable.value =
             categoryNamesExpense.isNotEmpty() && categoryNamesRevenue.isNotEmpty()

@@ -25,8 +25,8 @@ jobs:
       - name: Set chmod to Gradlew
         run: chmod +x ./gradlew
 
-      - name: Build release APK
-        run: ./gradlew assembleRelease
+      - name: Build APK
+        run: ./gradlew assembleDebug
 
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
