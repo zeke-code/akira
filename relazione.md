@@ -101,20 +101,35 @@ e i relativi servizi.
 ```bash
 Akira/
 ├── data/
-   ├── local/
-   │   ├── dao/
-   │   │   └── TransactionDao.kt
-   │   ├── database/
-   │   │   └── AppDatabase.kt
-   │   └── entities/
-   │       ├── Transaction.kt
-   │       └── UserSettings.kt
-   └── remote/
-       ├── api/
-       │   └── StockApiService.kt
-       └── models/
-           ├── StockResponse.kt
-           └── MarketData.kt
+│   ├── local/
+│   │   ├── dao/
+│   │   │   ├── BudgetDao.kt
+│   │   │   ├── CategoryDao.kt
+│   │   │   ├── EarningDao.kt
+│   │   │   └── ExpenseDao.kt
+│   │   ├── database/
+│   │   │   └── AkiraDatabase.kt
+│   │   ├── entities/
+│   │   │   ├── BudgetModel.kt
+│   │   │   ├── CategoryModel.kt
+│   │   │   ├── EarningModel.kt
+│   │   │   ├── EarningWithCategory.kt
+│   │   │   ├── ExpenseModel.kt
+│   │   │   ├── ExpenseWithCategory.kt
+│   │   │   ├── SettingItem.kt
+│   │   │   └── TransactionModel.kt
+│   │   └── repository/
+│   │       ├── FinancialRepository.kt
+│   │       ├── StocksRepository.kt
+│   │       └── UserRepository.kt
+│   └── remote/
+│       ├── api/
+│       │   ├── AlphaVentureService.kt
+│       │   └── GithubApiService.kt
+│       ├── models/
+│          ├── GithubReleaseModel.kt
+│          ├── StockQuoteModel.kt
+│          └── TimeSeriesDailyModel.kt
 ```
 
 Nel pacchetto `data` abbiamo quindi:
@@ -128,6 +143,7 @@ Nel pacchetto `data` abbiamo quindi:
     - `ExpenseDao`: contiene l'interfaccia per effettuare operazioni CRUD sulle spese.
   - database: contiene il database dell'applicazione e i dati già pregenerati per le categorie.
   - entities: contiene tutte le entità presenti nel database.
+  - repository: contiene tutte le repository del progetto che agiscono come **Unique Source Of Truth** per i dati.
 
     - **`BudgetModel.kt`**  
        Rappresenta il modello per la gestione del budget mensile impostato dall'utente.  
@@ -160,6 +176,15 @@ Nel pacchetto `data` abbiamo quindi:
     - **`SettingItem.kt`**  
       Modello per la gestione delle **impostazioni** dell'app.  
       Memorizza le preferenze utente, come le notifiche attive, la valuta selezionata o altre configurazioni personalizzabili.
+
+    - **`FinancialRepository.kt`**
+      Repository che restituisce tutti i dati riguardanti le finanze dell'utente
+
+    - **`StocksRepository.kt`**
+      Repository che restituisce tutti i dati riguardanti le azioni delle aziende
+
+    - **`UserRepository.kt`**
+      Repository che restituisce tutte le informazioni riguardo l'utente (SharedPreferences, impostazioni di appi)
 
 - remote
 
@@ -203,18 +228,18 @@ per ricordare all'utente di registrare le proprie transazioni all'interno dell'a
 
 ## **Punti di forza**
 
-- **Privacy e Sicurezza:** l'applicazione non richiede permessi invasivi e conserva tutti i dati in locale, garantendo un elevato livello di protezione della privacy.
+- **Privacy:** l'applicazione non richiede permessi invasivi e conserva tutti i dati in locale, garantendo un elevato livello di protezione della privacy.
 - **Performance Ottimizzate:** l'utilizzo di una sola Activity ha semplificato la gestione del ciclo di vita dei vari elementi, riducendo il rischio di crash e migliorando le prestazioni generali.
 - **Architettura Scalabile:** l'adozione dell'architettura MVVM e della Dependency Injection con Hilt facilita l'aggiunta di nuove funzionalità e la manutenzione del codice.
 - **UI moderna e molto semplice:** la UI è molto semplice e intuitiva, permettendo all'utente di fare tutto quello di cui ha bisogno in pochi tap.
 
 ## **Possibili Migliorie**
 
-L'applicazione ha avuto uno sviluppo un po' travagliato. All'inizio era stata progettata per essere semplicemente un'applicazione a più view; il passaggio ad applicazione ad Activity singola mi ha rubato un po' di tempo per migliorare il tutto e aggiungere più feature.
+L'applicazione ha avuto uno sviluppo un po' travagliato. All'inizio era stata progettata per essere semplicemente un'applicazione a più view; il passaggio ad applicazione ad Activity singola mi ha rubato un po' di tempo che potrebbe essere stato investito per rifiniture varie e aggiunta di più feature.
 
 Ecco i punti che sarebbe possibile migliorare:
 
-1. L'utilizzo di JetPack Compose avrebbe potuto giovare molto all'applicazione, riducendo boilerplate code e riutilizzando elementi di UI più volte all'interno delle viste (i file XML sono inoltre noiosi da mantenere). La libreria non è stata utilizzata poiché lo sviluppo inizio con l'approccio delle Views per attenersi di più ai contenuti del corso.
+1. L'utilizzo di JetPack Compose avrebbe potuto giovare molto all'applicazione, riducendo boilerplate code e riutilizzando elementi di UI più volte all'interno delle viste (i file XML sono inoltre noiosi da mantenere). La libreria non è stata utilizzata poiché lo sviluppo iniziò con l'approccio delle Views per attenersi di più ai contenuti del corso.
 2. La vista delle statistiche può essere migliorata, offrendo più dati e un reload dei dati nei grafici migliori per migliorare le performance.
 3. La vista per la creazione di transazioni potrebbe essere più carina e andrebbe riprogettata, poiché al momento molto grezza anche se funzionale.
 4. Una feature sicuramente utile sarebbe la creazione personalizzata di categorie, non implementata per mancanza di tempo.
